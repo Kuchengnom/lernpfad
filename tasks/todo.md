@@ -109,9 +109,11 @@ Review: build, both fixtures and 27 unit checks pass. All 14 browser workflows p
 # Publish Lernpfad to GitHub Pages
 
 - [x] Verify the supplied empty repository and SSH access; install GitHub CLI.
-- [ ] Rename the visible product to Lernpfad while retaining compatible storage keys.
-- [ ] Exclude supplied reference media and local evidence from the initial public source commit.
-- [ ] Add CI checks and a GitHub Pages workflow that publishes only dist; verify locally.
+- [x] Rename the visible product to Lernpfad while retaining compatible storage keys.
+- [x] Exclude supplied reference media and local evidence from the initial public source commit.
+- [x] Add CI checks and a GitHub Pages workflow that publishes only dist; verify locally.
 - [ ] Push the initial repository, enable Pages and inspect the deployed site including offline use.
 
 Repository: Kuchengnom/lernpfad. GitHub CLI authorization is separate from working SSH and is requested through GitHub's device flow. No new SSH key is required.
+
+Publication review: 27 unit tests and 14 browser workflows pass. The production build also passes `node scripts/check-pages.mjs http://127.0.0.1:4175/lernpfad/`, including project-scoped service worker, HTTP-cache-cleared offline reload, authoring and lesson start. Independent review prompted a main-branch-only dispatch guard and a bounded service-worker readiness check. Initial local commit created; push was denied because the existing SSH key authenticates as `haase3000`, without write access to `Kuchengnom/lernpfad`. GitHub CLI 2.100.0 is installed; device authorization with an account holding repository write/admin rights is pending. No source has been pushed and no live deployment is claimed.

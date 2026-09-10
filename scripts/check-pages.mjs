@@ -14,7 +14,10 @@ try {
   assert.equal(response.status(), 200);
   await page.locator('[data-action="start-learn"]').first().waitFor();
   assert.match(await page.title(), /Lernpfad/);
-  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.evaluate(() => Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Service worker was not ready within 20 seconds')), 20000)),
+  ]));
   await page.reload();
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
