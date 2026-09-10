@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+dist/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+
+# Supplied school/app reference images remain local; publish the manifests only.
+references/**/*
+!references/**/
+!references/**/*.md
+experiment/evidence/

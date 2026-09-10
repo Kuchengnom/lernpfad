@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "curriculum",
+  "curriculum": {
+    "id": "course.french.qa",
+    "version": "1.0",
+    "title": "Französisch · Technischer Testkurs",
+    "sourceLanguage": "de",
+    "targetLanguage": "fr",
+    "sources": [
+      {
+        "id": "src.qa",
+        "kind": "teacher-note",
+        "file": "Originaler QA-Testtext",
+        "notes": "Synthetischer, eigenständig verfasster Testkurs für die Softwareprüfung. Keine Ableitung aus einem französischen Schulbuch."
+      }
+    ],
+    "concepts": [
+      {
+        "id": "fr.bonjour",
+        "kind": "vocabulary",
+        "label": "bonjour",
+        "learningGoal": "Eine Begrüßung erkennen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.qa"
+        ],
+        "target": "bonjour",
+        "native": "guten Tag"
+      },
+      {
+        "id": "fr.ete",
+        "kind": "vocabulary",
+        "label": "l'été",
+        "learningGoal": "Die Jahreszeit Sommer benennen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.qa"
+        ],
+        "target": "l'été",
+        "native": "der Sommer"
+      },
+      {
+        "id": "fr.etre",
+        "kind": "grammar",
+        "label": "Je suis",
+        "learningGoal": "Eine Aussage mit je suis bilden.",
+        "dependsOn": [],
+        "provenance": [
+          "src.qa"
+        ],
+        "rule": "Mit je suis sagst du „ich bin“.",
+        "examples": [
+          "Je suis à l'école."
+        ]
+      },
+      {
+        "id": "fr.lire",
+        "kind": "reading-skill",
+        "label": "Eine Ortsangabe finden",
+        "learningGoal": "Eine ausdrücklich genannte Stadt erkennen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.qa"
+        ]
+      },
+      {
+        "id": "fr.ecrire",
+        "kind": "writing-skill",
+        "label": "Sich vorstellen",
+        "learningGoal": "Einen eigenen kurzen Satz schreiben.",
+        "dependsOn": [],
+        "provenance": [
+          "src.qa"
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "fr.ex.bonjour",
+        "type": "choice",
+        "conceptIds": [
+          "fr.bonjour"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie begrüßt du jemanden tagsüber?",
+        "explanation": "Bonjour bedeutet guten Tag.",
+        "provenance": [
+          "src.qa"
+        ],
+        "choices": [
+          {
+            "id": "option.merci",
+            "text": "Merci"
+          },
+          {
+            "id": "option.bonjour",
+            "text": "Bonjour"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.bonjour"
+        ]
+      },
+      {
+        "id": "fr.ex.ete",
+        "type": "text-input",
+        "conceptIds": [
+          "fr.ete"
+        ],
+        "difficulty": 1,
+        "prompt": "Schreibe „der Sommer“ auf Französisch, mit Artikel.",
+        "explanation": "Der Sommer heißt l'été. Der Akzent gehört zum Wort.",
+        "provenance": [
+          "src.qa"
+        ],
+        "acceptedAnswers": [
+          "l'été",
+          "l’été"
+        ]
+      },
+      {
+        "id": "fr.ex.etre",
+        "type": "word-tiles",
+        "conceptIds": [
+          "fr.etre"
+        ],
+        "difficulty": 1,
+        "prompt": "Bilde „Ich bin in der Schule“. Beginne mit Je.",
+        "explanation": "Je suis à l'école bedeutet: Ich bin in der Schule.",
+        "provenance": [
+          "src.qa"
+        ],
+        "tiles": [
+          {
+            "id": "tile.ecole",
+            "text": "l'école."
+          },
+          {
+            "id": "tile.je",
+            "text": "Je"
+          },
+          {
+            "id": "tile.a",
+            "text": "à"
+          },
+          {
+            "id": "tile.suis",
+            "text": "suis"
+          }
+        ],
+        "correctOrder": [
+          "tile.je",
+          "tile.suis",
+          "tile.a",
+          "tile.ecole"
+        ]
+      },
+      {
+        "id": "fr.ex.lire",
+        "type": "reading",
+        "conceptIds": [
+          "fr.lire"
+        ],
+        "difficulty": 1,
+        "prompt": "In welcher Stadt wohnt Léa?",
+        "explanation": "Im ersten Satz steht, dass Léa in Lyon wohnt.",
+        "provenance": [
+          "src.qa"
+        ],
+        "passage": "Léa habite à Lyon. Chaque matin, elle va à l'école à pied.",
+        "choices": [
+          {
+            "id": "option.paris",
+            "text": "Paris"
+          },
+          {
+            "id": "option.lyon",
+            "text": "Lyon"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.lyon"
+        ]
+      },
+      {
+        "id": "fr.ex.ecrire",
+        "type": "writing",
+        "conceptIds": [
+          "fr.ecrire"
+        ],
+        "difficulty": 1,
+        "prompt": "Stelle dich in einem kurzen französischen Satz mit einem erfundenen Namen vor.",
+        "explanation": "Vergleiche deinen Satz mit dem Beispiel; dein Name darf anders sein.",
+        "provenance": [
+          "src.qa"
+        ],
+        "checklist": [
+          "Ich verwende Je m’appelle oder Je suis.",
+          "Ich ergänze einen erfundenen Namen."
+        ],
+        "modelAnswer": "Je m'appelle Camille.",
+        "selfCheck": true
+      }
+    ]
+  }
+}

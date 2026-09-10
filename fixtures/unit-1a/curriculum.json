@@ -1,0 +1,1931 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "curriculum",
+  "curriculum": {
+    "id": "course.english.unit-1a",
+    "version": "1.0",
+    "title": "Unit 1A · Holiday Stories",
+    "sourceLanguage": "de",
+    "targetLanguage": "en",
+    "sources": [
+      {
+        "id": "src.p20",
+        "kind": "textbook-page",
+        "file": "references/textbook/unit-1a-topic-vocabulary-page-20.heic",
+        "page": 20,
+        "notes": "Transport and holiday-place vocabulary; source audio is unavailable.",
+        "mediaAvailable": false
+      },
+      {
+        "id": "src.p21",
+        "kind": "textbook-page",
+        "file": "references/textbook/unit-1a-regular-simple-past-page-21.heic",
+        "page": 21,
+        "notes": "Regular simple past and -ed pronunciation. Referenced textbook audio is not supplied.",
+        "mediaAvailable": false
+      },
+      {
+        "id": "src.p22",
+        "kind": "textbook-page",
+        "file": "references/textbook/unit-1a-irregular-simple-past-page-22.heic",
+        "page": 22,
+        "notes": "Irregular simple past and present/past contrast."
+      },
+      {
+        "id": "src.p25",
+        "kind": "textbook-page",
+        "file": "references/textbook/unit-1a-writing-holiday-experience-page-25.heic",
+        "page": 25,
+        "notes": "Holiday writing scaffold and WH questions."
+      },
+      {
+        "id": "src.p18",
+        "kind": "textbook-page",
+        "file": "references/textbook/unit-1a-text-page-18.heic",
+        "page": 18,
+        "notes": "Holiday-story reading context; no passage is reproduced. Referenced textbook audio is not supplied.",
+        "mediaAvailable": false
+      }
+    ],
+    "concepts": [
+      {
+        "id": "u1a.vocab.bus",
+        "kind": "vocabulary",
+        "label": "bus",
+        "learningGoal": "Name a bus in English.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "bus",
+        "native": "Bus"
+      },
+      {
+        "id": "u1a.vocab.bike",
+        "kind": "vocabulary",
+        "label": "bike",
+        "learningGoal": "Name a bike in English.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "bike",
+        "native": "Fahrrad"
+      },
+      {
+        "id": "u1a.vocab.hotel",
+        "kind": "vocabulary",
+        "label": "hotel",
+        "learningGoal": "Name a hotel in English.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "hotel",
+        "native": "Hotel"
+      },
+      {
+        "id": "u1a.vocab.beach",
+        "kind": "vocabulary",
+        "label": "beach",
+        "learningGoal": "Name a beach in English.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "beach",
+        "native": "Strand"
+      },
+      {
+        "id": "u1a.grammar.regular-past",
+        "kind": "grammar",
+        "label": "regular simple past",
+        "learningGoal": "Form common regular past forms.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p21"
+        ],
+        "rule": "Usually add -ed; change consonant+y to -ied; add -d after final e.",
+        "examples": [
+          "play → played",
+          "cry → cried",
+          "smile → smiled"
+        ]
+      },
+      {
+        "id": "u1a.grammar.irregular-past",
+        "kind": "grammar",
+        "label": "irregular simple past",
+        "learningGoal": "Retrieve common irregular past forms.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "Irregular past forms must be learned individually.",
+        "examples": [
+          "go → went",
+          "drive → drove",
+          "read → read"
+        ]
+      },
+      {
+        "id": "u1a.reading.holiday-detail",
+        "kind": "reading-skill",
+        "label": "holiday detail",
+        "learningGoal": "Find a stated travel detail in a short text.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p18"
+        ]
+      },
+      {
+        "id": "u1a.writing.holiday",
+        "kind": "writing-skill",
+        "label": "holiday paragraph",
+        "learningGoal": "Write a short, supported holiday description.",
+        "dependsOn": [
+          "u1a.grammar.regular-past",
+          "u1a.grammar.irregular-past"
+        ],
+        "provenance": [
+          "src.p25"
+        ]
+      },
+      {
+        "id": "u1a.vocab.car",
+        "kind": "vocabulary",
+        "label": "car",
+        "learningGoal": "Das Wort car für Auto abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "car",
+        "native": "Auto"
+      },
+      {
+        "id": "u1a.vocab.moped",
+        "kind": "vocabulary",
+        "label": "moped",
+        "learningGoal": "Das Wort moped für Moped abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "moped",
+        "native": "Moped"
+      },
+      {
+        "id": "u1a.vocab.plane",
+        "kind": "vocabulary",
+        "label": "plane",
+        "learningGoal": "Das Wort plane für Flugzeug abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "plane",
+        "native": "Flugzeug"
+      },
+      {
+        "id": "u1a.vocab.scooter",
+        "kind": "vocabulary",
+        "label": "scooter",
+        "learningGoal": "Das Wort scooter für Roller abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "scooter",
+        "native": "Roller"
+      },
+      {
+        "id": "u1a.vocab.skateboard",
+        "kind": "vocabulary",
+        "label": "skateboard",
+        "learningGoal": "Das Wort skateboard für Skateboard abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "skateboard",
+        "native": "Skateboard"
+      },
+      {
+        "id": "u1a.vocab.tram",
+        "kind": "vocabulary",
+        "label": "tram",
+        "learningGoal": "Das Wort tram für Straßenbahn abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "tram",
+        "native": "Straßenbahn"
+      },
+      {
+        "id": "u1a.vocab.train",
+        "kind": "vocabulary",
+        "label": "train",
+        "learningGoal": "Das Wort train für Zug abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "train",
+        "native": "Zug"
+      },
+      {
+        "id": "u1a.vocab.campsite",
+        "kind": "vocabulary",
+        "label": "campsite",
+        "learningGoal": "Das Wort campsite für Campingplatz abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "campsite",
+        "native": "Campingplatz"
+      },
+      {
+        "id": "u1a.vocab.caravan",
+        "kind": "vocabulary",
+        "label": "caravan",
+        "learningGoal": "Das Wort caravan für Wohnwagen abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "caravan",
+        "native": "Wohnwagen"
+      },
+      {
+        "id": "u1a.vocab.castle",
+        "kind": "vocabulary",
+        "label": "castle",
+        "learningGoal": "Das Wort castle für Burg abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "castle",
+        "native": "Burg"
+      },
+      {
+        "id": "u1a.vocab.cathedral",
+        "kind": "vocabulary",
+        "label": "cathedral",
+        "learningGoal": "Das Wort cathedral für Kathedrale abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "cathedral",
+        "native": "Kathedrale"
+      },
+      {
+        "id": "u1a.vocab.city",
+        "kind": "vocabulary",
+        "label": "city",
+        "learningGoal": "Das Wort city für Stadt abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "city",
+        "native": "Stadt"
+      },
+      {
+        "id": "u1a.vocab.forest",
+        "kind": "vocabulary",
+        "label": "forest",
+        "learningGoal": "Das Wort forest für Wald abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "forest",
+        "native": "Wald"
+      },
+      {
+        "id": "u1a.vocab.holiday-home",
+        "kind": "vocabulary",
+        "label": "holiday home",
+        "learningGoal": "Das Wort holiday home für Ferienhaus abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "holiday home",
+        "native": "Ferienhaus"
+      },
+      {
+        "id": "u1a.vocab.island",
+        "kind": "vocabulary",
+        "label": "island",
+        "learningGoal": "Das Wort island für Insel abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "island",
+        "native": "Insel"
+      },
+      {
+        "id": "u1a.vocab.lake",
+        "kind": "vocabulary",
+        "label": "lake",
+        "learningGoal": "Das Wort lake für See abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "lake",
+        "native": "See"
+      },
+      {
+        "id": "u1a.vocab.mountain",
+        "kind": "vocabulary",
+        "label": "mountain",
+        "learningGoal": "Das Wort mountain für Berg abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "mountain",
+        "native": "Berg"
+      },
+      {
+        "id": "u1a.vocab.museum",
+        "kind": "vocabulary",
+        "label": "museum",
+        "learningGoal": "Das Wort museum für Museum abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "museum",
+        "native": "Museum"
+      },
+      {
+        "id": "u1a.vocab.pool",
+        "kind": "vocabulary",
+        "label": "pool",
+        "learningGoal": "Das Wort pool für Schwimmbecken abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "pool",
+        "native": "Schwimmbecken"
+      },
+      {
+        "id": "u1a.vocab.restaurant",
+        "kind": "vocabulary",
+        "label": "restaurant",
+        "learningGoal": "Das Wort restaurant für Restaurant abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "restaurant",
+        "native": "Restaurant"
+      },
+      {
+        "id": "u1a.vocab.theme-park",
+        "kind": "vocabulary",
+        "label": "theme park",
+        "learningGoal": "Das Wort theme park für Freizeitpark abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "theme park",
+        "native": "Freizeitpark"
+      },
+      {
+        "id": "u1a.vocab.village",
+        "kind": "vocabulary",
+        "label": "village",
+        "learningGoal": "Das Wort village für Dorf abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "village",
+        "native": "Dorf"
+      },
+      {
+        "id": "u1a.vocab.zoo",
+        "kind": "vocabulary",
+        "label": "zoo",
+        "learningGoal": "Das Wort zoo für Zoo abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "zoo",
+        "native": "Zoo"
+      },
+      {
+        "id": "u1a.vocab.kids-club",
+        "kind": "vocabulary",
+        "label": "kids’ club",
+        "learningGoal": "Das Wort kids’ club für Kinderclub abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "kids’ club",
+        "native": "Kinderclub"
+      },
+      {
+        "id": "u1a.vocab.water-park",
+        "kind": "vocabulary",
+        "label": "water park",
+        "learningGoal": "Das Wort water park für Wasserpark abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "target": "water park",
+        "native": "Wasserpark"
+      },
+      {
+        "id": "u1a.verb.drive.past",
+        "kind": "grammar",
+        "label": "drive → drove",
+        "learningGoal": "Die Vergangenheitsform von drive abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "drive ist unregelmäßig. Die Simple-Past-Form lautet drove.",
+        "examples": [
+          "drive → drove"
+        ]
+      },
+      {
+        "id": "u1a.verb.go.past",
+        "kind": "grammar",
+        "label": "go → went",
+        "learningGoal": "Die Vergangenheitsform von go abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "go ist unregelmäßig. Die Simple-Past-Form lautet went.",
+        "examples": [
+          "go → went"
+        ]
+      },
+      {
+        "id": "u1a.verb.do.past",
+        "kind": "grammar",
+        "label": "do → did",
+        "learningGoal": "Die Vergangenheitsform von do abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "do ist unregelmäßig. Die Simple-Past-Form lautet did.",
+        "examples": [
+          "do → did"
+        ]
+      },
+      {
+        "id": "u1a.verb.get.past",
+        "kind": "grammar",
+        "label": "get → got",
+        "learningGoal": "Die Vergangenheitsform von get abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "get ist unregelmäßig. Die Simple-Past-Form lautet got.",
+        "examples": [
+          "get → got"
+        ]
+      },
+      {
+        "id": "u1a.verb.have.past",
+        "kind": "grammar",
+        "label": "have → had",
+        "learningGoal": "Die Vergangenheitsform von have abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "have ist unregelmäßig. Die Simple-Past-Form lautet had.",
+        "examples": [
+          "have → had"
+        ]
+      },
+      {
+        "id": "u1a.verb.make.past",
+        "kind": "grammar",
+        "label": "make → made",
+        "learningGoal": "Die Vergangenheitsform von make abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "make ist unregelmäßig. Die Simple-Past-Form lautet made.",
+        "examples": [
+          "make → made"
+        ]
+      },
+      {
+        "id": "u1a.verb.meet.past",
+        "kind": "grammar",
+        "label": "meet → met",
+        "learningGoal": "Die Vergangenheitsform von meet abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "meet ist unregelmäßig. Die Simple-Past-Form lautet met.",
+        "examples": [
+          "meet → met"
+        ]
+      },
+      {
+        "id": "u1a.verb.read.past",
+        "kind": "grammar",
+        "label": "read → read",
+        "learningGoal": "Die Vergangenheitsform von read abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "read ist unregelmäßig. Die Simple-Past-Form lautet read.",
+        "examples": [
+          "read → read"
+        ]
+      },
+      {
+        "id": "u1a.verb.say.past",
+        "kind": "grammar",
+        "label": "say → said",
+        "learningGoal": "Die Vergangenheitsform von say abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "say ist unregelmäßig. Die Simple-Past-Form lautet said.",
+        "examples": [
+          "say → said"
+        ]
+      },
+      {
+        "id": "u1a.verb.think.past",
+        "kind": "grammar",
+        "label": "think → thought",
+        "learningGoal": "Die Vergangenheitsform von think abrufen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "think ist unregelmäßig. Die Simple-Past-Form lautet thought.",
+        "examples": [
+          "think → thought"
+        ]
+      },
+      {
+        "id": "u1a.grammar.by-transport",
+        "kind": "grammar",
+        "label": "by bus · by train",
+        "learningGoal": "Verkehrsmittel mit by angeben.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p20"
+        ],
+        "rule": "Vor Verkehrsmitteln steht in diesen Wendungen by ohne Artikel.",
+        "examples": [
+          "by bus",
+          "by train"
+        ]
+      },
+      {
+        "id": "u1a.grammar.wh-questions",
+        "kind": "grammar",
+        "label": "Where · When · Who",
+        "learningGoal": "Das passende Fragewort für Ort, Zeit und Person auswählen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p25"
+        ],
+        "rule": "Where fragt nach dem Ort, when nach der Zeit, who nach einer Person.",
+        "examples": [
+          "Where did you go?",
+          "When did you arrive?"
+        ]
+      },
+      {
+        "id": "u1a.grammar.present-past",
+        "kind": "grammar",
+        "label": "usually · yesterday",
+        "learningGoal": "Gegenwart und Vergangenheit am Zeitkontext unterscheiden.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p22"
+        ],
+        "rule": "Usually beschreibt Gewohnheiten; yesterday verweist auf die Vergangenheit.",
+        "examples": [
+          "We usually go by bus.",
+          "Yesterday we went by train."
+        ]
+      },
+      {
+        "id": "u1a.writing.adjectives",
+        "kind": "writing-skill",
+        "label": "Mit Adjektiven beschreiben",
+        "learningGoal": "Eine Beschreibung mit einem passenden Adjektiv genauer machen.",
+        "dependsOn": [],
+        "provenance": [
+          "src.p25"
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "u1a.ex.bus-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.bus"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Bus“.",
+        "explanation": "A bus is a large road vehicle for passengers.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "bus"
+          },
+          {
+            "id": "opt.b",
+            "text": "beach"
+          },
+          {
+            "id": "opt.c",
+            "text": "bike"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.a"
+        ]
+      },
+      {
+        "id": "u1a.ex.bike-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.bike"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Fahrrad“ auf Englisch?",
+        "explanation": "Fahrrad is bike.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "bike",
+          "a bike"
+        ]
+      },
+      {
+        "id": "u1a.ex.hotel-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.hotel"
+        ],
+        "difficulty": 1,
+        "prompt": "An welchem dieser Orte kann man im Urlaub übernachten?",
+        "explanation": "A hotel is a place to stay.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "hotel"
+          },
+          {
+            "id": "opt.b",
+            "text": "train"
+          },
+          {
+            "id": "opt.c",
+            "text": "skateboard"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.a"
+        ]
+      },
+      {
+        "id": "u1a.ex.beach-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.beach"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Strand“ auf Englisch?",
+        "explanation": "Strand is beach.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "beach",
+          "the beach"
+        ]
+      },
+      {
+        "id": "u1a.ex.bus-tiles",
+        "type": "word-tiles",
+        "conceptIds": [
+          "u1a.vocab.bus"
+        ],
+        "difficulty": 2,
+        "prompt": "Ordne den Satz zur Anreise. Beginne mit We.",
+        "explanation": "Use by before a means of transport.",
+        "provenance": [
+          "src.p20"
+        ],
+        "tiles": [
+          {
+            "id": "opt.c",
+            "text": "by"
+          },
+          {
+            "id": "opt.d",
+            "text": "bus."
+          },
+          {
+            "id": "opt.a",
+            "text": "We"
+          },
+          {
+            "id": "opt.b",
+            "text": "travelled"
+          }
+        ],
+        "correctOrder": [
+          "opt.a",
+          "opt.b",
+          "opt.c",
+          "opt.d"
+        ]
+      },
+      {
+        "id": "u1a.ex.played-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 1,
+        "prompt": "Yesterday we ___ football. (play)",
+        "explanation": "For a regular verb, play becomes played.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "played"
+        ]
+      },
+      {
+        "id": "u1a.ex.cried-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Wähle die Vergangenheitsform von cry.",
+        "explanation": "A consonant plus y changes to ied: cry → cried.",
+        "provenance": [
+          "src.p21"
+        ],
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "cryed"
+          },
+          {
+            "id": "opt.b",
+            "text": "cried"
+          },
+          {
+            "id": "opt.c",
+            "text": "crys"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.b"
+        ]
+      },
+      {
+        "id": "u1a.ex.smiled-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: smile → ___",
+        "explanation": "After final e, add d: smile → smiled.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "smiled"
+        ]
+      },
+      {
+        "id": "u1a.ex.went-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.verb.go.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle die Vergangenheitsform von go.",
+        "explanation": "Go is irregular: its past form is went.",
+        "provenance": [
+          "src.p22"
+        ],
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "goed"
+          },
+          {
+            "id": "opt.b",
+            "text": "went"
+          },
+          {
+            "id": "opt.c",
+            "text": "gone"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.b"
+        ]
+      },
+      {
+        "id": "u1a.ex.drove-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.drive.past"
+        ],
+        "difficulty": 2,
+        "prompt": "Yesterday Dad ___ us to the beach. (drive)",
+        "explanation": "Drive is irregular: drive → drove.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "drove"
+        ]
+      },
+      {
+        "id": "u1a.ex.reading-transport",
+        "type": "reading",
+        "conceptIds": [
+          "u1a.reading.holiday-detail",
+          "u1a.vocab.bus"
+        ],
+        "difficulty": 2,
+        "prompt": "How did Mina travel?",
+        "explanation": "The text directly says that Mina travelled by bus.",
+        "provenance": [
+          "src.p18",
+          "src.p20"
+        ],
+        "passage": "Mina stayed in a hotel near the beach. On Saturday, she travelled by bus with her cousin. They visited a small museum.",
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "By bus"
+          },
+          {
+            "id": "opt.b",
+            "text": "By plane"
+          },
+          {
+            "id": "opt.c",
+            "text": "By bike"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.a"
+        ]
+      },
+      {
+        "id": "u1a.ex.reading-place",
+        "type": "reading",
+        "conceptIds": [
+          "u1a.reading.holiday-detail",
+          "u1a.vocab.hotel"
+        ],
+        "difficulty": 3,
+        "prompt": "Where did Mina stay?",
+        "explanation": "The first sentence gives the place: a hotel near the beach.",
+        "provenance": [
+          "src.p18",
+          "src.p20"
+        ],
+        "passage": "Mina stayed in a hotel near the beach. On Saturday, she travelled by bus with her cousin. They visited a small museum.",
+        "choices": [
+          {
+            "id": "opt.a",
+            "text": "In a hotel"
+          },
+          {
+            "id": "opt.b",
+            "text": "On a train"
+          },
+          {
+            "id": "opt.c",
+            "text": "At school"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.a"
+        ]
+      },
+      {
+        "id": "u1a.ex.write-holiday",
+        "type": "writing",
+        "conceptIds": [
+          "u1a.writing.holiday"
+        ],
+        "difficulty": 3,
+        "prompt": "Schreibe drei englische Sätze über einen ausgedachten Urlaub.",
+        "explanation": "Use a place, transport and at least one past form; compare your own wording with the model only after writing.",
+        "provenance": [
+          "src.p25",
+          "src.p20",
+          "src.p22"
+        ],
+        "checklist": [
+          "Name a holiday place.",
+          "Say how you travelled.",
+          "Use one simple-past verb."
+        ],
+        "modelAnswer": "Last summer I went to the beach by bus. We stayed in a hotel. I played in the water.",
+        "selfCheck": true
+      },
+      {
+        "id": "u1a.ex.car-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.car"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Auto“.",
+        "explanation": "„Auto“ heißt car.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "scooter"
+          },
+          {
+            "id": "opt.1",
+            "text": "car"
+          },
+          {
+            "id": "opt.2",
+            "text": "campsite"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.moped-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.moped"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Moped“ auf Englisch?",
+        "explanation": "„Moped“ heißt moped.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "moped"
+        ]
+      },
+      {
+        "id": "u1a.ex.plane-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.plane"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Flugzeug“ auf Englisch?",
+        "explanation": "„Flugzeug“ heißt plane.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "plane"
+        ]
+      },
+      {
+        "id": "u1a.ex.scooter-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.scooter"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Roller“.",
+        "explanation": "„Roller“ heißt scooter.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "train"
+          },
+          {
+            "id": "opt.1",
+            "text": "scooter"
+          },
+          {
+            "id": "opt.2",
+            "text": "cathedral"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.skateboard-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.skateboard"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Skateboard“ auf Englisch?",
+        "explanation": "„Skateboard“ heißt skateboard.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "skateboard"
+        ]
+      },
+      {
+        "id": "u1a.ex.tram-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.tram"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Straßenbahn“ auf Englisch?",
+        "explanation": "„Straßenbahn“ heißt tram.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "tram"
+        ]
+      },
+      {
+        "id": "u1a.ex.train-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.train"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Zug“.",
+        "explanation": "„Zug“ heißt train.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "castle"
+          },
+          {
+            "id": "opt.1",
+            "text": "train"
+          },
+          {
+            "id": "opt.2",
+            "text": "holiday home"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.campsite-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.campsite"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Campingplatz“ auf Englisch?",
+        "explanation": "„Campingplatz“ heißt campsite.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "campsite"
+        ]
+      },
+      {
+        "id": "u1a.ex.caravan-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.caravan"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Wohnwagen“ auf Englisch?",
+        "explanation": "„Wohnwagen“ heißt caravan.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "caravan"
+        ]
+      },
+      {
+        "id": "u1a.ex.castle-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.castle"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Burg“.",
+        "explanation": "„Burg“ heißt castle.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "forest"
+          },
+          {
+            "id": "opt.1",
+            "text": "castle"
+          },
+          {
+            "id": "opt.2",
+            "text": "mountain"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.cathedral-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.cathedral"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Kathedrale“ auf Englisch?",
+        "explanation": "„Kathedrale“ heißt cathedral.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "cathedral"
+        ]
+      },
+      {
+        "id": "u1a.ex.city-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.city"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Stadt“ auf Englisch?",
+        "explanation": "„Stadt“ heißt city.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "city"
+        ]
+      },
+      {
+        "id": "u1a.ex.forest-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.forest"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Wald“.",
+        "explanation": "„Wald“ heißt forest.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "lake"
+          },
+          {
+            "id": "opt.1",
+            "text": "forest"
+          },
+          {
+            "id": "opt.2",
+            "text": "restaurant"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.holiday-home-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.holiday-home"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Ferienhaus“ auf Englisch?",
+        "explanation": "„Ferienhaus“ heißt holiday home.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "holiday home"
+        ]
+      },
+      {
+        "id": "u1a.ex.island-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.island"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Insel“ auf Englisch?",
+        "explanation": "„Insel“ heißt island.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "island"
+        ]
+      },
+      {
+        "id": "u1a.ex.lake-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.lake"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „See“.",
+        "explanation": "„See“ heißt lake.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "pool"
+          },
+          {
+            "id": "opt.1",
+            "text": "lake"
+          },
+          {
+            "id": "opt.2",
+            "text": "zoo"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.mountain-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.mountain"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Berg“ auf Englisch?",
+        "explanation": "„Berg“ heißt mountain.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "mountain"
+        ]
+      },
+      {
+        "id": "u1a.ex.museum-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.museum"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Museum“ auf Englisch?",
+        "explanation": "„Museum“ heißt museum.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "museum"
+        ]
+      },
+      {
+        "id": "u1a.ex.pool-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.pool"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Schwimmbecken“.",
+        "explanation": "„Schwimmbecken“ heißt pool.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "village"
+          },
+          {
+            "id": "opt.1",
+            "text": "pool"
+          },
+          {
+            "id": "opt.2",
+            "text": "car"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.restaurant-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.restaurant"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Restaurant“ auf Englisch?",
+        "explanation": "„Restaurant“ heißt restaurant.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "restaurant"
+        ]
+      },
+      {
+        "id": "u1a.ex.theme-park-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.theme-park"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Freizeitpark“ auf Englisch?",
+        "explanation": "„Freizeitpark“ heißt theme park.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "theme park"
+        ]
+      },
+      {
+        "id": "u1a.ex.village-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.village"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Dorf“.",
+        "explanation": "„Dorf“ heißt village.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "water park"
+          },
+          {
+            "id": "opt.1",
+            "text": "village"
+          },
+          {
+            "id": "opt.2",
+            "text": "scooter"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.zoo-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.zoo"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Zoo“ auf Englisch?",
+        "explanation": "„Zoo“ heißt zoo.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "zoo"
+        ]
+      },
+      {
+        "id": "u1a.ex.kids-club-input",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.vocab.kids-club"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie heißt „Kinderclub“ auf Englisch?",
+        "explanation": "„Kinderclub“ heißt kids’ club.",
+        "provenance": [
+          "src.p20"
+        ],
+        "acceptedAnswers": [
+          "kids’ club"
+        ]
+      },
+      {
+        "id": "u1a.ex.water-park-choice",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.vocab.water-park"
+        ],
+        "difficulty": 1,
+        "prompt": "Wähle das englische Wort für „Wasserpark“.",
+        "explanation": "„Wasserpark“ heißt water park.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "plane"
+          },
+          {
+            "id": "opt.1",
+            "text": "water park"
+          },
+          {
+            "id": "opt.2",
+            "text": "train"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.do-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.do.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: do → ___",
+        "explanation": "do ist unregelmäßig: did.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "did"
+        ]
+      },
+      {
+        "id": "u1a.ex.get-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.get.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: get → ___",
+        "explanation": "get ist unregelmäßig: got.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "got"
+        ]
+      },
+      {
+        "id": "u1a.ex.have-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.have.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: have → ___",
+        "explanation": "have ist unregelmäßig: had.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "had"
+        ]
+      },
+      {
+        "id": "u1a.ex.make-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.make.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: make → ___",
+        "explanation": "make ist unregelmäßig: made.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "made"
+        ]
+      },
+      {
+        "id": "u1a.ex.meet-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.meet.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: meet → ___",
+        "explanation": "meet ist unregelmäßig: met.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "met"
+        ]
+      },
+      {
+        "id": "u1a.ex.read-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.read.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: read → ___",
+        "explanation": "read ist unregelmäßig: read.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "read"
+        ]
+      },
+      {
+        "id": "u1a.ex.say-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.say.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: say → ___",
+        "explanation": "say ist unregelmäßig: said.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "said"
+        ]
+      },
+      {
+        "id": "u1a.ex.think-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.verb.think.past"
+        ],
+        "difficulty": 1,
+        "prompt": "Ergänze die Vergangenheit: think → ___",
+        "explanation": "think ist unregelmäßig: thought.",
+        "provenance": [
+          "src.p22"
+        ],
+        "acceptedAnswers": [
+          "thought"
+        ]
+      },
+      {
+        "id": "u1a.ex.irregular-rule",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.irregular-past"
+        ],
+        "difficulty": 1,
+        "prompt": "Was gilt für unregelmäßige Verben im Simple Past?",
+        "explanation": "Unregelmäßige Formen folgen nicht der normalen -ed-Regel: go → went.",
+        "provenance": [
+          "src.p22"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "Immer -ed anhängen"
+          },
+          {
+            "id": "opt.1",
+            "text": "Die Vergangenheitsform einzeln lernen"
+          },
+          {
+            "id": "opt.2",
+            "text": "Immer -ing anhängen"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.add-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: add → ___",
+        "explanation": "add → added. Hänge -ed an.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "added"
+        ]
+      },
+      {
+        "id": "u1a.ex.call-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: call → ___",
+        "explanation": "call → called. Hänge -ed an.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "called"
+        ]
+      },
+      {
+        "id": "u1a.ex.laugh-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: laugh → ___",
+        "explanation": "laugh → laughed. Hänge -ed an.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "laughed"
+        ]
+      },
+      {
+        "id": "u1a.ex.stay-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: stay → ___",
+        "explanation": "stay → stayed. Nach Vokal + y bleibt das y.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "stayed"
+        ]
+      },
+      {
+        "id": "u1a.ex.hurry-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: hurry → ___",
+        "explanation": "hurry → hurried. Nach Konsonant + y wird y zu i; dann folgt -ed.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "hurried"
+        ]
+      },
+      {
+        "id": "u1a.ex.agree-past",
+        "type": "text-input",
+        "conceptIds": [
+          "u1a.grammar.regular-past"
+        ],
+        "difficulty": 2,
+        "prompt": "Bilde das Simple Past: agree → ___",
+        "explanation": "agree → agreed. Nach einem stummen e wird nur -d angehängt.",
+        "provenance": [
+          "src.p21"
+        ],
+        "acceptedAnswers": [
+          "agreed"
+        ]
+      },
+      {
+        "id": "u1a.ex.preposition-by",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.by-transport"
+        ],
+        "difficulty": 1,
+        "prompt": "We travelled ___ train.",
+        "explanation": "Bei Verkehrsmitteln verwendest du hier by: by train, by bus.",
+        "provenance": [
+          "src.p20"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "on"
+          },
+          {
+            "id": "opt.1",
+            "text": "by"
+          },
+          {
+            "id": "opt.2",
+            "text": "at"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.wh-place",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.wh-questions"
+        ],
+        "difficulty": 1,
+        "prompt": "___ did you go? — To a lake.",
+        "explanation": "To a lake nennt einen Ort. Nach dem Ort fragst du mit Where.",
+        "provenance": [
+          "src.p25"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "When"
+          },
+          {
+            "id": "opt.1",
+            "text": "Who"
+          },
+          {
+            "id": "opt.2",
+            "text": "Where"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.2"
+        ]
+      },
+      {
+        "id": "u1a.ex.wh-time",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.wh-questions"
+        ],
+        "difficulty": 2,
+        "prompt": "___ did you arrive? — On Monday.",
+        "explanation": "On Monday nennt eine Zeit. Dafür verwendest du When.",
+        "provenance": [
+          "src.p25"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "When"
+          },
+          {
+            "id": "opt.1",
+            "text": "Where"
+          },
+          {
+            "id": "opt.2",
+            "text": "Who"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.0"
+        ]
+      },
+      {
+        "id": "u1a.ex.contrast",
+        "type": "choice",
+        "conceptIds": [
+          "u1a.grammar.present-past"
+        ],
+        "difficulty": 2,
+        "prompt": "We usually go by bus. Yesterday we ___ by train.",
+        "explanation": "Yesterday liegt in der Vergangenheit. Die Simple-Past-Form von go ist went.",
+        "provenance": [
+          "src.p22"
+        ],
+        "choices": [
+          {
+            "id": "opt.0",
+            "text": "go"
+          },
+          {
+            "id": "opt.1",
+            "text": "went"
+          },
+          {
+            "id": "opt.2",
+            "text": "going"
+          }
+        ],
+        "correctChoiceIds": [
+          "opt.1"
+        ]
+      },
+      {
+        "id": "u1a.ex.write-detail",
+        "type": "writing",
+        "conceptIds": [
+          "u1a.writing.adjectives"
+        ],
+        "difficulty": 2,
+        "prompt": "Beschreibe einen ausgedachten Urlaubsort in einem englischen Satz. Nutze ein Adjektiv.",
+        "explanation": "Ein Adjektiv macht eine Beschreibung genauer. Dein Satz darf anders lauten als das Beispiel.",
+        "provenance": [
+          "src.p25"
+        ],
+        "checklist": [
+          "Habe ich einen Ort genannt?",
+          "Habe ich ein passendes Adjektiv ergänzt?"
+        ],
+        "modelAnswer": "We visited a quiet village.",
+        "selfCheck": true
+      },
+      {
+        "id": "u1a.ex.drive-tiles",
+        "type": "word-tiles",
+        "conceptIds": [
+          "u1a.verb.drive.past"
+        ],
+        "difficulty": 3,
+        "prompt": "Ordne den Satz. Beginne mit We.",
+        "explanation": "Nach dem Subjekt folgt hier die Vergangenheitsform drove.",
+        "provenance": [
+          "src.p22"
+        ],
+        "tiles": [
+          {
+            "id": "tile.car",
+            "text": "a car."
+          },
+          {
+            "id": "tile.drove",
+            "text": "drove"
+          },
+          {
+            "id": "tile.we",
+            "text": "We"
+          }
+        ],
+        "correctOrder": [
+          "tile.we",
+          "tile.drove",
+          "tile.car"
+        ]
+      }
+    ]
+  }
+}
