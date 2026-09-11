@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fixture from '../fixtures/unit-1a/curriculum.json' with {type:'json'};
 import { validateCurriculum, validateLearner, parseImport, backupPackage } from '../app/validation.js';
+import { pastedImportText, parsePastedImport } from '../app/import-text.js';
 import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from '../app/engine.js';
 const course = fixture.curriculum;
 const copy = value => structuredClone(value);
@@ -27,6 +28,14 @@ test('reject malformed, future, oversized and unknown-property packages',()=>{
   assert.throws(()=>parseImport(JSON.stringify({...fixture,schemaVersion:'2.0'})),/version/);
   assert.throws(()=>parseImport(' '.repeat(5*1024*1024+1)),/groß/);
   assert.throws(()=>parseImport(JSON.stringify({...fixture,script:'anything'})),/unbekannte/);
+});
+test('pasted imports accept raw JSON or one complete json fence only',()=>{
+  const raw=JSON.stringify(fixture);
+  assert.equal(pastedImportText(raw),raw);
+  assert.equal(pastedImportText(`\n\`\`\`json\n${raw}\n\`\`\`\n`),raw);
+  assert.deepEqual(parsePastedImport(`\`\`\`json\n${raw}\n\`\`\``),{curriculum:course,learner:null});
+  assert.throws(()=>pastedImportText(`Here is the JSON:\n\`\`\`json\n${raw}\n\`\`\``),/reines JSON/);
+  assert.throws(()=>pastedImportText(`\`\`\`\n${raw}\n\`\`\``),/vollständigen/);
 });
 test('reject ambiguous keys, dangling sources, cyclic prerequisites and repeated tiles',()=>{
   let f=copy(fixture);f.curriculum.exercises[0].correctChoiceIds=['opt.missing'];assert.throws(()=>validateCurriculum(f),/richtige Antwort/);

@@ -91,7 +91,7 @@ export function validateLearner(learner, course) {
 export function parseImport(text) {
   if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) fail('Die Datei ist zu groß. Bitte verwende eine JSON-Datei bis 5 MB.');
   let data;
-  try { data = JSON.parse(text); } catch { fail('Diese Datei enthält kein gültiges JSON. Bitte exportiere die Datei erneut, ohne Markdown-Codeblöcke.'); }
+  try { data = JSON.parse(text); } catch { fail('Dieser Import enthält kein gültiges JSON. Bitte kopiere die vollständige Antwort oder lasse den JSON-Text korrigieren.'); }
   if (!data || data.schemaVersion !== '1.0') fail('Diese Dateiversion wird noch nicht unterstützt. Erwartet wird schemaVersion „1.0“. Dein bisheriger Lernstand bleibt erhalten.');
   if (!['curriculum', 'backup'].includes(data.kind)) fail('Bitte wähle einen Lernstoff oder eine vollständige Lernpfad-Sicherung.');
   const allowed = data.kind === 'backup' ? ['schemaVersion', 'kind', 'curriculum', 'learner'] : ['schemaVersion', 'kind', 'curriculum'];

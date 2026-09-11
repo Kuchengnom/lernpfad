@@ -35,7 +35,7 @@ Open `http://127.0.0.1:4173`. Wait for **Offline bereit** after initial loading.
 - Start a short practice round from **Heute**. Wrong answers return in future practice; completed rounds award effort points and a stamp. Leaving a round or reloading retains answered progress and lets you resume.
 - **Lernbuch** lets you search words, translations and German grammar explanations, then practise a chosen concept. Looking things up never changes progress. Prerequisites are shown before advanced practice.
 - **Heute → Wiederholen** shows unresolved objective mistakes and due concepts. Reviews stay focused and may be short; a fresh learner sees an empty list. A paused round can be resumed or deliberately replaced while retaining checked answers.
-- **Üben → Lernstoff importieren** opens a preview of curriculum JSON or a complete backup. Review its file name, content, sample tasks, sources and prerequisite warnings; export the current backup directly from the preview. Only **Import übernehmen** replaces the current course and learner. Cancel or leave the preview to keep the current round and progress. A curriculum-only file starts fresh; a full backup restores its saved outcomes.
+- **Üben → Lernstoff importieren** offers **Text einfügen** for a copied ChatGPT JSON answer and **Datei auswählen** for a file. Both open the same preview of curriculum JSON or a complete backup. Pasted text can be raw JSON or one complete Markdown `json` code block. The draft survives editing, errors and preview cancellation within the open tab; it is not saved across reloads. Review its file name, content, sample tasks, sources and prerequisite warnings; export the current backup directly from the preview. Only **Import übernehmen** replaces the current course and learner. Cancel or leave the preview to keep the current round and progress. A curriculum-only file starts fresh; a full backup restores its saved outcomes.
 - **Sicherung exportieren** downloads course and learner outcomes. Import on another device to restore them. **Lernstoff exportieren** shares only curriculum.
 - **Fortschritt** shows concept-level progress. Writing uses a model and explicit self-check, never automatic grading.
 
@@ -55,7 +55,7 @@ Browser tests use Playwright. They detect this workstation's isolated Chrome ins
 
 ## Author and continue
 
-Open **Üben → Anleitung & Prompt**. Select **Französisch** or **Englisch**, then copy or download the complete prompt. It already includes the current JSON Schema. Paste it into a new external AI conversation, attach your school material, and save the generated result as `lernstoff.json`. Return to **Üben → Lernstoff importieren**, inspect the preview and explicitly accept. The app does not send material to an AI.
+Open **Üben → Anleitung & Prompt**. Select **Französisch** or **Englisch**, then copy or download the complete prompt. It already includes the current JSON Schema. Paste it into a new external AI conversation, attach your school material, and copy the complete generated JSON answer. Return to **Text einfügen** (available in the guide and under **Üben**), paste, choose **Vorschau öffnen**, inspect it and explicitly accept. Downloading and selecting `lernstoff.json` remains available. The app does not send material to an AI.
 
 The [prompt template](prompts/parent-authoring-prompt.md) and [schema](specs/schema/curriculum.schema.json) remain the source files. The app replaces the language placeholders and embeds the schema automatically. Instructions stay German; target content supports English and French. The small [French QA fixture](fixtures/french-smoke/curriculum.json) is an original technical test, not a source-derived French course.
 
@@ -66,3 +66,5 @@ The second milestone adds learn-before-practice and focused review. See [its eva
 The third milestone adds preview-before-import and advisory checks for unreachable practice. See [Milestone 3 evidence](experiment/milestone-3-evaluation.md). Choosing a file, viewing it or downloading the current backup never installs the previewed data.
 
 Main module boundaries: `app/main.js` coordinates state, `ui.js` and `styles.css` render, `engine.js` selects/evaluates, `validation.js` guards imports, and `storage.js` persists atomically. `scripts/build-sw.js` generates the offline worker from the exact production files. There is no deployment service dependency.
+
+The Lernpfad visual identity uses original scout-inspired illustrations and a route/compass symbol. Artwork is bundled locally and precached; no external image service is used at runtime. See [artwork provenance and prompts](experiment/lernpfad-artwork.md) and [mobile paste-import evaluation](experiment/mobile-paste-evaluation.md).

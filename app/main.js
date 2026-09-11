@@ -1,10 +1,13 @@
 import './styles.css';
+import './scout.css';
+import './import-text.css';
 import { renderApp } from './ui.js';
 import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from './engine.js';
 import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
 import { analyzeReadiness } from './readiness.js';
 import { buildAuthoringPrompt, authoringSchema } from './authoring.js';
 import { validateCurriculum, validateLearner, parseImport, backupPackage, curriculumPackage, MAX_FILE_BYTES } from './validation.js';
+import { parsePastedImport } from './import-text.js';
 import example from '../fixtures/unit-1a/curriculum.json';
 
 const root = document.querySelector('#app');
@@ -14,6 +17,7 @@ let state = {
   offlineReady: false, busy: true, readOnly: false,
   studyQuery: '', studyKind: 'all',
   pendingImport: null,
+  importTextDraft: '', importTextError: null,
   authoringLanguage: 'fr',
 };
 state.learner = newLearner(state.curriculum);
@@ -57,8 +61,8 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 }
 const documentElement = tag => window.document.createElement(tag);
 
-function previewImport(imported, fileName) {
-  state.pendingImport = { ...imported, fileName, report: analyzeReadiness(imported.curriculum) };
+function previewImport(imported, fileName, fromText = false) {
+  state.pendingImport = { ...imported, fileName, fromText, report: analyzeReadiness(imported.curriculum) };
   state.view = 'import-preview';
   state.notice = null;
   show();
@@ -86,7 +90,7 @@ const actions = {
       field?.focus(); field?.select();
     }
   },
-  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage), `trailbook-autorenprompt-${state.authoringLanguage}.md`); },
+  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage), `lernpfad-autorenprompt-${state.authoringLanguage}.md`); },
   downloadSchema() { download(authoringSchema, 'curriculum.schema.json'); },
   navigate(view) { if (!state.busy) { state.view = view; state.pendingImport = null; state.notice = null; show(); focusMain(); } },
   cancelImport() { if (!state.busy) actions.navigate('library'); },
@@ -165,12 +169,25 @@ const actions = {
       previewImport(imported, file.name);
     } catch (error) { state.busy = false; notify(error.message); focusMain(); }
   },
+  validatePastedImport(text) {
+    if (state.busy || state.readOnly) return;
+    state.importTextDraft = String(text ?? '');
+    state.importTextError = null;
+    try {
+      const imported = parsePastedImport(state.importTextDraft);
+      previewImport(imported, 'Eingefügtes JSON', true);
+    } catch (error) {
+      state.importTextError = error.message;
+      show();
+      root.querySelector('[data-import-text]')?.focus({ preventScroll: true });
+    }
+  },
   exportBackup() {
-    try { download(backupPackage(state.curriculum, state.learner), 'trailbook-sicherung.json'); notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success'); }
+    try { download(backupPackage(state.curriculum, state.learner), 'lernpfad-sicherung.json'); notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success'); }
     catch (error) { notify(error.message); }
     root.querySelector('[data-action="export-backup"]')?.focus();
   },
-  exportCurriculum() { download(curriculumPackage(state.curriculum), 'trailbook-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
+  exportCurriculum() { download(curriculumPackage(state.curriculum), 'lernpfad-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
   async loadExample() {
     if (state.busy || state.readOnly) return;
     if (state.curriculum.id === example.curriculum.id && state.curriculum.version === example.curriculum.version) { actions.navigate('home'); return; }

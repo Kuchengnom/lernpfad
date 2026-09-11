@@ -112,8 +112,36 @@ Review: build, both fixtures and 27 unit checks pass. All 14 browser workflows p
 - [x] Rename the visible product to Lernpfad while retaining compatible storage keys.
 - [x] Exclude supplied reference media and local evidence from the initial public source commit.
 - [x] Add CI checks and a GitHub Pages workflow that publishes only dist; verify locally.
-- [ ] Push the initial repository, enable Pages and inspect the deployed site including offline use.
+- [x] Push the initial repository (user completed; remote main is `4c2edee`).
+- [x] Enable Pages with GitHub Actions and inspect the deployed site including offline use.
 
 Repository: Kuchengnom/lernpfad. GitHub CLI authorization is separate from working SSH and is requested through GitHub's device flow. No new SSH key is required.
 
-Publication review: 27 unit tests and 14 browser workflows pass. The production build also passes `node scripts/check-pages.mjs http://127.0.0.1:4175/lernpfad/`, including project-scoped service worker, HTTP-cache-cleared offline reload, authoring and lesson start. Independent review prompted a main-branch-only dispatch guard and a bounded service-worker readiness check. Initial local commit created; push was denied because the existing SSH key authenticates as `haase3000`, without write access to `Kuchengnom/lernpfad`. GitHub CLI 2.100.0 is installed; device authorization with an account holding repository write/admin rights is pending. No source has been pushed and no live deployment is claimed.
+Publication review: 27 unit tests and 14 browser workflows pass. The production build also passes `node scripts/check-pages.mjs http://127.0.0.1:4175/lernpfad/`, including project-scoped service worker, HTTP-cache-cleared offline reload, authoring and lesson start. Independent review prompted a main-branch-only dispatch guard and a bounded service-worker readiness check. The user subsequently pushed the local commits successfully. GitHub CI confirms the build and checks pass on `4c2edee`, but the custom deploy failed at Pages configuration. The live site currently contains unbuilt source from a separate legacy Pages job; see the repair plan below. GitHub CLI 2.100.0 is installed but not authenticated. Live application acceptance remains pending.
+
+## Live Pages repair — 2026-09-11
+
+Plan checked against the successful application build, failed deploy annotations and live HTML.
+
+- [x] Diagnose the live response and failed Actions step.
+- [x] Switch repository Pages source to GitHub Actions and rerun the tested deployment (user completed).
+- [x] Verify live rendering, project-scoped service worker and offline learning; update publication evidence.
+
+Diagnosis: the user successfully pushed commit `4c2edee`. The custom workflow's build passed; `configure-pages` failed because Pages was not enabled/configured for Actions. A subsequent legacy Pages job published source `index.html`, which requests `/app/main.js` instead of the built assets. Fix the repository publishing source; the existing relative Vite base already passes local subdirectory checks.
+
+Repair review: run `34579670888` successfully built and deployed `4c2edee`. The public HTML now references the compiled assets. The live smoke check passed: rendering, `/lernpfad/` worker scope, HTTP-cache-cleared offline reload, French authoring prompt and lesson start, without JavaScript exceptions. The public dashboard screenshot was visually inspected. Independent static review found no deployment-path defect; remaining user-visible blank output may be stale browser HTML, so try a hard reload or cache-busting URL before further diagnosis. The Node 20 notices are non-fatal upstream action warnings.
+
+# Mobile ChatGPT handoff and Lernpfad visual identity — 2026-09-11
+
+User requests pasted learning JSON and a scout/pathfinding image world. Plan reviewed against atomic import, offline-first assets, existing design and German product naming. Root owns integration, authoring guide, generated illustrations and browser QA; bounded Terra tasks implement pasted-import state/helper and scout art/CSS.
+
+- [x] Add a discoverable pasted-JSON entry, preserving draft text through errors and preview; accept raw JSON or one complete Markdown JSON fence.
+- [x] Reuse schema/readiness preview and explicit replacement transaction; retain file imports, existing learner data and 5 MB limit.
+- [x] Update the mobile authoring instructions/prompt and all current visible naming/downloads to Lernpfad, retaining storage compatibility.
+- [x] Generate and inspect original scout illustrations, copy optimized production assets into the repository and integrate them with responsive layout and offline cache.
+- [x] Run critical automated checks, rendered desktop/mobile/keyboard and offline QA, obtain independent review and correct findings.
+- [x] Document evidence and the next pilot test; prepare the tested change for delivery.
+
+Mobile handoff review: 28 unit tests, both fixture validations and all 16 browser workflows pass. Root inspected final desktop/mobile artwork, import entry placement and pasted-text UI. Independent review prompted neutral JSON error guidance; final QA also moved the import entry ahead of decorative/secondary content. See `experiment/mobile-paste-evaluation.md` and `experiment/lernpfad-artwork.md`. The next pilot is copying a real French course from ChatGPT on a physical phone, reviewing the preview and completing a round.
+
+- [ ] Publish the tested mobile-import/scout update and verify the new live assets and input flow.

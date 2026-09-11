@@ -6,7 +6,7 @@ Erfinde keine Inhalte, die im Material nicht belegbar sind. Kopiere keine Seiten
 
 Erstelle etwa 30 bis 60 kurze, abwechslungsreiche Aufgaben. Die Menge muss durch das tatsächlich vorliegende Material begrenzt sein: Bei wenig oder unsicherem Material erstelle weniger statt Wissen hinzuzuerfinden. Erklärungen und Arbeitsaufträge für das Kind sind auf Deutsch. Wörter, Sätze, Lesetexte, Antwortoptionen und Musterantworten in der Zielsprache sind {{TARGET_LANGUAGE}} (`{{TARGET_CODE}}`).
 
-Gib ausschließlich eine vollständige JSON-Datei zurück: genau ein JSON-Objekt, ohne Markdown-Zaun und ohne einleitenden oder abschließenden Text. Das unten eingefügte Schema ist die vollständige, maßgebliche Eingabe; benutze ausschließlich seine Felder. Die Ausgabe beginnt mit `{"schemaVersion":"1.0","kind":"curriculum","curriculum":...}` und enthält keinerlei Lernstand.
+Der Nutzer möchte deine Antwort auf dem Handy kopieren und direkt in Lernpfad einfügen. Liefere den vollständigen JSON-Text direkt in der Antwort, nicht nur als Download-Link oder Anhang. Gib ausschließlich eine vollständige JSON-Datei zurück: genau ein JSON-Objekt, ohne Markdown-Zaun und ohne einleitenden oder abschließenden Text. Das unten eingefügte Schema ist die vollständige, maßgebliche Eingabe; benutze ausschließlich seine Felder. Die Ausgabe beginnt mit `{"schemaVersion":"1.0","kind":"curriculum","curriculum":...}` und enthält keinerlei Lernstand.
 
 ## Pflichtstruktur und Herkunft
 

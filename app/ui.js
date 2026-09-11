@@ -1,3 +1,5 @@
+import { importTextView } from './import-text-view.js';
+import { brandMark, fieldKitArtwork, heroArtwork } from './scout-art.js';
 import { authoringView } from './authoring-view.js';
 import { getReviewItems } from './engine.js';
 import { learnerText } from './study-language.js';
@@ -25,16 +27,6 @@ function conceptProgress(state) {
 const isDue = item => item.nextDueAt && Date.parse(item.nextDueAt) <= Date.now();
 const isLocked = state => Boolean(state.busy || state.readOnly);
 
-function heroArtwork() {
-  return `<svg class="hero-art" viewBox="0 0 480 280" role="img" aria-label="Eine stilisierte Reiseroute durch Berge, Meer und einen kleinen Koffer">
-    <path class="hero-art__sun" d="M380 38a25 25 0 1 0 0 .1"/>
-    <path class="hero-art__mountain" d="m35 230 92-118 49 68 57-84 111 134H35Z"/>
-    <path class="hero-art__mountain hero-art__mountain--back" d="m180 230 90-92 75 92H180Z"/>
-    <path class="hero-art__route" d="M58 209c53-8 26-62 81-57 48 5 35 45 81 25 38-16 25-59 90-57 38 1 34 40 78 32"/>
-    <circle class="hero-art__stop" cx="58" cy="209" r="8"/><circle class="hero-art__stop" cx="220" cy="177" r="8"/><circle class="hero-art__stop" cx="388" cy="152" r="8"/>
-    <g class="hero-art__case"><rect x="321" y="183" width="76" height="51" rx="10"/><path d="M347 183v-10c0-10 23-10 23 0v10M321 202h76M358 201v11"/></g>
-  </svg>`;
-}
 
 function nav(view) {
   const items = [['home', 'Heute', 'route'], ['library', 'Üben', 'book'], ['study', 'Lernbuch', 'archive'], ['progress', 'Fortschritt', 'spark']];
@@ -45,7 +37,7 @@ function noticeBanner(state) { return state.notice ? `<div class="notice notice-
 function shell(state, content) {
   const notice = state.notice ? `<div class="notice notice--${esc(state.notice.type)}" role="status">${esc(state.notice.text)}</div>` : '';
   return `<div class="app-shell">
-    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">L</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.learner?.gems || 0} Stempel</span></div><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
+    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">${brandMark()}</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.learner?.gems || 0} Stempel</span></div><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
     <main id="main" class="main-content" tabindex="-1"><div class="mobile-meta"><strong>Lernpfad</strong><span>${state.learner?.xp || 0} Punkte · ${state.learner?.gems || 0} Stempel<br>${state.offlineReady ? 'Offline bereit' : 'Lernstand auf diesem Gerät'}</span></div>${notice}${content}</main>
     ${nav(state.view)}
   </div>`;
@@ -59,8 +51,8 @@ function home(state) {
   const due = progress.filter(isDue).length;
   const started = progress.filter(item => item.attempts).length;
   return shell(state, `<section class="home-grid" aria-labelledby="home-title">
-    <div class="home-intro"><p class="eyebrow">Deine kleine Lernreise</p><h1 id="home-title">Hallo! Bereit für<br><em>deine nächste Etappe?</em></h1><p class="lede">Heute übst du ${esc(languageName(state.curriculum.targetLanguage))} aus <strong>${esc(courseTitle(state))}</strong> — kurz, klar und in deinem Tempo.</p>${button(`${state.session ? 'Runde fortsetzen' : 'Lernrunde starten'} ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</div>
-    <div class="hero-card">${heroArtwork()}<div class="hero-card__caption"><span class="stamp">Heute</span><strong>${esc(courseTitle(state))}</strong><span>Eine kurze Runde wartet auf dich.</span></div></div>
+    <div class="home-intro"><p class="eyebrow">Dein Wissen. Dein Weg.</p><h1 id="home-title">Hallo! Bereit für<br><em>deine nächste Etappe?</em></h1><p class="lede">Heute übst du ${esc(languageName(state.curriculum.targetLanguage))} aus <strong>${esc(courseTitle(state))}</strong> — kurz, klar und in deinem Tempo.</p>${button(`${state.session ? 'Runde fortsetzen' : 'Lernrunde starten'} ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</div>
+    <div class="hero-card scout-hero">${heroArtwork()}<div class="hero-card__caption"><span class="stamp">Heute</span><strong>${esc(courseTitle(state))}</strong><span>Eine kurze Runde wartet auf dich.</span></div></div>
     ${state.session ? `<section class="resume-banner card"><div><p class="eyebrow">Noch offen</p><h2>Deine Lernrunde wartet.</h2><p>Du bist bei Aufgabe ${state.index + 1} von ${state.session.exercises.length}.</p></div>${button(`Runde fortsetzen ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>` : `<section class="continue-card card" aria-labelledby="continue-title"><div><p class="eyebrow">Empfohlen</p><h2 id="continue-title">Weiterlernen</h2><p>${due ? `${due} Thema${due === 1 ? '' : 'en'} wartet auf Wiederholung.` : 'Eine neue Mischung aus Wörtern und Sätzen.'}</p></div>${button(`Los geht’s ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>`}
     <section class="route-card card" aria-labelledby="route-title"><div class="section-title"><div><p class="eyebrow">Dein Lernstoff</p><h2 id="route-title">${esc(courseTitle(state))}</h2></div><span class="route-badge">${mastered} oft richtig geübt</span></div><div class="truthful-counts"><span><strong>${progress.length}</strong> Themen</span><span><strong>${started}</strong> begonnen</span><span><strong>${due}</strong> fällig</span></div>${button(`Lernbuch öffnen ${icons.arrow}`, 'navigate', 'button button--secondary button--with-icon', 'data-view="study"')}</section>
     <section class="quick-card card" aria-labelledby="quick-title"><p class="eyebrow">Kurz & gezielt</p><h2 id="quick-title">Was brauchst du?</h2><div class="quick-actions">${button(`${icons.route}<span>Wiederholungen ansehen${due ? ` (${due})` : ''}</span>`, 'navigate', 'quick-action', 'data-view="review"')}${button(`${icons.archive}<span>Lernbuch verwalten</span>`, 'navigate', 'quick-action', 'data-view="library"')}</div></section>
@@ -136,7 +128,19 @@ function complete(state) {
 }
 
 function library(state) {
-  return shell(state, `<section class="utility-page" aria-labelledby="library-title"><p class="eyebrow">Dein Lernbuch</p><h1 id="library-title">Üben & verwalten</h1><p class="lede">Dein Material und dein Fortschritt liegen nur auf diesem Gerät, bis du sie selbst exportierst.</p><div class="card authoring-entry"><h2>Eigenen Lernstoff erstellen</h2><p>Schulmaterial in einer neuen KI-Unterhaltung in eine passende Datei verwandeln – mit Anleitung und vollständigem Prompt für Englisch oder Französisch.</p>${button('Anleitung & Prompt', 'navigate', 'button button--primary', 'data-view="authoring"')}</div><div class="utility-grid"><article class="card utility-card"><div class="utility-icon">${icons.book}</div><h2>Beispiel starten</h2><p>Öffne die kleine Holiday-Stories-Lernreise.</p>${button('Beispiel laden', 'load-example', 'button button--secondary')}</article><article class="card utility-card"><div class="utility-icon">${icons.archive}</div><h2>Lernstoff importieren</h2><p>Wähle Lernstoff oder eine Lernpfad-Sicherung als JSON-Datei. Nach der Auswahl öffnet sich eine Vorschau; erst dort übernimmst du den Wechsel.</p><label class="button button--secondary file-button">Datei auswählen<input type="file" accept="application/json,.json" data-import-file></label></article><article class="card utility-card"><div class="utility-icon">${icons.route}</div><h2>Deine Sicherung</h2><p>Lade deinen Lernstand herunter, um ihn mitzunehmen.</p>${button('Sicherung exportieren', 'export-backup', 'button button--secondary')}</article><article class="card utility-card"><div class="utility-icon">${icons.spark}</div><h2>Lernstoff teilen</h2><p>Exportiere nur das Lernbuch ohne deinen Fortschritt.</p>${button('Lernstoff exportieren', 'export-curriculum', 'button button--secondary')}</article></div></section>`);
+  return shell(state, `<section class="utility-page" aria-labelledby="library-title">
+    <p class="eyebrow">Dein Lernbuch</p><h1 id="library-title">Üben & verwalten</h1>
+    <p class="lede">Dein Material und dein Fortschritt liegen nur auf diesem Gerät, bis du sie selbst exportierst.</p>
+    <div class="library-handoff">
+      <article class="card utility-card"><div class="utility-icon">${icons.archive}</div><h2>Lernstoff importieren</h2><p>Kopiere die JSON-Antwort aus ChatGPT hierher oder wähle eine Datei. Erst in der Vorschau übernimmst du den neuen Lernstoff.</p><div class="import-entry-actions">${button('Text einfügen', 'navigate', 'button button--primary', 'data-view="import-text"')}<label class="button button--secondary file-button">Datei auswählen<input type="file" accept="application/json,.json" data-import-file></label></div></article>
+      <div class="card authoring-entry scout-authoring-entry"><div class="authoring-entry__copy"><h2>Eigenen Lernstoff erstellen</h2><p>Aus deinem Schulmaterial wird dein eigener Lernpfad. Mit Anleitung und Prompt für Englisch oder Französisch.</p>${button('Anleitung & Prompt', 'navigate', 'button button--primary', 'data-view="authoring"')}</div>${fieldKitArtwork()}</div>
+    </div>
+    <div class="utility-grid">
+      <article class="card utility-card"><div class="utility-icon">${icons.route}</div><h2>Deine Sicherung</h2><p>Lade deinen Lernstand herunter, um ihn mitzunehmen.</p>${button('Sicherung exportieren', 'export-backup', 'button button--secondary')}</article>
+      <article class="card utility-card"><div class="utility-icon">${icons.spark}</div><h2>Lernstoff teilen</h2><p>Exportiere nur das Lernbuch ohne deinen Fortschritt.</p>${button('Lernstoff exportieren', 'export-curriculum', 'button button--secondary')}</article>
+      <article class="card utility-card"><div class="utility-icon">${icons.book}</div><h2>Beispiel starten</h2><p>Öffne die kleine Holiday-Stories-Lernreise.</p>${button('Beispiel laden', 'load-example', 'button button--secondary')}</article>
+    </div>
+  </section>`);
 }
 
 function languageName(code) { return ({ de: 'Deutsch', en: 'Englisch', fr: 'Französisch' })[code] || code || 'unbekannt'; }
@@ -162,15 +166,15 @@ function importPreview(state) {
   const disabled = isLocked(state);
   const disabledAttribute = disabled ? 'disabled aria-disabled="true"' : '';
   const importKind = incomingLearner ? 'Sicherung mit Lernstand' : 'Lernstoff ohne Lernstand';
-  const backupSummary = incomingLearner ? `<p class="import-preview__backup"><strong>${incomingLearner.xp || 0} Punkte</strong> und <strong>${(incomingLearner.completedSessions || []).length} abgeschlossene Runde${(incomingLearner.completedSessions || []).length === 1 ? '' : 'n'}</strong> werden mit importiert. Dieser gespeicherte Fortschritt kann weitere Übungen freischalten.</p>` : '<p class="import-preview__backup">Diese Datei enthält keinen Lernstand. Der neue Kurs beginnt ohne importierten Fortschritt.</p>';
+  const backupSummary = incomingLearner ? `<p class="import-preview__backup"><strong>${incomingLearner.xp || 0} Punkte</strong> und <strong>${(incomingLearner.completedSessions || []).length} abgeschlossene Runde${(incomingLearner.completedSessions || []).length === 1 ? '' : 'n'}</strong> werden mit importiert. Dieser gespeicherte Fortschritt kann weitere Übungen freischalten.</p>` : '<p class="import-preview__backup">Dieser Lernstoff enthält keinen Lernstand. Der neue Kurs beginnt ohne importierten Fortschritt.</p>';
   const availability = Number.isFinite(report.availableExerciseCount) ? report.availableExerciseCount : exercises.length;
   const locked = Number.isFinite(report.lockedExerciseCount) ? report.lockedExerciseCount : 0;
   const unreachable = report.unreachableConceptIds || [];
   const unused = report.unusedConceptIds || [];
   return shell(state, `<section class="import-preview" aria-labelledby="import-preview-title">
     <p class="eyebrow">Import prüfen</p>
-    <h1 id="import-preview-title">Deine Datei ist bereit zur Vorschau.</h1>
-    <p class="import-preview__filename">Datei: ${esc(pending.fileName || 'Ausgewählte JSON-Datei')}</p>
+    <h1 id="import-preview-title">${pending.fromText ? 'Dein Lernstoff ist bereit zur Vorschau.' : 'Deine Datei ist bereit zur Vorschau.'}</h1>
+    <p class="import-preview__filename">${pending.fromText ? 'Quelle' : 'Datei'}: ${esc(pending.fileName || 'Ausgewählte JSON-Datei')}</p>
     <p class="lede">Das Dateiformat passt. Bitte prüfe auch, ob Inhalte und Lösungen zu deinem Unterricht passen.</p>
     <article class="card import-preview__course">
       <div class="import-preview__course-head"><div><p class="eyebrow">${esc(importKind)}</p><h2>${esc(curriculum.title || curriculum.id || 'Unbenannter Lernstoff')}</h2><p>Version ${esc(curriculum.version || '–')} · ${esc(languageName(curriculum.sourceLanguage))} → ${esc(languageName(curriculum.targetLanguage))}</p></div><span class="import-preview__mark" aria-hidden="true">${icons.check}</span></div>
@@ -181,7 +185,7 @@ function importPreview(state) {
     <section class="import-preview__section" aria-labelledby="import-examples-title"><h2 id="import-examples-title">${exercises.length < 3 ? 'Beispielaufgaben' : 'Drei Beispielaufgaben'}</h2><p>Nur zur Orientierung: Die Vorschau verändert nichts.</p><details class="import-preview__details"><summary>Beispiele anzeigen</summary><ol>${exercises.slice(0, 3).map(exercise => `<li><span>${esc(exerciseLabel(exercise.type))}</span><p lang="${esc(curriculum.instructionLanguage || curriculum.sourceLanguage || 'de')}">${esc(importPrompt(exercise))}</p></li>`).join('') || '<li>Keine Beispielaufgabe vorhanden.</li>'}</ol></details></section>
     <section class="import-preview__section" aria-labelledby="import-sources-title"><h2 id="import-sources-title">Quellhinweise</h2><p>Die ${sourceText.length} Angabe${sourceText.length === 1 ? '' : 'n'} ${sourceText.length === 1 ? 'beschreibt' : 'beschreiben'} nur die Herkunft im Import. Lernpfad öffnet oder lädt daraus keine Dateien.</p><details class="import-preview__details"><summary>Quellhinweise anzeigen</summary><ul class="import-preview__sources">${sourceText.map(text => `<li>${esc(text)}</li>`).join('') || '<li>Keine Quellhinweise vorhanden.</li>'}</ul></details></section>
     <section class="import-preview__section import-preview__validation" aria-labelledby="import-validation-title"><h2 id="import-validation-title">Übungen ohne bisherigen Lernstand</h2><p><strong>${availability}</strong> Übung${availability === 1 ? '' : 'en'} ${availability === 1 ? 'wäre' : 'wären'} zu Beginn verfügbar. <strong>${locked}</strong> ${locked === 1 ? 'bliebe' : 'blieben'} zunächst gesperrt, weil ein vorausgesetztes Thema noch geübt werden muss.</p>${unreachable.length ? `<p class="import-preview__warning">${unreachable.length} Thema${unreachable.length === 1 ? ' ist' : 'en sind'} aus den Übungsbeziehungen nicht erreichbar: ${esc(unreachable.map(conceptLabel).join(', '))}.</p>` : unused.length ? '' : '<p class="import-preview__ok">Alle Themen sind über mindestens eine Übung erreichbar.</p>'}${unused.length ? `<p class="import-preview__warning">${unused.length} Thema${unused.length === 1 ? ' wird' : 'en werden'} von keiner Übung verwendet: ${esc(unused.map(conceptLabel).join(', '))}.</p>` : ''}</section>
-    <section class="import-preview__section import-preview__replacement" aria-labelledby="import-replacement-title"><h2 id="import-replacement-title">Was auf diesem Gerät ersetzt wird</h2><p>Der aktuelle Kurs${currentCourse ? ` „${esc(currentCourse.title || currentCourse.id)}“` : ''} und sein lokaler Lernstand werden durch diesen Import ersetzt.${currentSession ? ' Die pausierte Lernrunde wird beendet und nicht übernommen.' : ' Es gibt keine pausierte Lernrunde.'}</p><p>Du kannst vorher eine Sicherung deines <strong>aktuellen</strong> Kurses und Lernstands herunterladen. Das schließt diese Vorschau nicht.</p><div class="import-preview__actions">${button('Aktuelle Sicherung exportieren', 'export-backup', 'button button--secondary', disabledAttribute)}${button('Import übernehmen', 'confirm-import', 'button button--primary', disabledAttribute)}${button('Abbrechen', 'cancel-import', 'button button--quiet', disabledAttribute)}</div></section>
+    <section class="import-preview__section import-preview__replacement" aria-labelledby="import-replacement-title"><h2 id="import-replacement-title">Was auf diesem Gerät ersetzt wird</h2><p>Der aktuelle Kurs${currentCourse ? ` „${esc(currentCourse.title || currentCourse.id)}“` : ''} und sein lokaler Lernstand werden durch diesen Import ersetzt.${currentSession ? ' Die pausierte Lernrunde wird beendet und nicht übernommen.' : ' Es gibt keine pausierte Lernrunde.'}</p><p>Du kannst vorher eine Sicherung deines <strong>aktuellen</strong> Kurses und Lernstands herunterladen. Das schließt diese Vorschau nicht.</p><div class="import-preview__actions">${button('Aktuelle Sicherung exportieren', 'export-backup', 'button button--secondary', disabledAttribute)}${button('Import übernehmen', 'confirm-import', 'button button--primary', disabledAttribute)}${pending.fromText ? button('Text bearbeiten', 'navigate', 'button button--secondary', 'data-view="import-text"') : ''}${button('Abbrechen', 'cancel-import', 'button button--quiet', disabledAttribute)}</div></section>
   </section>`);
 }
 
@@ -197,13 +201,14 @@ function speak(text) {
 export function renderApp(root, state, actions) {
   if (state.session?.id !== draftSession) { drafts.clear(); draftSession = state.session?.id; }
   const active = root.contains(document.activeElement) ? document.activeElement : null;
-  const activeField = active?.matches('[data-draft-text], [data-draft-writing], [data-study-query]') ? { selector: active.matches('textarea') ? '[data-draft-writing]' : active.matches('[data-study-query]') ? '[data-study-query]' : '[data-draft-text]', start: active.selectionStart, end: active.selectionEnd } : null;
-  const views = { authoring: state => shell(state, authoringView(state, esc, button)), home, session, complete, library, progress: progressView, study, review, 'import-preview': importPreview };
+  const activeField = active?.matches('[data-draft-text], [data-draft-writing], [data-study-query], [data-import-text]') ? { selector: active.matches('[data-import-text]') ? '[data-import-text]' : active.matches('textarea') ? '[data-draft-writing]' : active.matches('[data-study-query]') ? '[data-study-query]' : '[data-draft-text]', start: active.selectionStart, end: active.selectionEnd } : null;
+  const views = { 'import-text': state => shell(state, importTextView(state, esc, button)), authoring: state => shell(state, authoringView(state, esc, button)), home, session, complete, library, progress: progressView, study, review, 'import-preview': importPreview };
   root.innerHTML = (views[state.view] || home)(state);
   root.querySelectorAll('[data-action]').forEach(control => control.addEventListener('click', () => {
     const action = control.dataset.action;
     const exercise = state.session?.exercises?.[state.index];
     const key = `${state.session?.id || 'session'}:${state.index}`;
+    if (action === 'validate-pasted-import') actions.validatePastedImport(root.querySelector('[data-import-text]')?.value);
     if (action === 'copy-authoring') actions.copyAuthoringPrompt();
     if (action === 'download-authoring') actions.downloadAuthoringPrompt();
     if (action === 'download-schema') actions.downloadSchema();
@@ -242,6 +247,8 @@ export function renderApp(root, state, actions) {
   root.querySelectorAll('[data-tile]').forEach(control => control.addEventListener('click', () => { const key = `${state.session?.id || 'session'}:${state.index}`; drafts.set(key, [...(drafts.get(key) || []), control.dataset.tile]); pendingFocus = { type: 'tile-next' }; renderApp(root, state, actions); }));
   root.querySelectorAll('[data-draft-text], [data-draft-writing]').forEach(control => control.addEventListener('input', () => drafts.set(`${state.session?.id || 'session'}:${state.index}`, control.value)));
   root.querySelectorAll('[data-study-query]').forEach(input => input.addEventListener('input', () => actions.setStudyQuery(input.value)));
+  root.querySelectorAll('[data-import-text]').forEach(input => input.addEventListener('input', () => { state.importTextDraft = input.value; state.importTextError = null; root.querySelector('#import-text-error')?.remove(); input.setAttribute('aria-invalid', 'false'); input.setAttribute('aria-describedby', 'import-text-help'); }));
+  root.querySelectorAll('[data-import-text-form]').forEach(form => form.addEventListener('submit', event => { event.preventDefault(); actions.validatePastedImport(root.querySelector('[data-import-text]')?.value); }));
   root.querySelectorAll('[data-authoring-language]').forEach(input => input.addEventListener('change', () => actions.setAuthoringLanguage(input.value)));
   root.querySelectorAll('[data-import-file]').forEach(input => { input.disabled = Boolean(state.busy || state.readOnly); input.addEventListener('change', () => input.files?.[0] && actions.importFile(input.files[0])); });
   root.querySelectorAll('[data-audio]').forEach(control => control.addEventListener('click', () => speak(control.dataset.audio)));
@@ -257,7 +264,7 @@ export function renderApp(root, state, actions) {
     if (submitControl) submitControl.disabled = isLocked(state) || !hasAnswer();
   }));
   root.querySelectorAll('[data-action]').forEach(control => {
-    const mutating = ['start-learn', 'start-review', 'practice-concept', 'load-example', 'submit', 'self-check', 'confirm-import', 'cancel-import'].includes(control.dataset.action);
+    const mutating = ['start-learn', 'start-review', 'practice-concept', 'load-example', 'submit', 'self-check', 'confirm-import', 'cancel-import', 'validate-pasted-import'].includes(control.dataset.action);
     control.disabled = control.disabled || Boolean(state.busy || (state.readOnly && mutating));
   });
   {

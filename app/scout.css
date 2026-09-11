@@ -1,0 +1,125 @@
+/* Optional visual layer. Import after styles.css and add the scout-* classes
+   shown in the integration note in scout-art.js's handoff. */
+
+:root {
+  --scout-forest: #285d4f;
+  --scout-forest-deep: #183f37;
+  --scout-ochre: #d89b31;
+  --scout-coral: #c9674c;
+  --scout-paper: #fffaf0;
+  --scout-shadow: 0 2px 0 rgba(24, 49, 58, .09), 0 16px 30px rgba(24, 49, 58, .10);
+}
+
+.brand-mark {
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--scout-ochre);
+  box-shadow: inset 0 -3px rgba(72, 46, 13, .18);
+}
+
+.brand-mark__insignia {
+  width: 1.72rem;
+  height: 1.72rem;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-mark__trail {
+  stroke: var(--coral);
+  stroke-width: 2.1;
+}
+
+.scout-hero {
+  min-height: clamp(17.5rem, 33vw, 25rem);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  background: var(--scout-forest-deep);
+  box-shadow: var(--scout-shadow);
+  isolation: isolate;
+}
+
+.scout-hero::after {
+  content: "";
+  position: absolute;
+  inset: 38% 0 0;
+  z-index: -1;
+  background: linear-gradient(180deg, transparent, rgba(14, 39, 33, .72));
+  pointer-events: none;
+}
+
+.scout-hero .hero-card__caption {
+  max-width: 21rem;
+  padding: .75rem;
+  border: 1px solid rgba(255, 250, 240, .34);
+  border-radius: var(--radius-md);
+  background: rgba(24, 49, 42, .72);
+  color: var(--scout-paper);
+  backdrop-filter: blur(6px);
+}
+
+.scout-hero .hero-card__caption span:last-child {
+  color: #e5efe8;
+}
+
+.scout-hero .stamp {
+  background: var(--scout-ochre);
+}
+
+.scout-art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: #cfd8b8;
+}
+
+.scout-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.scout-art--hero img {
+  filter: saturate(.86) contrast(1.02);
+}
+
+.scout-authoring-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 17rem);
+  align-items: center;
+  gap: 1.5rem;
+  overflow: hidden;
+  background: var(--scout-paper);
+}
+.scout-authoring-entry .scout-art {
+  position: relative;
+  inset: auto;
+  z-index: 0;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-md);
+}
+.scout-authoring-entry .button--primary { background: var(--scout-forest); }
+@media (hover: hover) and (pointer: fine) {
+  .scout-authoring-entry .button--primary:hover { background: var(--scout-forest-deep); }
+}
+@media (max-width: 760px) {
+  .scout-hero { min-height: 15rem; }
+  .scout-hero .hero-card__caption { max-width: min(100%, 19rem); }
+  .scout-authoring-entry { grid-template-columns: 1fr; gap: 1rem; }
+  .scout-authoring-entry .scout-art { max-height: 10rem; width: 100%; }
+}
+@media (max-width: 480px) {
+  .scout-hero { min-height: 14rem; }
+  .scout-hero .hero-card__caption { padding: .6rem; }
+  .scout-hero .hero-card__caption strong { font-size: 1.05rem; }
+}
+
+.library-handoff { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; margin: 1.5rem 0; }
+.library-handoff .authoring-entry { margin: 0; grid-template-columns: 1fr; gap: 1rem; }
+.library-handoff .scout-art { max-height: 10rem; }
+.import-entry-actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+@media (max-width: 760px) { .library-handoff { grid-template-columns: 1fr; } }

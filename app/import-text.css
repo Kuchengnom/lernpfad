@@ -1,0 +1,14 @@
+.import-text-page { max-width: 52rem; }
+.import-text-page > h1 { margin: 0; font-size: clamp(2.3rem, 4vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }
+.import-text-form { margin-top: 2rem; display: grid; gap: .85rem; }
+.import-text-form > label { font-weight: 850; }
+.import-text-form textarea { width: 100%; min-height: 16rem; resize: vertical; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); color: var(--ink); line-height: 1.45; }
+.import-text-form textarea:disabled { opacity: .6; }
+.import-text-help { margin: 0; color: var(--ink-muted); line-height: 1.45; }
+.import-text-error { margin: 0; padding: .75rem .9rem; border-left: 3px solid var(--error); background: var(--error-bg); color: var(--error); line-height: 1.45; }
+.import-text-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .25rem; }
+@media (max-width: 640px) {
+  .import-text-form textarea { min-height: 18rem; }
+  .import-text-actions { display: grid; grid-template-columns: 1fr; }
+  .import-text-actions .button { width: 100%; }
+}

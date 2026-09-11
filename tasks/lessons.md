@@ -1,3 +1,7 @@
 # Lessons
 
 - Verify the authoring path from the user's actual entry point: a repository prompt alone does not provide an in-app handoff. Before declaring another target language ready, check schema acceptance, all learner-facing labels and language attributes, answer normalization, and an import-to-backup browser run.
+
+- For GitHub Pages, distinguish the custom app workflow from the legacy Pages/Jekyll job. A successful source deployment does not prove a Vite app is live: inspect the served entry script, verify the configured publishing source, then run the live rendering and offline smoke check.
+
+- Test the complete mobile authoring journey: users may copy ChatGPT output instead of downloading a JSON file. Offer pasted text alongside file upload and route both through the same validation, preview and explicit acceptance. Preserve the pasted draft on errors and never require clipboard-read permission.
