@@ -249,3 +249,34 @@ application router, both held by the library workstream.
 
 See `experiment/welcome-page.md` for design rationale, the claim/basis table and the full
 asset brief.
+
+# Branch split and verified main — 2026-09-14
+
+GPT/Codex unavailable, so the in-flight library work was assessed, committed and parked
+rather than left loose in the working tree.
+
+`main` (verified: build, 39 unit tests, 16/16 browser workflows, all green):
+- `ba38500` device speech module and tests
+- `0eee1ea` parent landing page, Impressum/Datenschutz drafts, share image, root swap to
+  `lernen.html`, `check-pages.mjs` and browser specs updated for the new URL
+- `9384b41` speech wired into the exercise audio button
+
+`library-wip` branch — `a7ac1e3`, multi-book profile, stamps, album and Bergzeit. Deliberately
+not on main because it is unfinished:
+- **Artwork does not exist.** `app/journey.js` renders `./illustrations/lernpfad-bergzeit.webp`
+  and `app/stamps.js` renders `./illustrations/stamps/<id>.webp`; neither the file nor the
+  directory is in `public/`, so every stamp and the rest screen render a broken image.
+- **Three browser tests fail**, all in the import flow, because import was redesigned to add a
+  book instead of replacing the workspace. `milestone3` still expects the old replacement
+  wording and `confirm-import` placement; `paste-import`'s offline scout-asset check fails.
+  Fixing these means settling the new import contract — a design decision for whoever finishes
+  the feature, not a mechanical test edit.
+
+Two test breakages were mechanical and are fixed on both: every spec navigated to `/`, which
+the root swap broke, and the answer helper raced the render instead of waiting for the app to
+settle on an exercise, the Bergzeit screen or the completion screen.
+
+- [ ] Generate the missing artwork: one Bergzeit bench scene and six stamps (fox, tent,
+      compass, backpack, pine cone, mountain bird), matching the existing scout illustrations.
+- [ ] Settle the new import contract and reconcile the three failing specs, then merge
+      `library-wip`.
