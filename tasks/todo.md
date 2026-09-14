@@ -291,3 +291,28 @@ Plan checked against `ASTRA.md`, the branch-split record and current code. Merge
 - [ ] Test migration, independent book progress, renaming, profile restore, awards, pause/resume and failed writes.
 - [ ] Inspect desktop/mobile, offline assets, keyboard and reduced-motion behavior independently.
 - [ ] Record results, commit the integrated increment and update the preview.
+
+## Review of the completed library increment — 2026-09-14
+
+Verified after Astra's merge and artwork: production build, 55 unit checks, fixture validation
+for both courses, and 21 of 21 browser workflows pass. Stamp and Bergzeit artwork inspected
+visually; both match the established gouache scout palette.
+
+One defect found and fixed. `app/ui.js` renders the "Vorlesen" button when an exercise has
+`audioText`, and a hint line when it has `hint`. Neither field was in the curriculum schema,
+and every exercise variant sets `additionalProperties: false`, so any curriculum carrying them
+was rejected as malformed. Both appear in zero fixtures. Device speech was therefore
+unreachable in production — three commits and two workstreams built a feature whose only
+trigger could not legally exist. Both fields are now optional additions to `exerciseBase` and
+to all five variants; existing curricula and backups still validate. The authoring prompt
+embeds the schema and now also states that `audioText` carries target-language text, never
+German.
+
+This surfaced only because Astra's new `library.spec.js` speech test built a curriculum with
+`audioText` and failed at import. Worth noting that no existing test would have caught it: the
+feature was verified by unit tests against a fake synthesizer, never against real content.
+
+- [ ] Add `audioText` to a few French fixture exercises so the read-aloud path is exercised by
+      a real course rather than only by an injected test document.
+- [ ] Still outstanding from the speech work: the real iPhone flight-mode check with local
+      system voices. No offline-speech claim is made anywhere until that is done.
