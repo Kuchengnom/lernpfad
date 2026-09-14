@@ -286,11 +286,11 @@ settle on an exercise, the Bergzeit screen or the completion screen.
 Plan checked against `ASTRA.md`, the branch-split record and current code. Merge the parked implementation with the completed landing/speech work, then finish and verify before committing it.
 
 - [x] Recover `library-wip` onto current main without losing speech or the landing entry.
-- [ ] Settle additive imports, duplicate-book progress retention and explicit profile replacement; correct data/UI review findings.
-- [ ] Generate and inspect six original stamp assets plus the Bergzeit bench.
-- [ ] Test migration, independent book progress, renaming, profile restore, awards, pause/resume and failed writes.
-- [ ] Inspect desktop/mobile, offline assets, keyboard and reduced-motion behavior independently.
-- [ ] Record results, commit the integrated increment and update the preview.
+- [x] Settle additive imports, duplicate-book progress retention and explicit profile replacement; correct data/UI review findings.
+- [x] Generate and inspect six original stamp assets plus the Bergzeit bench.
+- [x] Test migration, independent book progress, renaming, profile restore, awards, pause/resume and failed writes.
+- [x] Inspect desktop/mobile, offline assets, keyboard and reduced-motion behavior independently.
+- [x] Record results, commit the integrated increment and update the preview.
 
 ## Review of the completed library increment — 2026-09-14
 
@@ -316,3 +316,13 @@ feature was verified by unit tests against a fake synthesizer, never against rea
       a real course rather than only by an injected test document.
 - [ ] Still outstanding from the speech work: the real iPhone flight-mode check with local
       system voices. No offline-speech claim is made anywhere until that is done.
+
+
+# Mathe auf Basis der neuen Quellen — 2026-09-14
+
+- [x] Aktuellen Stand mit den von Opus abgeschlossenen Commits abgleichen; erneuter Produktionsbuild und 21/21 Browserchecks bestanden.
+- [x] Alle sieben Fotos in `references/textbook/mathe/` direkt ansehen und ein Quelleninventar erstellen.
+- [x] Ersten Umfang und ausführbaren Integrationsplan mit Datenversionen, Zahlen-/Listenbewertung, Autorenworkflow und Definition of Done festhalten: `experiment/mathe-integration.md`.
+- [ ] Geplanten Mathe-Meilenstein implementieren und gegen seine Definition of Done prüfen.
+
+Planungsreview: Umfang auf belegte Teilbarkeit/Primzahlen und ganze Zahlen begrenzt. Handschrift ist keine Lösungsvorlage. Bibliothek, Runden, Wiederholung und Sammelstempel werden fachübergreifend weiterverwendet; Mathe ist noch nicht im laufenden Build freigeschaltet.

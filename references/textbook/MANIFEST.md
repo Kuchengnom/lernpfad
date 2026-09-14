@@ -19,3 +19,7 @@ When adding material, preserve the original file and use a descriptive copy name
 | `unit-1-vocabulary-page-288.heic` | `IMG_7043.HEIC` | Continuation vocabulary/irregular-verb and writing vocabulary reference, p. 288. |
 
 The images contain copyrighted textbook content. Use them to extract a compact, source-provenanced learning model; do not republish substantial passages or embed the page images in the product. The audio symbols identify unavailable source audio—represent that absence explicitly, never fabricate audio.
+
+## Additional mathematics sources
+
+Seven photos supplied on 2026-09-14 cover divisibility and prime numbers. See [the mathematics manifest](mathe/MANIFEST.md) and [integration plan](../../experiment/mathe-integration.md). Original photos remain local.
