@@ -4,14 +4,224 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#235c50" />
-    <meta name="description" content="Dein Schulstoff. Deine kleine Sprach-Lernreise. Privat und offline." />
-    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="description" content="Lernpfad ist ein kleines Lernprogramm für zu Hause: Du gibst den Stoff aus dem Schulheft hinein, dein Kind übt ihn in kurzen Runden. Ohne Konto, ohne Werbung, alles bleibt auf dem Gerät." />
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
-    <title>Lernpfad · Sprachen entdecken</title>
+    <link rel="stylesheet" href="./app/welcome.css" />
+    <title>Lernpfad · Üben mit dem Stoff aus dem eigenen Heft</title>
+    <!-- Absolute URLs: link crawlers do not resolve relative paths, and a
+         relative og:image silently renders no preview card. Update these if the
+         deployment host ever changes. -->
+    <link rel="canonical" href="https://kuchengnom.github.io/lernpfad/" />
+    <meta property="og:url" content="https://kuchengnom.github.io/lernpfad/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Lernpfad · Üben mit dem Stoff aus dem eigenen Heft" />
+    <meta property="og:description" content="Lernpfad ist ein kleines Lernprogramm für zu Hause: Du gibst den Stoff aus dem Schulheft hinein, dein Kind übt ihn in kurzen Runden. Ohne Konto, ohne Werbung, alles bleibt auf dem Gerät." />
+    <meta property="og:image" content="https://kuchengnom.github.io/lernpfad/lernpfad-share.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Lernpfad · Üben mit dem Stoff aus dem eigenen Heft" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="Lernpfad" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lernpfad · Üben mit dem Stoff aus dem eigenen Heft" />
+    <meta name="twitter:description" content="Lernpfad ist ein kleines Lernprogramm für zu Hause: Du gibst den Stoff aus dem Schulheft hinein, dein Kind übt ihn in kurzen Runden. Ohne Konto, ohne Werbung, alles bleibt auf dem Gerät." />
+    <meta name="twitter:image" content="https://kuchengnom.github.io/lernpfad/lernpfad-share.png" />
   </head>
   <body>
-    <div id="app"><p>Dein Lernbuch wird geöffnet …</p></div>
-    <noscript>Lernpfad benötigt JavaScript, um Übungen lokal auszuführen.</noscript>
-    <script type="module" src="/app/main.js"></script>
+    <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+    <header class="site-head">
+      <a class="wordmark" href="./">
+        <span class="wordmark__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" focusable="false"><circle cx="16" cy="16" r="12.25"/><path d="m20.75 10.9-2.45 6.2-6.2 2.45 2.45-6.2 6.2-2.45Z"/><path class="trail" d="M7.5 22.5c2.1-1.9 3.8-.8 5.3-2.8 1.3-1.7.7-3.5 2.2-5.1"/></svg>
+        </span>
+        <span>Lernpfad</span>
+      </a>
+      <nav class="site-nav" aria-label="Seitenbereiche">
+        <a href="#etappen">So funktioniert’s</a>
+        <a href="#privatsphaere">Privatsphäre</a>
+        <a href="#fragen">Fragen</a>
+      </nav>
+      <a class="button button--primary button--small" href="./lernen.html">Lernpfad öffnen</a>
+    </header>
+
+    <main id="inhalt">
+      <!-- Hero: the thesis is "dein Heft", not "eine weitere Lern-App". -->
+      <section class="hero">
+        <div class="hero__text">
+          <p class="eyebrow">Für Eltern</p>
+          <h1>Üben mit dem Stoff aus dem <em>eigenen Heft</em>.</h1>
+          <p class="lede">
+            Lernpfad ist ein kleines Lernprogramm für zu Hause. Du gibst den Stoff aus dem
+            Schulheft hinein, dein Kind übt ihn in kurzen Runden. Ohne Konto, ohne Werbung,
+            und ohne dass Lernstände das Gerät verlassen.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="./lernen.html">Lernpfad öffnen</a>
+            <a class="button button--quiet" href="#etappen">So funktioniert’s</a>
+          </div>
+          <p class="hero__note">Kostenlos. Keine Anmeldung. Ein eingebauter Englisch-Kurs liegt zum Ausprobieren bereit.</p>
+          <ul class="chips">
+            <li>Kein Konto</li>
+            <li>Bleibt auf dem Gerät</li>
+            <li>Funktioniert offline</li>
+          </ul>
+        </div>
+        <div class="hero__art">
+          <img src="./illustrations/lernpfad-trail.webp" alt="" width="1536" height="1024" decoding="async" fetchpriority="high" />
+        </div>
+      </section>
+
+      <section class="band">
+        <div class="pitch">
+          <h2>Die meisten Lern-Apps bringen ihren eigenen Stoff mit.</h2>
+          <p>
+            Der passt selten zu dem, was nächste Woche geschrieben wird. In Lernpfad kommt der
+            Inhalt aus dem Heft, dem Arbeitsblatt oder der Vokabelliste deines Kindes — also
+            genau aus dem, was gerade dran ist.
+          </p>
+        </div>
+      </section>
+
+      <!-- The route IS the product metaphor, so the steps sit on a trail rather than
+           on decorative 01/02/03 markers. The order carries real information. -->
+      <section id="etappen" class="section">
+        <p class="eyebrow">In drei Etappen</p>
+        <h2 class="section__title">So funktioniert’s</h2>
+        <ol class="route">
+          <li class="route__stop">
+            <span class="route__pin" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M5 4.5h9.5a2.5 2.5 0 0 1 2.5 2.5v12.5H7.5A2.5 2.5 0 0 1 5 17Z"/><path d="M8.5 9h6M8.5 12.5h6"/></svg>
+            </span>
+            <h3>Stoff hineingeben</h3>
+            <p>
+              Lernpfad zeigt dir einen fertigen Text zum Kopieren. Den fügst du zusammen mit den
+              Seiten aus dem Heft in einen KI-Chat wie ChatGPT ein und kopierst die Antwort
+              zurück in Lernpfad — am Handy einfach als Text.
+            </p>
+            <p class="route__aside">Vor dem Übernehmen siehst du eine Vorschau: Titel, Anzahl der Übungen, Beispiele.</p>
+          </li>
+          <li class="route__stop">
+            <span class="route__pin" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="m15.6 8.4-1.9 4.7-4.7 1.9 1.9-4.7 4.7-1.9Z"/></svg>
+            </span>
+            <h3>Kurze Runde üben</h3>
+            <p>
+              Dein Kind übt in kurzen Runden: auswählen, eintippen, Sätze aus Bausteinen bauen,
+              einen Text lesen, selbst etwas schreiben. Nach jeder Antwort kommt sofort eine
+              Rückmeldung mit der richtigen Lösung.
+            </p>
+            <p class="route__aside">Eine angefangene Runde lässt sich später an derselben Stelle fortsetzen.</p>
+          </li>
+          <li class="route__stop">
+            <span class="route__pin" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M3 18.5 9 8l3.5 5.5L15 10l6 8.5Z"/><path d="M9 8 6.4 12.6"/></svg>
+            </span>
+            <h3>Wiederholen, was hakt</h3>
+            <p>
+              Was falsch war, landet in einer Wiederholung. Lernpfad schlägt vor, was als
+              Nächstes dran ist, und sagt ehrlich, wenn gerade nichts offen ist — statt eine
+              Liste zu erfinden.
+            </p>
+            <p class="route__aside">Keine tägliche Strähne, kein Countdown, kein verlorener Fortschritt bei einer Pause.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <p class="eyebrow">Fünf Übungsarten</p>
+        <h2 class="section__title">Wie geübt wird</h2>
+        <ul class="kinds">
+          <li><h3>Auswählen</h3><p>Aus mehreren Antworten die richtige finden.</p></li>
+          <li><h3>Antwort eintippen</h3><p>Die Form selbst schreiben. Akzente zählen mit.</p></li>
+          <li><h3>Satz bauen</h3><p>Wortbausteine in die richtige Reihenfolge bringen.</p></li>
+          <li><h3>Lesen &amp; verstehen</h3><p>Eine Angabe in einem kurzen Text finden.</p></li>
+          <li><h3>Schreibwerkstatt</h3><p>Frei schreiben und danach selbst mit einem Beispiel vergleichen.</p></li>
+        </ul>
+        <p class="kinds__note">
+          Wo dein Gerät eine passende Stimme mitbringt, kann sich dein Kind einzelne Sätze
+          vorlesen lassen.
+        </p>
+      </section>
+
+      <!-- The single saturated block on the page: the promise parents actually care about. -->
+      <section id="privatsphaere" class="privacy">
+        <div class="privacy__inner">
+          <p class="eyebrow eyebrow--light">Privatsphäre</p>
+          <h2>Wo die Daten deines Kindes liegen</h2>
+          <ul class="privacy__list">
+            <li><strong>Auf diesem Gerät.</strong> Lernstände liegen im Speicher deines Browsers. Es gibt keinen Server, auf den Lernpfad sie hochlädt.</li>
+            <li><strong>Kein Konto.</strong> Keine E-Mail-Adresse, kein Passwort, keine Werbung, kein Tracking.</li>
+            <li><strong>Geschriebenes bleibt da.</strong> Was dein Kind in die Schreibwerkstatt tippt, wird nicht verschickt und nicht in die Sicherung geschrieben.</li>
+            <li><strong>Offline nach dem ersten Öffnen.</strong> Danach läuft Lernpfad auch ohne Internet — im Zug, im Urlaub, bei schlechtem Empfang.</li>
+          </ul>
+          <p class="privacy__caveat">
+            Ehrlich dazu: Browserspeicher ist kein Tresor. Wenn du die Browserdaten löschst oder
+            das Gerät verloren geht, ist der Lernstand weg. Deshalb kannst du jederzeit eine
+            Sicherungsdatei herunterladen — die liegt dann bei dir, nicht bei uns.
+          </p>
+        </div>
+      </section>
+
+      <!-- The deliberate risk: telling parents what this is not, before they find out. -->
+      <section class="section">
+        <p class="eyebrow">Damit klar ist, worauf du dich einlässt</p>
+        <h2 class="section__title">Was Lernpfad nicht ist</h2>
+        <ul class="nots">
+          <li>Kein Ersatz für den Unterricht und keine Nachhilfe.</li>
+          <li>Keine Note und keine Diagnose. Der Übungsstand zeigt, wie oft eine Antwort richtig war — mehr sagt er nicht.</li>
+          <li>Zurzeit nur Sprachen: Englisch und Französisch. Mathe gibt es noch nicht.</li>
+          <li>Keine Sprachaufnahmen, kein Mikrofon, keine Aussprachebewertung.</li>
+          <li>Noch nicht auf allen Geräten geprüft. Getestet ist der Weg über aktuelle Browser am Rechner und am Handy; Safari und iPhone stehen noch aus.</li>
+          <li>Noch nicht mit Kindern erprobt. Lernpfad ist neu — Rückmeldungen helfen mehr als Versprechen.</li>
+        </ul>
+      </section>
+
+      <section id="fragen" class="section">
+        <p class="eyebrow">Häufige Fragen</p>
+        <h2 class="section__title">Kurz beantwortet</h2>
+        <div class="faq">
+          <details>
+            <summary>Was kostet Lernpfad?</summary>
+            <p>Nichts. Lernpfad ist ein privates Projekt ohne Abo, ohne Werbung und ohne Zusatzkäufe. Der Quelltext ist offen einsehbar.</p>
+          </details>
+          <details>
+            <summary>Brauche ich ChatGPT dafür?</summary>
+            <p>Für eigenen Schulstoff ist ein KI-Chat der schnellste Weg: Lernpfad gibt dir den passenden Text vor, du fügst die Seiten deines Kindes dazu. Zum Ausprobieren ist ein fertiger Englisch-Kurs schon eingebaut. Wer mag, kann eine Übungsdatei auch von Hand schreiben — das Format ist dokumentiert.</p>
+          </details>
+          <details>
+            <summary>Muss ich etwas installieren?</summary>
+            <p>Nein. Lernpfad läuft im Browser. Du kannst es auf dem Handy zum Startbildschirm hinzufügen, dann öffnet es sich wie eine App.</p>
+          </details>
+          <details>
+            <summary>Funktioniert das auf dem Handy?</summary>
+            <p>Ja. Die Bedienung ist für kleine Bildschirme gebaut und mit der Tastatur erreichbar. Den Stoff kannst du am Handy als Text einfügen, ohne Datei-Umweg.</p>
+          </details>
+          <details>
+            <summary>Für welches Alter ist das gedacht?</summary>
+            <p>Für die Schuljahre, in denen Vokabeln und Grammatik geübt werden. Eine Erprobung mit Kindern steht noch aus, deshalb steht hier keine Altersangabe, die wir nicht belegen können.</p>
+          </details>
+          <details>
+            <summary>Was, wenn ich das Gerät wechsle?</summary>
+            <p>Lade die Sicherungsdatei herunter und öffne sie auf dem neuen Gerät. Eine automatische Synchronisierung zwischen Geräten gibt es bewusst nicht — dafür bräuchte es ein Konto und einen Server.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="close">
+        <h2>Schau es dir an, bevor du es deinem Kind zeigst.</h2>
+        <p>Der eingebaute Englisch-Kurs ist sofort da. Du brauchst nichts einzurichten.</p>
+        <a class="button button--primary button--large" href="./lernen.html">Lernpfad öffnen</a>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p>Lernpfad · Sprachen entdecken</p>
+      <p>Läuft lokal in deinem Browser. Keine Konten, keine Werbung, kein Tracking.</p>
+      <nav class="site-foot__links" aria-label="Rechtliches">
+        <a href="./impressum.html">Impressum</a>
+        <a href="./datenschutz.html">Datenschutz</a>
+      </nav>
+    </footer>
   </body>
 </html>

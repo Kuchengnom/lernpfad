@@ -11,7 +11,7 @@ const downloadText=async(page,action)=>{
 
 test('authoring guide supplies the selected prompt with exact schema, working clipboard, downloads and offline fallback',async({page,context})=>{
   await context.grantPermissions(['clipboard-read','clipboard-write']);
-  await page.goto('/');await library(page);await page.getByRole('button',{name:'Anleitung & Prompt'}).click();
+  await page.goto('/lernen.html');await library(page);await page.getByRole('button',{name:'Anleitung & Prompt'}).click();
   await expect(page.locator('[data-authoring-language]')).toHaveValue('fr');
   const prompt=await page.locator('[data-authoring-prompt]').inputValue();
   expect(prompt).toContain('targetLanguage: "fr"');expect(prompt).not.toContain('{{TARGET_');
@@ -39,7 +39,7 @@ test('authoring guide supplies the selected prompt with exact schema, working cl
 });
 
 test('French file imports and all five exercise types complete with French language metadata and portable progress',async({page})=>{
-  await page.goto('/');await library(page);
+  await page.goto('/lernen.html');await library(page);
   await page.locator('[data-import-file]').setInputFiles({name:'franzoesisch.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(french))});
   await expect(page.getByText(/Deutsch → Französisch/)).toBeVisible();
   await page.locator('[data-action="confirm-import"]').click();

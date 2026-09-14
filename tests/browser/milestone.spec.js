@@ -5,11 +5,11 @@ import fixture from '../../fixtures/unit-1a/curriculum.json' with { type: 'json'
 
 const getWorkspace = page => page.evaluate(() => new Promise((resolve, reject) => {
   const open = indexedDB.open('trailbook-local', 1);
-  open.onsuccess = () => { const db = open.result; const req = db.transaction('workspace').objectStore('workspace').get('current'); req.onsuccess = () => { resolve(req.result); db.close(); }; req.onerror = reject; };
+  open.onsuccess = () => { const db = open.result; const req = db.transaction('workspace').objectStore('workspace').get('current'); req.onsuccess = () => { resolve(req.result?.profileVersion ? req.result.books.find(book => book.id === req.result.activeBookId).workspace : req.result); db.close(); }; req.onerror = reject; };
   open.onerror = reject;
 }));
 async function start(page) {
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();
   await page.locator('[data-action="start-learn"]').first().click();
   await expect(page.locator('#exercise-title')).toBeVisible();
@@ -36,6 +36,12 @@ async function answerCurrent(page, wrong = false, keyboard = false) {
   await expect(page.locator('[data-action="next"]')).toBeVisible();
   await activate(page.locator('[data-action="next"]'));
   await expect(page.getByRole('heading', { name: prompt, exact: true })).toHaveCount(0);
+  // Wait for the app to settle on one of its three post-answer states before
+  // inspecting it: count() does not wait, so checking too early races the render.
+  await page.locator('#exercise-title, [data-action="continue-rest"], #complete-title').first().waitFor();
+  // Bergzeit appears once at the midpoint of longer rounds; continue through it.
+  const rest = page.locator('[data-action="continue-rest"]');
+  if (await rest.count()) { await activate(rest); await page.locator('#exercise-title').first().waitFor(); }
   return e;
 }
 
@@ -69,7 +75,7 @@ test('real lesson, mistake, reload, reward, exported backup restores on a fresh 
   expect(backup.learner).toEqual(saved.learner);
   const fresh = await browser.newContext();
   const other = await fresh.newPage();
-  await other.goto('/');
+  await other.goto('/lernen.html');
   await other.locator('.sidebar [data-view="library"]').click();
   await other.locator('[data-import-file]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
   await other.locator('[data-action="confirm-import"]').click();
@@ -81,7 +87,7 @@ test('real lesson, mistake, reload, reward, exported backup restores on a fresh 
 
 test('offline production reload and practice make no remote requests', async ({ page, context }) => {
   const remote = []; page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1:4173') && !r.url().startsWith('blob:')) remote.push(r.url()); });
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
@@ -98,7 +104,7 @@ test('offline production reload and practice make no remote requests', async ({ 
 });
 
 test('malformed imports preserve data and keyboard/mobile accessibility basics', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();
   const initial = await getWorkspace(page);
   await page.locator('.sidebar [data-view="library"]').click();
@@ -174,7 +180,7 @@ test('storage failure leaves an answer retryable and second tabs cannot overwrit
   await page.locator('[data-action="submit"]').click();
   await expect(page.locator('[data-action="next"]')).toBeEnabled();
   expect((await getWorkspace(page)).learner.answerRecords).toHaveLength(1);
-  const second=await context.newPage();await second.goto('/');
+  const second=await context.newPage();await second.goto('/lernen.html');
   await expect(second.getByText(/Ein anderer Tab nutzt/)).toBeVisible();
   await expect(second.locator('[data-action="start-learn"]').first()).toBeDisabled();
   await second.close();

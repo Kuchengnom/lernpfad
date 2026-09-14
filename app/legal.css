@@ -1,0 +1,78 @@
+/* Extra rules for the long-form legal pages (impressum.html, datenschutz.html).
+   Shared tokens, header, buttons and footer come from welcome.css — this file
+   only adds what prose and a definition list need that the landing page's
+   card-and-section layout doesn't already provide. */
+
+.legal {
+  max-width: 46rem;
+}
+.legal h1 {
+  font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+  margin-bottom: 1.5rem;
+}
+.legal h2 {
+  font-size: 1.25rem;
+  margin: 2.25rem 0 0.75rem;
+}
+.legal h2:first-of-type { margin-top: 0.5rem; }
+.legal p {
+  color: var(--ink-muted);
+  line-height: 1.65;
+  margin-bottom: 0.9rem;
+}
+.legal p:last-child { margin-bottom: 0; }
+.legal a { color: var(--action); }
+.legal ul {
+  color: var(--ink-muted);
+  line-height: 1.65;
+  padding-left: 1.25rem;
+  margin: 0 0 0.9rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.legal .note {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0 1.25rem;
+  font-size: 0.9rem;
+}
+
+/* Anbieter / contact block: definition list reads better than prose here. */
+.legal dl {
+  display: grid;
+  grid-template-columns: minmax(9rem, max-content) 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.legal dt { font-weight: 700; color: var(--ink); }
+.legal dd { margin: 0; color: var(--ink-muted); }
+.legal .placeholder { color: var(--coral); font-weight: 700; }
+
+.legal__meta {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+/* Simple cross-page nav used above the footer on both legal pages. */
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  justify-content: center;
+}
+.legal-links a { color: var(--ink-muted); }
+
+@media (max-width: 30rem) {
+  .legal dl { grid-template-columns: 1fr; }
+  .legal dt { margin-top: 0.5rem; }
+  .legal dt:first-child { margin-top: 0; }
+}

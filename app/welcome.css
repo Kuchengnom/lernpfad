@@ -1,0 +1,375 @@
+/* Landing page for parents. Standalone on purpose: it must render without the
+   application bundle. Tokens mirror app/styles.css — that file stays the source
+   of truth for the product itself; change both together. */
+:root {
+  --canvas: #f7f3ea;
+  --paper: #fffcf6;
+  --paper-muted: #f0e9da;
+  --ink: #18313a;
+  --ink-muted: #52666b;
+  --line: #d7d2c7;
+  --action: #066e66;
+  --action-strong: #05665f;
+  --action-deep: #063f3b;
+  --action-on: #fff;
+  --sun: #e7a51b;
+  --coral: #d35d46;
+  --route: #a8c7c1;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 2px 0 rgba(24, 49, 58, 0.08), 0 8px 20px rgba(24, 49, 58, 0.06);
+  --measure: 62ch;
+  --page: 68rem;
+  /* ponytail: no webfont request. A page promising that nothing leaves the
+     device must not fetch fonts from a CDN. Self-hosted display face is a
+     defined follow-up asset, see experiment/welcome-page.md. */
+  font-family: "Nunito Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); min-width: 320px; }
+img { max-width: 100%; height: auto; }
+h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+p { margin: 0; }
+a:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  z-index: 10;
+}
+.skip-link:focus { left: 0.75rem; }
+
+/* Header ---------------------------------------------------------------- */
+.site-head {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  margin-right: auto;
+}
+.wordmark__mark {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--action);
+}
+.wordmark__mark svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: var(--action-on);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.wordmark__mark .trail { stroke: var(--sun); }
+.site-nav { display: flex; gap: 1.5rem; }
+.site-nav a {
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+.site-nav a:hover { color: var(--ink); border-bottom-color: var(--route); }
+
+/* Buttons --------------------------------------------------------------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: transform 140ms ease, background-color 140ms ease;
+}
+.button--primary { background: var(--action); color: var(--action-on); }
+.button--primary:hover { background: var(--action-strong); }
+.button--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
+.button--quiet:hover { border-color: var(--ink-muted); }
+.button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
+.wordmark { min-height: 2.75rem; }
+.button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
+.button:active { transform: translateY(1px); }
+
+/* Shared section frame. Hero, privacy and close use their own frames so their
+   padding never fights this rule. */
+.section {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem;
+}
+.section__title { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2.25rem; }
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--action);
+  margin-bottom: 0.6rem;
+}
+.eyebrow--light { color: var(--route); }
+
+/* Hero ------------------------------------------------------------------ */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 3rem;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+.hero h1 {
+  font-size: clamp(2.1rem, 1.3rem + 3.4vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--action);
+  /* The one flourish: the headline's key phrase sits on a drawn trail. */
+  background: linear-gradient(var(--route), var(--route)) left 92% / 100% 0.32em no-repeat;
+  padding-bottom: 0.05em;
+}
+.lede {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  max-width: var(--measure);
+}
+.hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.75rem 0 0.85rem; }
+.hero__note { font-size: 0.9rem; color: var(--ink-muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 1.5rem 0 0; }
+.chips li {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--action-deep);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.85rem;
+}
+.hero__art img {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: block;
+}
+
+/* Pitch band ------------------------------------------------------------ */
+.band { background: var(--paper-muted); border-block: 1px solid var(--line); }
+.pitch { max-width: var(--page); margin: 0 auto; padding: 3.25rem 1.5rem; }
+.pitch h2 { font-size: clamp(1.4rem, 1.1rem + 1.3vw, 1.9rem); margin-bottom: 0.85rem; max-width: 28ch; }
+.pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.6; max-width: var(--measure); }
+
+/* Route: the three stops sit on a dashed trail, because the order is real. */
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.25rem; position: relative; }
+.route__stop { position: relative; padding-left: 3.75rem; }
+.route__pin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 2px solid var(--action);
+}
+.route__pin svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: var(--action);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.route__stop::before {
+  content: "";
+  position: absolute;
+  left: 1.3rem;
+  top: 3rem;
+  bottom: -2.25rem;
+  border-left: 3px dashed var(--route);
+}
+.route__stop:last-child::before { display: none; }
+.route__stop h3 { font-size: 1.25rem; margin-bottom: 0.5rem; padding-top: 0.35rem; }
+.route__stop p { color: var(--ink-muted); line-height: 1.6; max-width: var(--measure); }
+.route__aside {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  border-left: 3px solid var(--sun);
+  padding-left: 0.75rem;
+}
+
+/* Exercise kinds -------------------------------------------------------- */
+.kinds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.kinds li {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+.kinds h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
+.kinds p { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
+.kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+
+/* Privacy: the only saturated block on the page. */
+.privacy { background: var(--action-deep); color: #eef6f3; }
+.privacy__inner { max-width: var(--page); margin: 0 auto; padding: 4.5rem 1.5rem; }
+.privacy h2 { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2rem; }
+.privacy__list {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.5rem;
+}
+.privacy__list li { line-height: 1.6; color: #cfe3dd; }
+.privacy__list strong { display: block; color: #fff; margin-bottom: 0.2rem; }
+.privacy__caveat {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
+  color: #cfe3dd;
+  line-height: 1.6;
+  max-width: var(--measure);
+}
+
+/* What it is not -------------------------------------------------------- */
+.nots { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; max-width: var(--measure); }
+.nots li {
+  position: relative;
+  padding-left: 1.9rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+.nots li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 1rem;
+  height: 2px;
+  background: var(--coral);
+}
+
+/* FAQ: native disclosure, no script. */
+.faq { display: grid; gap: 0.5rem; max-width: 46rem; }
+.faq details {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 1rem 1.25rem;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  color: var(--action);
+  font-size: 1.35rem;
+  line-height: 1;
+  font-weight: 700;
+}
+.faq details[open] summary::after { content: "–"; }
+.faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); line-height: 1.6; }
+
+/* Closing call ---------------------------------------------------------- */
+.close {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 1rem 1.5rem 5rem;
+  text-align: center;
+}
+.close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; }
+.close p { color: var(--ink-muted); margin-bottom: 1.75rem; }
+
+.site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
+.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
+.site-foot__links a:hover { color: var(--ink); }
+.site-foot {
+  border-top: 1px solid var(--line);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+/* Responsive ------------------------------------------------------------ */
+@media (max-width: 60rem) {
+  .hero { grid-template-columns: 1fr; gap: 2rem; padding-bottom: 3rem; }
+  /* Headline first on a phone: the illustration is decorative and must not push
+     the actual promise below the fold. */
+  .hero__art { order: 1; }
+  .site-nav { display: none; }
+}
+@media (min-width: 60rem) {
+  /* Wide layout turns the trail horizontal so the three stops read as one route. */
+  .route { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .route__stop { padding-left: 0; padding-top: 3.75rem; }
+  .route__stop::before {
+    left: 3.25rem;
+    right: -2rem;
+    top: 1.3rem;
+    bottom: auto;
+    border-left: 0;
+    border-top: 3px dashed var(--route);
+  }
+  .route__stop h3 { padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

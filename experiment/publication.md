@@ -23,3 +23,29 @@ The user reran the custom workflow: [34579670888](https://github.com/Kuchengnom/
 `node scripts/check-pages.mjs https://kuchengnom.github.io/lernpfad/` passed against the public deployment: app rendering, exact worker scope, HTTP-cache-cleared offline reload, French authoring access, lesson start and no page exceptions. A separate isolated browser rendered the home dashboard correctly; screenshot `experiment/evidence/pages-live-home.png` was visually inspected. The offline exercise screenshot is `experiment/evidence/pages-offline.png`. These evidence files remain local and ignored.
 
 Independent source review found no deployment-path defect. If an existing browser still shows the earlier failed page, hard reload or open `https://kuchengnom.github.io/lernpfad/?v=4c2edee`. Cached old HTML is a possible explanation, not a confirmed diagnosis of the user's browser. Avoid clearing site data as a first step because that would remove learner progress.
+
+## Competing publisher found during mobile update — 2026-09-11
+
+Commit `156853d` contains the tested pasted-JSON workflow and scout assets and was pushed successfully. GitHub started both the custom workflow `34618334911` and a dynamic Jekyll workflow `34618333453` on that commit. Independent review inspected the dynamic job's explicit `Build with Jekyll` step. Public HTML was observed reverting to `/app/main.js`, so a successful custom deployment is not a durable fix while the branch publisher remains active.
+
+The existing `configure-pages@v5` action reads the existing Pages site; it does not change its publishing source. Set repository Settings → Pages → Source to **GitHub Actions**, allow any already-running legacy deployment to finish (or cancel it), then run **Check and deploy Lernpfad** on `main` again. Repository administration is currently blocked by missing authenticated CLI access; the user has been asked to check the source setting. Do not report this update as stably live until the competing publisher is disabled and the latest public HTML and workflow pass inspection.
+
+## Competing publisher resolved — 2026-09-12
+
+The user switched the repository Pages source to GitHub Actions. Live HTML at
+`https://kuchengnom.github.io/lernpfad/` now references the compiled bundle
+`./assets/index-CuaV9UDd.js` and its hashed stylesheet, with no `/app/main.js` reference, so
+the custom workflow's tested `dist` artifact is what is being served. The legacy Jekyll
+publisher no longer overwrites it.
+
+Verification used the *published* commit's own smoke script, extracted with
+`git show 156853d:scripts/check-pages.mjs`, because the working tree's copy has since been
+extended for the root swap and would fail against the older deployed structure. Result:
+
+`PASS https://kuchengnom.github.io/lernpfad/: app, project scope, uncached offline reload,
+authoring and lesson start.`
+
+This closes the durable-publication item. The mobile pasted-import and scout artwork in
+`156853d` are now genuinely live. The root swap (landing page at `/`, application at
+`lernen.html`) is prepared locally and can now be pushed against this known-good baseline;
+after that push, the working tree's `scripts/check-pages.mjs` is the correct one to run.

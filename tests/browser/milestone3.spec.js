@@ -7,14 +7,14 @@ import { newLearner, generateSession, recordAnswer, completeSession } from '../.
 const workspace = page => page.evaluate(() => new Promise((resolve,reject) => {
   const open=indexedDB.open('trailbook-local',1);
   open.onerror=()=>reject(open.error);
-  open.onsuccess=()=>{const db=open.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result);db.close();};};
+  open.onsuccess=()=>{const db=open.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result);db.close();};};
 }));
 const file = (document,name='lesson.json') => ({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(document))});
 const library = page => page.locator('[data-view="library"]:visible').first().click();
 const choose = (page,document,name) => page.locator('[data-import-file]').setInputFiles(file(document,name));
 
 test('file preview preserves current answers and paused round, escapes text, exports current backup, and only applies explicitly',async({page})=>{
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await page.locator('[data-action="start-learn"]').first().click();
   await page.locator('[data-draft-text]').fill('a deliberate mistake');
   await page.locator('[data-action="submit"]').click();
@@ -66,7 +66,7 @@ test('backup preview retries an aborted transaction, restores exact outcomes, an
   for(const exercise of session.exercises) learner=recordAnswer(learner,exercise,{correct:true,selfCheck:false,sessionId:session.id,answerId:`${session.id}:${exercise.id}`,curriculumId:course.id,curriculumVersion:course.version},{now:'2026-09-10T12:00:00.000Z'});
   learner=completeSession(learner,session);
   const backup={schemaVersion:'1.0',kind:'backup',curriculum:course,learner};
-  await page.goto('/');await library(page);
+  await page.goto('/lernen.html');await library(page);
   const original=await workspace(page);
   await choose(page,backup,'Sicherung.json');
   await page.evaluate(()=>{window.realPut=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(...args){const request=window.realPut.apply(this,args);this.transaction.abort();return request;};});
@@ -90,7 +90,7 @@ test('backup preview retries an aborted transaction, restores exact outcomes, an
 });
 
 test('slow file reads serialize navigation and imports; readiness warnings and mobile preview remain usable',async({page,context})=>{
-  await page.goto('/');await library(page);
+  await page.goto('/lernen.html');await library(page);
   const original=await workspace(page);
   await page.evaluate(()=>{
     window.readCount=0;
@@ -122,14 +122,14 @@ test('slow file reads serialize navigation and imports; readiness warnings and m
   await page.locator('[data-action="confirm-import"]').scrollIntoViewIfNeeded();
   await page.screenshot({path:'experiment/evidence/milestone3-import-phone-actions.png'});
   await page.locator('[data-action="cancel-import"]').click();
-  const second=await context.newPage();await second.goto('/');await library(second);
+  const second=await context.newPage();await second.goto('/lernen.html');await library(second);
   await expect(second.locator('[data-import-file]')).toBeDisabled();
   await second.close();
   expect(await workspace(page)).toEqual(original);
 });
 
 test('failed file reads release the busy guard and discarded previews never survive reload',async({page})=>{
-  await page.goto('/');await library(page);
+  await page.goto('/lernen.html');await library(page);
   const original=await workspace(page);
   await page.evaluate(()=>{
     window.realFileText=File.prototype.text;

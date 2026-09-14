@@ -10,13 +10,13 @@ const workspace = page => page.evaluate(() => new Promise((resolve, reject) => {
   request.onsuccess = () => {
     const db = request.result;
     const get = db.transaction('workspace').objectStore('workspace').get('current');
-    get.onsuccess = () => { resolve(get.result); db.close(); };
+    get.onsuccess = () => { resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result); db.close(); };
   };
 }));
 
 test('mobile pasted JSON preserves drafts and current progress through errors, edit, cancel and failed acceptance', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await page.locator('[data-action="start-learn"]').first().click();
   await page.locator('[data-draft-text]').fill('wrong');
   await page.locator('[data-action="submit"]').click();
@@ -78,7 +78,7 @@ test('mobile pasted JSON preserves drafts and current progress through errors, e
 });
 
 test('scout assets and direct authoring-to-paste flow work offline, without clipboard read, on narrow screens', async ({ page, context }) => {
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();
   await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
   await page.screenshot({ path: 'experiment/evidence/scout-home-desktop.png', fullPage: true });

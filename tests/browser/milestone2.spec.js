@@ -5,7 +5,7 @@ async function workspace(page) {
   return page.evaluate(() => new Promise((resolve,reject)=>{
     const request=indexedDB.open('trailbook-local',1);
     request.onerror=()=>reject(request.error);
-    request.onsuccess=()=>{const db=request.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result);db.close();};};
+    request.onsuccess=()=>{const db=request.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result);db.close();};};
   }));
 }
 async function openStudy(page) {
@@ -26,7 +26,7 @@ async function answerBeach(page, answer) {
 }
 
 test('study lookup is read-only, concept practice creates a real mistake and a short review resolves it',async({page})=>{
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();
   const before=await workspace(page);
   await openStudy(page);
@@ -80,7 +80,7 @@ test('study lookup is read-only, concept practice creates a real mistake and a s
 });
 
 test('new learners get an honest empty review, grammar is readable on mobile and filters preserve keyboard focus',async({page,context})=>{
-  await page.goto('/');
+  await page.goto('/lernen.html');
   await page.locator('[data-view="review"]').first().click();
   await expect(page.locator('[data-action="start-review"]')).toHaveCount(0);
   await expect(page.locator('.review-item')).toHaveCount(0);
@@ -113,7 +113,7 @@ test('new learners get an honest empty review, grammar is readable on mobile and
 });
 
 test('changing an unfinished practice focus is deliberate and preserves answered progress',async({page})=>{
-  await page.goto('/');await openStudy(page);await focusBeach(page);
+  await page.goto('/lernen.html');await openStudy(page);await focusBeach(page);
   await page.locator('[data-draft-text]').fill('forest');
   await page.locator('[data-action="submit"]').click();
   await expect(page.locator('[data-action="next"]')).toBeEnabled();

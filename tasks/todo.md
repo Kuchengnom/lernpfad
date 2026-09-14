@@ -144,4 +144,108 @@ User requests pasted learning JSON and a scout/pathfinding image world. Plan rev
 
 Mobile handoff review: 28 unit tests, both fixture validations and all 16 browser workflows pass. Root inspected final desktop/mobile artwork, import entry placement and pasted-text UI. Independent review prompted neutral JSON error guidance; final QA also moved the import entry ahead of decorative/secondary content. See `experiment/mobile-paste-evaluation.md` and `experiment/lernpfad-artwork.md`. The next pilot is copying a real French course from ChatGPT on a physical phone, reviewing the preview and completing a round.
 
-- [ ] Publish the tested mobile-import/scout update and verify the new live assets and input flow.
+- [x] Publish the tested mobile-import/scout update and verify the new live assets and input flow.
+      Resolved 2026-09-12: the user switched Pages source to GitHub Actions; live HTML now serves
+      the compiled bundle and the published commit's own smoke script passes against the live
+      site. See `experiment/publication.md`.
+
+Publication status: mobile/scout commit `156853d` was pushed. A competing dynamic Jekyll job still publishes repository source and can overwrite the custom build; live HTML reverted to `/app/main.js`. Await the repository Pages Source switch to GitHub Actions, then rerun custom deployment after the legacy job ends. Implementation and local QA are complete; durable live publication remains blocked on the repository setting.
+
+# Next product direction — 2026-09-12
+
+User requested assessment of math, device speech, QR/hash transport, multiple local courses and an emotional scout learning loop. Code, actual fixture sizes, current browser API documentation and path/reward/mission reference images were inspected. See `experiment/next-product-increment.md` for scope, evidence and proposed acceptance criteria. This is a design/feasibility answer, not an implementation-complete claim.
+
+- [ ] Add a local multi-book library and full-profile backup with migration of existing progress.
+- [ ] Add lasting cross-book stamp awards, an illustrated album and prominent completion presentation.
+- [ ] Add an accessible mountain route and optional Bergzeit with honest active-time accounting.
+- [ ] Add device speech with explicit language, local-voice handling and an actual iPhone check.
+- [ ] Run the real-material parent/child pilot, then choose a bounded math topic and sharing expansion.
+
+# Library and scout experience implementation — 2026-09-12
+
+User authorized starting the proposed sequence. Root integrates model, UI and migration; independent workstreams own profile validation/tests, book views and generated stamp/rest artwork.
+
+- [ ] Implement atomic migration from one workspace into a multi-book local profile; preserve active round and old backups.
+- [ ] Add book selection/rename/import identity handling and full-profile backup/restore with a reviewed preview.
+- [ ] Add persistent illustrated milestone stamps, prominent collection and completion moments.
+- [ ] Add accessible mountain-route progress and optional resumable Bergzeit between tasks.
+- [ ] Verify migrations, duplicate/revised imports, profile round-trip, failed writes, course switching, responsive/offline UI and independent QA.
+- [ ] Record outcome and deliver the tested increment; device speech follows this foundation.
+
+# Device speech — 2026-09-12 (Claude, parallel to the library work)
+
+Claimed while another agent works on the library/stamps/Bergzeit items (`app/profile.js`,
+`app/books-view.js`, `app/stamps.js`, `app/journey.js`, `app/ui.js`, `app/main.js`). This is
+step 3 of the sequence in `experiment/next-product-increment.md` and was untouched.
+
+Scope deliberately kept to files nobody else holds: new `app/speech.js`, new
+`tests/speech.test.js`, plus a three-line edit in `app/ui.js` (import `speak`, delete the
+old `speak` stub at ~line 201, pass `state.curriculum?.targetLanguage` to the `[data-audio]`
+listener at ~line 262). No browser specs, no schema, no storage changes.
+
+- [x] `app/speech.js`: explicit `lang` tags (de-DE/en-GB/fr-FR), pure `pickVoice(voices, tag)`
+      preferring `localService`, base-language fallback, never a cross-language voice,
+      delayed `getVoices()`/`voiceschanged` handling, cancel before speak, error-safe.
+- [x] `tests/speech.test.js`: node --test coverage for `pickVoice` and `speak` against a fake synth.
+- [x] Result of `npm test` recorded below.
+
+Not done and not claimed: the real iPhone flight-mode check with system voices. That remains a
+manual user step from `next-product-increment.md` and no offline-voice promise is made in code.
+
+## Device speech review
+
+`npm test` passes: 52 of 52, no failures — 41 pre-existing checks plus 11 new ones in
+`tests/speech.test.js` (exact-tag match, `localService` preference, base-language fallback,
+refusal to return a cross-language voice, empty list; and for `speak`: lang is set, cancel
+runs first, blank text is a no-op, no voice is assigned when none matches). The Playwright
+suite was deliberately not run because the library workstream is mid-change in those specs.
+
+Verified by re-reading the files after the run: the old lang-less `speak` stub is gone,
+`app/ui.js:9` imports `speak` from `./speech.js`, and `app/ui.js:259` passes
+`state.curriculum?.targetLanguage`. No other line of `ui.js` was altered, so the concurrent
+library edits are intact.
+
+Open follow-ups for whoever continues this:
+- `cancelSpeech()` is exported but not yet called on exercise/course change. Those transitions
+  live in `app/main.js`, which the library workstream holds; wire it there after that lands.
+- The iPhone flight-mode check with real system voices is still outstanding. Until it is done,
+  make no offline-voice claim in the UI or documentation.
+- No `[data-audio]` control exists outside the exercise card yet, so only exercise audio speaks.
+
+# Parent landing page — 2026-09-12 (Claude)
+
+User asked for a German landing page aimed at non-technical parents who just want a tool for
+their child. Built as a second static Vite entry so it does not touch `app/main.js` or the
+application router, both held by the library workstream.
+
+- [x] `welcome.html` + `app/welcome.css`: static, no JS, no webfont request, reuses the shipped
+      palette and the existing trail illustration.
+- [x] `vite.config.js`: two build entries; `scripts/build-sw.js` precaches the page unchanged.
+- [x] German copy for parents, including an explicit "Was Lernpfad nicht ist" section. Every
+      claim checked against shipped behaviour; unshipped library/stamps/maths not advertised.
+- [x] Rendered and inspected at 1280px and 375px: no overflow, one h1, alt text present,
+      44px targets, native `<details>` FAQ, visible focus, reduced motion respected.
+- [x] `npm run build` and `npm test` (52/52) pass.
+- [x] Share image `public/lernpfad-share.png` (1200×630, 39 kB) rendered from the page's own
+      tokens, plus the full `og:`/`twitter:` set. Image/`og:url`/`canonical` are absolute URLs;
+      a relative `og:image` renders no preview card at all, which a subagent got wrong first.
+- [x] `impressum.html` + `datenschutz.html` drafts with `app/legal.css`, linked from the
+      landing page footer, built as Vite entries. Data-protection text derived from the
+      verified implementation; both marked "Entwurf, keine Rechtsberatung".
+- [ ] Remaining GPT assets: app screenshots (held until the library UI settles), parent-facing
+      hero, paste-flow recording, stamps once shipped. See `experiment/welcome-page.md`.
+- [ ] USER must fill before publishing the legal pages: `[Vor- und Nachname]`,
+      `[Straße und Hausnummer]`, `[PLZ und Ort]`, `[E-Mail-Adresse]`. No email was inserted
+      automatically — publishing one exposes it to scrapers, which is the user's call.
+- [x] Root swap applied locally: landing page at `index.html`, application at `lernen.html`,
+      `start_url` → `./lernen.html` (`id` unchanged so existing installs survive), legal and
+      landing links rewired, `check-pages.mjs` extended to cover both. No first-visit redirect:
+      IndexedDB is async and would flash; `start_url` covers daily use instead.
+      `node scripts/check-pages.mjs` passes end to end against the local build.
+- [x] Live deployment verified green on 2026-09-12, so the root swap is now clear to push
+      against a known-good baseline.
+- [ ] Add a quiet "Was ist Lernpfad?" link from the app chrome back to the landing page, in
+      `app/ui.js`, once the library workstream releases that file.
+
+See `experiment/welcome-page.md` for design rationale, the claim/basis table and the full
+asset brief.
