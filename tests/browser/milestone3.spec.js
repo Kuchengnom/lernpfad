@@ -85,7 +85,7 @@ test('backup preview retries an aborted transaction, restores exact outcomes, an
   await page.locator('[data-action="cancel-import"]').click();
   await page.locator('[data-action="load-example"]').click();
   await page.locator('[data-action="confirm-import"]').click();
-  await expect(page.getByText(/Dein Lernstoff ist bereit/)).toBeVisible();
+  await expect(page.getByText(/Dein Lernbuch ist schon da/)).toBeVisible();
   expect((await workspace(page)).curriculum.id).toBe(fixture.curriculum.id);
 });
 
@@ -98,6 +98,7 @@ test('slow file reads serialize navigation and imports; readiness warnings and m
     File.prototype.text=async function(){window.readCount++;const text=await realText.call(this);return new Promise(resolve=>{window.finishRead=()=>resolve(text);});};
   });
   const blocked=structuredClone(fixture);
+  blocked.curriculum.version='2.0'; // A changed prerequisite graph is a new curriculum revision.
   const writing=blocked.curriculum.concepts.find(c=>c.kind==='writing-skill');
   // Acyclic concept graph, but a self-check cannot unlock this prerequisite.
   writing.dependsOn=[];

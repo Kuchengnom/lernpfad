@@ -6,7 +6,6 @@ import { brandMark, fieldKitArtwork, heroArtwork } from './scout-art.js';
 import { authoringView } from './authoring-view.js';
 import { getReviewItems } from './engine.js';
 import { learnerText } from './study-language.js';
-import { speak } from './speech.js';
 
 const drafts = new Map();
 let pendingFocus = null;
@@ -41,8 +40,8 @@ function noticeBanner(state) { return state.notice ? `<div class="notice notice-
 function shell(state, content) {
   const notice = state.notice ? `<div class="notice notice--${esc(state.notice.type)}" role="status">${esc(state.notice.text)}</div>` : '';
   return `<div class="app-shell">
-    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">${brandMark()}</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="sidebar-library">${button('Meine Lernbücher', 'navigate', 'nav-item', 'data-view="books"')}${button('Sammelmappe', 'navigate', 'nav-item', 'data-view="album"')}</div><div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.learner?.gems || 0} Stempel</span></div><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
-    <main id="main" class="main-content" tabindex="-1"><div class="mobile-meta"><strong>Lernpfad</strong><span>${state.learner?.xp || 0} Punkte · ${state.learner?.gems || 0} Stempel<br>${state.offlineReady ? 'Offline bereit' : 'Lernstand auf diesem Gerät'}</span></div>${notice}${content}</main>
+    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">${brandMark()}</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="sidebar-library">${button('Meine Lernbücher', 'navigate', `nav-item ${state.view === 'books' ? 'is-active' : ''}`, `data-view="books" ${state.view === 'books' ? 'aria-current="page"' : ''}`)}${button('Sammelmappe', 'navigate', `nav-item ${state.view === 'album' ? 'is-active' : ''}`, `data-view="album" ${state.view === 'album' ? 'aria-current="page"' : ''}`)}</div><div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.profile?.stampAwards.length || 0} Sammelstempel</span></div><a class="about-link" href="./index.html">Was ist Lernpfad?</a><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
+    <main id="main" class="main-content" tabindex="-1"><div class="mobile-meta"><strong>Lernpfad</strong><span>${state.learner?.xp || 0} Punkte · ${state.profile?.stampAwards.length || 0} Sammelstempel<br>${state.offlineReady ? 'Offline bereit' : 'Lernstand auf diesem Gerät'}</span></div>${notice}${content}</main>
     ${nav(state.view)}
   </div>`;
 }
@@ -128,7 +127,7 @@ function session(state) {
 
 function complete(state) {
   const summary = state.summary || { xp: 0, gems: 0, correct: 0, total: 0 };
-  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">Das war eine gute Runde.</h1><p class="lede">Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.</p>${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}${completionStamps(state)}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Stempel</span></div></div>${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}</section>`);
+  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">Das war eine gute Runde.</h1><p class="lede">Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.</p>${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}${completionStamps(state)}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Runde geschafft</span></div></div>${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}</section>`);
 }
 
 function library(state) {
@@ -171,7 +170,7 @@ function importPreview(state) {
   const disabled = isLocked(state);
   const disabledAttribute = disabled ? 'disabled aria-disabled="true"' : '';
   const importKind = incomingLearner ? 'Sicherung mit Lernstand' : 'Lernstoff ohne Lernstand';
-  const backupSummary = incomingLearner ? `<p class="import-preview__backup"><strong>${incomingLearner.xp || 0} Punkte</strong> und <strong>${(incomingLearner.completedSessions || []).length} abgeschlossene Runde${(incomingLearner.completedSessions || []).length === 1 ? '' : 'n'}</strong> werden mit importiert. Dieser gespeicherte Fortschritt kann weitere Übungen freischalten.</p>` : '<p class="import-preview__backup">Dieser Lernstoff enthält keinen Lernstand. Der neue Kurs beginnt ohne importierten Fortschritt.</p>';
+  const backupSummary = incomingLearner ? `<p class="import-preview__backup"><strong>${incomingLearner.xp || 0} Punkte</strong> und <strong>${(incomingLearner.completedSessionIds || []).length} abgeschlossene Runde${(incomingLearner.completedSessionIds || []).length === 1 ? '' : 'n'}</strong> werden mit importiert. Dieser gespeicherte Fortschritt kann weitere Übungen freischalten.</p>` : pending.action === 'open' ? '<p class="import-preview__backup">Dein vorhandener Lernstand und deine pausierte Runde bleiben erhalten.</p>' : '<p class="import-preview__backup">Dieser Lernstoff enthält keinen Lernstand. Der neue Kurs beginnt ohne importierten Fortschritt.</p>';
   const availability = Number.isFinite(report.availableExerciseCount) ? report.availableExerciseCount : exercises.length;
   const locked = Number.isFinite(report.lockedExerciseCount) ? report.lockedExerciseCount : 0;
   const unreachable = report.unreachableConceptIds || [];
@@ -202,7 +201,7 @@ function progressView(state) {
 export function renderApp(root, state, actions) {
   if (state.session?.id !== draftSession) { drafts.clear(); draftSession = state.session?.id; }
   const active = root.contains(document.activeElement) ? document.activeElement : null;
-  const activeField = active?.matches('[data-draft-text], [data-draft-writing], [data-study-query], [data-import-text]') ? { selector: active.matches('[data-import-text]') ? '[data-import-text]' : active.matches('textarea') ? '[data-draft-writing]' : active.matches('[data-study-query]') ? '[data-study-query]' : '[data-draft-text]', start: active.selectionStart, end: active.selectionEnd } : null;
+  const activeField = active?.matches('[data-draft-text], [data-draft-writing], [data-study-query], [data-import-text], [data-book-title]') ? { selector: active.matches('[data-book-title]') ? `#${active.id}` : active.matches('[data-import-text]') ? '[data-import-text]' : active.matches('textarea') ? '[data-draft-writing]' : active.matches('[data-study-query]') ? '[data-study-query]' : '[data-draft-text]', start: active.selectionStart, end: active.selectionEnd } : null;
   const views = { books: state => shell(state, booksView(state, esc, button)), album: state => shell(state, albumView(state, esc, button)), rest: state => shell(state, restView(state, button)), 'import-text': state => shell(state, importTextView(state, esc, button)), authoring: state => shell(state, authoringView(state, esc, button)), home, session, complete, library, progress: progressView, study, review, 'import-preview': importPreview };
   root.innerHTML = (views[state.view] || home)(state);
   root.querySelectorAll('[data-action]').forEach(control => control.addEventListener('click', () => {
@@ -251,12 +250,13 @@ export function renderApp(root, state, actions) {
   });
   root.querySelectorAll('[data-tile]').forEach(control => control.addEventListener('click', () => { const key = `${state.session?.id || 'session'}:${state.index}`; drafts.set(key, [...(drafts.get(key) || []), control.dataset.tile]); pendingFocus = { type: 'tile-next' }; renderApp(root, state, actions); }));
   root.querySelectorAll('[data-draft-text], [data-draft-writing]').forEach(control => control.addEventListener('input', () => drafts.set(`${state.session?.id || 'session'}:${state.index}`, control.value)));
+  root.querySelectorAll('[data-book-title]').forEach(input => input.addEventListener('input', () => { state.bookTitleDrafts[input.dataset.bookId] = input.value; }));
   root.querySelectorAll('[data-study-query]').forEach(input => input.addEventListener('input', () => actions.setStudyQuery(input.value)));
   root.querySelectorAll('[data-import-text]').forEach(input => input.addEventListener('input', () => { state.importTextDraft = input.value; state.importTextError = null; root.querySelector('#import-text-error')?.remove(); input.setAttribute('aria-invalid', 'false'); input.setAttribute('aria-describedby', 'import-text-help'); }));
   root.querySelectorAll('[data-import-text-form]').forEach(form => form.addEventListener('submit', event => { event.preventDefault(); actions.validatePastedImport(root.querySelector('[data-import-text]')?.value); }));
   root.querySelectorAll('[data-authoring-language]').forEach(input => input.addEventListener('change', () => actions.setAuthoringLanguage(input.value)));
   root.querySelectorAll('[data-import-file]').forEach(input => { input.disabled = Boolean(state.busy || state.readOnly); input.addEventListener('change', () => input.files?.[0] && actions.importFile(input.files[0])); });
-  root.querySelectorAll('[data-audio]').forEach(control => control.addEventListener('click', () => speak(control.dataset.audio, state.curriculum?.targetLanguage)));
+  root.querySelectorAll('[data-audio]').forEach(control => control.addEventListener('click', () => actions.playAudio(control.dataset.audio)));
   const currentExercise = state.session?.exercises?.[state.index];
   const hasAnswer = () => {
     const value = drafts.get(`${state.session?.id || 'session'}:${state.index}`);

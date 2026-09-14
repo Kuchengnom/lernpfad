@@ -7,7 +7,7 @@ export const STAMPS = [
   { id: 'bird', title: 'Hoch hinaus', rounds: 40 },
 ];
 export function completedRounds(profile) {
-  return new Set((profile?.books || []).flatMap(book => book.workspace.learner.completedSessionIds)).size;
+  return (profile?.books || []).reduce((count, book) => count + new Set(book.workspace.learner.completedSessionIds).size, 0);
 }
 export function awardStamps(profile, sessionId, now = new Date().toISOString()) {
   const count = completedRounds(profile);

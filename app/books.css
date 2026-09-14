@@ -39,3 +39,7 @@
   .book-card { padding: 1rem; }
   .book-card__open .button, .book-card__rename .button { width: 100%; }
 }
+.about-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 1rem; color: #bdcbc8; font-size: .85rem; }
+
+.sidebar { gap: 1.75rem; overflow-y: auto; }
+.sidebar-library { display: grid; gap: .25rem; }

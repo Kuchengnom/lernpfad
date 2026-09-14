@@ -280,3 +280,14 @@ settle on an exercise, the Bergzeit screen or the completion screen.
       compass, backpack, pine cone, mountain bird), matching the existing scout illustrations.
 - [ ] Settle the new import contract and reconcile the three failing specs, then merge
       `library-wip`.
+
+# Finish parked library increment — 2026-09-14
+
+Plan checked against `ASTRA.md`, the branch-split record and current code. Merge the parked implementation with the completed landing/speech work, then finish and verify before committing it.
+
+- [x] Recover `library-wip` onto current main without losing speech or the landing entry.
+- [ ] Settle additive imports, duplicate-book progress retention and explicit profile replacement; correct data/UI review findings.
+- [ ] Generate and inspect six original stamp assets plus the Bergzeit bench.
+- [ ] Test migration, independent book progress, renaming, profile restore, awards, pause/resume and failed writes.
+- [ ] Inspect desktop/mobile, offline assets, keyboard and reduced-motion behavior independently.
+- [ ] Record results, commit the integrated increment and update the preview.

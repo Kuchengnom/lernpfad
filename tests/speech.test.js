@@ -12,7 +12,7 @@ test('languageTag maps known codes and falls back to German', () => {
 });
 
 test('pickVoice prefers an exact lang match', () => {
-  const voices = [voice('en-US', false), voice('en-GB', false), voice('fr-FR', false)];
+  const voices = [voice('en-US', true), voice('en-GB', true), voice('fr-FR', true)];
   assert.equal(pickVoice(voices, 'en-GB').lang, 'en-GB');
 });
 
@@ -22,7 +22,7 @@ test('pickVoice prefers a local-service voice among exact matches', () => {
 });
 
 test('pickVoice falls back to same base language when no exact match exists', () => {
-  const voices = [voice('fr-CA', false), voice('de-DE', false)];
+  const voices = [voice('fr-CA', true), voice('de-DE', false)];
   assert.equal(pickVoice(voices, 'fr-FR').lang, 'fr-CA');
 });
 
@@ -58,20 +58,26 @@ test('speak sets the explicit lang, assigns a matching voice, and cancels first'
   assert.equal(utterance.voice.name, 'local-fr');
 });
 
-test('speak leaves voice unset when no voice matches the language', () => {
-  const synth = fakeSynth([voice('de-DE', true)]);
-  speak('Hello', 'en', synth);
-  const utterance = synth.calls.spoken[0];
-  assert.equal(utterance.lang, 'en-GB');
-  assert.equal(utterance.voice, undefined);
+test('speech never silently falls back to remote or unspecified device voices', () => {
+  for (const voices of [[], [voice('de-DE', true)], [voice('en-GB', false)]]) {
+    const synth = fakeSynth(voices);
+    assert.deepEqual(speak('Hello', 'en', synth), { spoken: false, reason: 'no-local-voice' });
+    assert.equal(synth.calls.spoken.length, 0);
+  }
 });
 
-test('speak still sets lang and speaks when the voice list is empty', () => {
-  const synth = fakeSynth([]);
-  speak('Guten Tag', 'de', synth);
+test('a later tap uses newly available voices without queued speech', () => {
+  const voices = [];
+  const synth = fakeSynth(voices);
+  speak('Bonjour', 'fr', synth);
+  assert.equal(synth.calls.spoken.length, 0);
+  voices.push(voice('fr-FR', true));
+  assert.deepEqual(speak('Bonjour', 'fr', synth), { spoken: true });
   assert.equal(synth.calls.spoken.length, 1);
-  assert.equal(synth.calls.spoken[0].lang, 'de-DE');
-  assert.equal(synth.calls.spoken[0].voice, undefined);
+});
+
+test('local same-language voice wins over an exact remote voice', () => {
+  assert.equal(pickVoice([voice('fr-FR', false), voice('fr-BE', true)], 'fr-FR').lang, 'fr-BE');
 });
 
 test('speak is a no-op for blank text or a missing synth', () => {

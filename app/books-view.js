@@ -24,7 +24,7 @@ function bookCard(book, index, state, esc, button) {
   const lastPractised = dateLabel(lastAnswer);
   const concepts = curriculum.concepts || [];
   const started = concepts.filter(concept => (learner.conceptProgress?.[concept.id]?.attempts || 0) > 0).length;
-  const rounds = (learner.completedSessions || []).length;
+  const rounds = (learner.completedSessionIds || []).length;
   const roundLength = workspace.session?.exercises?.length || 0;
   const completed = Math.min(roundLength, Math.max(0, (Number.isInteger(workspace.index) ? workspace.index : 0) + (workspace.feedback ? 1 : 0)));
   const attributes = `data-book-id="${esc(book.id)}" ${lock(state)}`;
@@ -36,7 +36,7 @@ function bookCard(book, index, state, esc, button) {
     <dl class="book-card__counts"><div><dt>Übungen</dt><dd>${(curriculum.exercises || []).length}</dd></div><div><dt>Themen begonnen</dt><dd>${started} / ${concepts.length}</dd></div><div><dt>Runden geschafft</dt><dd>${rounds}</dd></div></dl>
     ${roundLength ? `<p class="book-card__paused">Runde pausiert · ${completed} von ${roundLength} Aufgaben beantwortet. Du kannst im Buch weiterlernen.</p>` : '<p class="book-card__meta">Keine pausierte Runde</p>'}
     <div class="book-card__open">${button(selected ? 'Zum ausgewählten Buch' : 'Buch öffnen', 'open-book', selected ? 'button button--primary' : 'button button--secondary', attributes)}</div>
-    <div class="book-card__rename"><label for="book-rename-${index}">Buchtitel bearbeiten</label><div><input id="book-rename-${index}" type="text" name="book-title" data-book-title data-book-id="${esc(book.id)}" value="${esc(title)}" maxlength="200" autocomplete="off" ${lock(state)}>${button('Titel speichern', 'rename-book', 'button button--secondary', attributes)}</div></div>
+    <div class="book-card__rename"><label for="book-rename-${index}">Buchtitel bearbeiten</label><div><input id="book-rename-${index}" type="text" name="book-title" data-book-title data-book-id="${esc(book.id)}" value="${esc(state.bookTitleDrafts?.[book.id] ?? title)}" maxlength="200" autocomplete="off" ${lock(state)}>${button('Titel speichern', 'rename-book', 'button button--secondary', attributes)}</div></div>
   </article>`;
 }
 
@@ -45,9 +45,10 @@ export function booksView(state, esc, button) {
   return `<section class="books-page" aria-labelledby="books-title">
     <p class="eyebrow">Deine Sammlung</p><h1 id="books-title">Meine Lernbücher</h1>
     <p class="lede">Wechsle zwischen deinen Büchern. Jedes behält seinen Lernstand und seine pausierte Runde.</p>
-    <section class="card books-backup" aria-labelledby="books-backup-title"><div><h2 id="books-backup-title">Deine ganze Sammlung mitnehmen</h2><p>„Alles sichern“ enthält alle Lernbücher, Lernstände und gesammelten Stempel. Beantwortete Aufgaben bleiben gesichert; auf einem anderen Gerät beginnst du eine neue Runde. Bewahre die Datei auf, damit du deine Sammlung auch nach einem Gerätewechsel oder dem Löschen von Browserdaten wiederherstellen kannst.</p></div>${button('Alles sichern', 'export-profile', 'button button--primary', state.busy ? 'disabled aria-disabled="true"' : '')}</section>
+
     <div class="books-toolbar"><p>${books.length} ${books.length === 1 ? 'Lernbuch' : 'Lernbücher'}</p><div>${button('Text einfügen', 'navigate', 'button button--secondary', 'data-view="import-text"')}${button('Datei & Import-Auswahl', 'navigate', 'button button--secondary', 'data-view="library"')}</div></div>
     <div class="books-grid">${books.map((book, index) => bookCard(book, index, state, esc, button)).join('') || '<div class="empty-state"><h2>Platz für dein erstes Lernbuch</h2><p>Füge Lernstoff als Text ein oder wähle eine JSON-Datei in der Import-Auswahl.</p></div>'}</div>
+    <section class="card books-backup" aria-labelledby="books-backup-title"><div><h2 id="books-backup-title">Deine ganze Sammlung mitnehmen</h2><p>„Alles sichern“ enthält alle Lernbücher, Lernstände und gesammelten Stempel. Beantwortete Aufgaben bleiben gesichert; auf einem anderen Gerät beginnst du eine neue Runde. Bewahre die Datei auf, damit du deine Sammlung auch nach einem Gerätewechsel oder dem Löschen von Browserdaten wiederherstellen kannst.</p></div>${button('Alles sichern', 'export-profile', 'button button--primary', state.busy ? 'disabled aria-disabled="true"' : '')}</section>
   </section>`;
 }
 

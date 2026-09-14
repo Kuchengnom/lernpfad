@@ -25,3 +25,4 @@
 @media (max-width: 760px) { .stamp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; } .collection-entry { flex-direction: column-reverse; align-items: start; } .mountain-progress { width: 9rem; } .stamp-card { padding: 1rem; } .stamp-card h2 { font-size: 1rem; overflow-wrap: anywhere; } }
 @media (prefers-reduced-motion: reduce) { .new-stamp img { animation: none; } }
 html[data-keyboard-input] .new-stamp img { animation: none; }
+.album-page > h1 { margin: 0; font-size: clamp(2.2rem, 4vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }

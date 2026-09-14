@@ -1,10 +1,11 @@
-import './books.css';
-import './journey.css';
 import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
+import { cancelSpeech, speak } from './speech.js';
 import { awardStamps } from './stamps.js';
 import './styles.css';
 import './scout.css';
 import './import-text.css';
+import './books.css';
+import './journey.css';
 import { renderApp } from './ui.js';
 import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from './engine.js';
 import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
@@ -16,7 +17,7 @@ import example from '../fixtures/unit-1a/curriculum.json';
 
 const root = document.querySelector('#app');
 let state = {
-  profile: null, view: 'home', curriculum: validateCurriculum(example), learner: null,
+  bookTitleDrafts: {}, profile: null, view: 'home', curriculum: validateCurriculum(example), learner: null,
   session: null, index: 0, feedback: null, summary: null, notice: null,
   offlineReady: false, busy: true, readOnly: false,
   studyQuery: '', studyKind: 'all',
@@ -26,7 +27,13 @@ let state = {
 };
 state.learner = newLearner(state.curriculum);
 const workspace = value => ({ curriculum: value.curriculum, learner: value.learner, session: value.session, index: value.index, feedback: value.feedback });
-const show = () => renderApp(root, state, actions);
+let speechContext;
+const show = () => {
+  const context = [state.view, state.profile?.activeBookId, state.session?.id, state.index].join(':');
+  if (context !== speechContext) cancelSpeech();
+  speechContext = context;
+  renderApp(root, state, actions);
+};
 const notify = (text, type = 'error') => { state.notice = { type, text }; show(); };
 function focusMain() { root.querySelector('#main')?.focus({ preventScroll: true }); }
 
@@ -67,7 +74,7 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 const documentElement = tag => window.document.createElement(tag);
 
 function fromProfile(profile, extra = {}) {
-  return { ...state, ...activeBook(profile).workspace, profile, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
+  return { ...state, ...activeBook(profile).workspace, profile, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
 }
 
 function previewImport(imported, fileName, fromText = false) {
@@ -80,6 +87,13 @@ function previewImport(imported, fileName, fromText = false) {
 }
 
 const actions = {
+  playAudio(text) {
+    const result = speak(text, state.curriculum?.targetLanguage);
+    if (!result.spoken) {
+      notify(result.reason === 'no-local-voice' ? 'Für diese Sprache ist gerade keine lokale Stimme verfügbar. Lade sie gegebenenfalls in den Spracheinstellungen deines Geräts herunter und versuche es erneut.' : 'Vorlesen ist auf diesem Gerät gerade nicht verfügbar.', 'info');
+      root.querySelector('[data-audio]')?.focus();
+    }
+  },
   setAuthoringLanguage(language) {
     if (state.busy || !['fr', 'en'].includes(language)) return;
     state.authoringLanguage = language; state.notice = null; show();
@@ -111,7 +125,7 @@ const actions = {
   },
   async renameBook(id, title) {
     if (state.busy || state.readOnly) return;
-    try { await commit({ ...state, profile: renameBook(state.profile, id, title), notice: { type: 'success', text: 'Name gespeichert.' } }); }
+    try { const bookTitleDrafts = { ...state.bookTitleDrafts }; delete bookTitleDrafts[id]; await commit({ ...state, bookTitleDrafts, profile: renameBook(state.profile, id, title), notice: { type: 'success', text: 'Name gespeichert.' } }); }
     catch (error) { notify(error.message); }
   },
   exportProfile() {
@@ -261,6 +275,8 @@ async function initialize() {
   }
 }
 
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelSpeech(); });
+window.addEventListener('pagehide', () => cancelSpeech());
 document.addEventListener('keydown', () => { document.documentElement.dataset.keyboardInput = ''; });
 document.addEventListener('pointerdown', () => { delete document.documentElement.dataset.keyboardInput; });
 show();
