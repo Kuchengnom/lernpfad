@@ -1,3 +1,6 @@
+import { booksView, profileImportView, bookImportMessage } from './books-view.js';
+import { stampStrip, albumView, completionStamps } from './stamps.js';
+import { mountainRoute, restView } from './journey.js';
 import { importTextView } from './import-text-view.js';
 import { brandMark, fieldKitArtwork, heroArtwork } from './scout-art.js';
 import { authoringView } from './authoring-view.js';
@@ -38,13 +41,13 @@ function noticeBanner(state) { return state.notice ? `<div class="notice notice-
 function shell(state, content) {
   const notice = state.notice ? `<div class="notice notice--${esc(state.notice.type)}" role="status">${esc(state.notice.text)}</div>` : '';
   return `<div class="app-shell">
-    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">${brandMark()}</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.learner?.gems || 0} Stempel</span></div><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
+    <aside class="sidebar"><a href="#main" class="brand"><span class="brand-mark">${brandMark()}</span><span>Lernpfad<small>Sprachen entdecken</small></span></a>${nav(state.view)}<div class="sidebar-library">${button('Meine Lernbücher', 'navigate', 'nav-item', 'data-view="books"')}${button('Sammelmappe', 'navigate', 'nav-item', 'data-view="album"')}</div><div class="learner-tally"><span>${state.learner?.xp || 0} Punkte</span><span>${state.learner?.gems || 0} Stempel</span></div><div class="sidebar-foot"><span class="privacy-dot ${state.offlineReady ? 'is-ready' : ''}"></span>${state.offlineReady ? 'Offline bereit.' : 'Wird lokal vorbereitet …'}</div></aside>
     <main id="main" class="main-content" tabindex="-1"><div class="mobile-meta"><strong>Lernpfad</strong><span>${state.learner?.xp || 0} Punkte · ${state.learner?.gems || 0} Stempel<br>${state.offlineReady ? 'Offline bereit' : 'Lernstand auf diesem Gerät'}</span></div>${notice}${content}</main>
     ${nav(state.view)}
   </div>`;
 }
 
-function courseTitle(state) { return state.curriculum?.title || 'Dein Lernbuch'; }
+function courseTitle(state) { return state.profile?.books.find(book => book.id === state.profile.activeBookId)?.title || state.curriculum?.title || 'Dein Lernbuch'; }
 
 function home(state) {
   const progress = conceptProgress(state);
@@ -56,7 +59,7 @@ function home(state) {
     <div class="hero-card scout-hero">${heroArtwork()}<div class="hero-card__caption"><span class="stamp">Heute</span><strong>${esc(courseTitle(state))}</strong><span>Eine kurze Runde wartet auf dich.</span></div></div>
     ${state.session ? `<section class="resume-banner card"><div><p class="eyebrow">Noch offen</p><h2>Deine Lernrunde wartet.</h2><p>Du bist bei Aufgabe ${state.index + 1} von ${state.session.exercises.length}.</p></div>${button(`Runde fortsetzen ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>` : `<section class="continue-card card" aria-labelledby="continue-title"><div><p class="eyebrow">Empfohlen</p><h2 id="continue-title">Weiterlernen</h2><p>${due ? `${due} Thema${due === 1 ? '' : 'en'} wartet auf Wiederholung.` : 'Eine neue Mischung aus Wörtern und Sätzen.'}</p></div>${button(`Los geht’s ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>`}
     <section class="route-card card" aria-labelledby="route-title"><div class="section-title"><div><p class="eyebrow">Dein Lernstoff</p><h2 id="route-title">${esc(courseTitle(state))}</h2></div><span class="route-badge">${mastered} oft richtig geübt</span></div><div class="truthful-counts"><span><strong>${progress.length}</strong> Themen</span><span><strong>${started}</strong> begonnen</span><span><strong>${due}</strong> fällig</span></div>${button(`Lernbuch öffnen ${icons.arrow}`, 'navigate', 'button button--secondary button--with-icon', 'data-view="study"')}</section>
-    <section class="quick-card card" aria-labelledby="quick-title"><p class="eyebrow">Kurz & gezielt</p><h2 id="quick-title">Was brauchst du?</h2><div class="quick-actions">${button(`${icons.route}<span>Wiederholungen ansehen${due ? ` (${due})` : ''}</span>`, 'navigate', 'quick-action', 'data-view="review"')}${button(`${icons.archive}<span>Lernbuch verwalten</span>`, 'navigate', 'quick-action', 'data-view="library"')}</div></section>
+    ${stampStrip(state, button)}<section class="quick-card card" aria-labelledby="quick-title"><p class="eyebrow">Kurz & gezielt</p><h2 id="quick-title">Was brauchst du?</h2><div class="quick-actions">${button(`${icons.route}<span>Wiederholungen ansehen${due ? ` (${due})` : ''}</span>`, 'navigate', 'quick-action', 'data-view="review"')}${button(`${icons.archive}<span>Meine Lernbücher</span>`, 'navigate', 'quick-action', 'data-view="books"')}</div></section>
   </section>`);
 }
 
@@ -120,24 +123,24 @@ function session(state) {
   const submitLabel = exercise.type === 'writing' ? 'Beispiel ansehen' : 'Antwort prüfen';
   const reading = exercise.type === 'reading' && exercise.passage ? `<blockquote class="reading-passage" lang="${esc(state.curriculum.targetLanguage)}">${esc(exercise.passage)}</blockquote>` : '';
   const prompt = exercise.type === 'reading' ? (exercise.question || exercise.prompt) : (exercise.prompt || exercise.question);
-  return `<div class="session-shell"><header class="session-head"><button type="button" class="leave-button" data-action="exit">Runde verlassen</button><div class="session-progress"><progress aria-label="Fortschritt: Aufgabe ${index} von ${total}" value="${index - (state.feedback ? 0 : 1)}" max="${total}"></progress><span>${index} von ${total}</span></div><span class="session-mode">${state.session.mode === 'review' ? 'Wiederholen' : 'Lernen'}</span></header><main id="main" class="exercise-main" tabindex="-1">${noticeBanner(state)}<article class="exercise-card" aria-labelledby="exercise-title"><p class="eyebrow">${esc(({choice:'Wähle aus',reading:'Lesen & verstehen','text-input':'Erinnere dich','word-tiles':'Baue einen Satz',writing:'Schreibwerkstatt'})[exercise.type] || 'Übung')}</p>${reading}<h1 id="exercise-title">${esc(prompt || 'Wähle die richtige Antwort.')}</h1>${exercise.hint ? `<p class="exercise-hint">${esc(exercise.hint)}</p>` : ''}${exercise.audioText ? `<button class="audio-button" type="button" data-audio="${esc(exercise.audioText)}">${icons.volume} Vorlesen</button>` : ''}<div class="exercise-answer">${exerciseBody(exercise, state)}</div>${!state.feedback ? button(submitLabel, 'submit', 'button button--primary submit-button') : ''}</article>${feedback(exercise, state)}</main></div>`;
+  return `<div class="session-shell"><header class="session-head"><button type="button" class="leave-button" data-action="exit">Runde verlassen</button>${mountainRoute(state)}<span class="session-mode">${state.session.mode === 'review' ? 'Wiederholen' : 'Lernen'}</span></header><main id="main" class="exercise-main" tabindex="-1">${noticeBanner(state)}<article class="exercise-card" aria-labelledby="exercise-title"><p class="eyebrow">${esc(({choice:'Wähle aus',reading:'Lesen & verstehen','text-input':'Erinnere dich','word-tiles':'Baue einen Satz',writing:'Schreibwerkstatt'})[exercise.type] || 'Übung')}</p>${reading}<h1 id="exercise-title">${esc(prompt || 'Wähle die richtige Antwort.')}</h1>${exercise.hint ? `<p class="exercise-hint">${esc(exercise.hint)}</p>` : ''}${exercise.audioText ? `<button class="audio-button" type="button" data-audio="${esc(exercise.audioText)}">${icons.volume} Vorlesen</button>` : ''}<div class="exercise-answer">${exerciseBody(exercise, state)}</div>${!state.feedback ? button(submitLabel, 'submit', 'button button--primary submit-button') : ''}</article>${feedback(exercise, state)}</main></div>`;
 }
 
 function complete(state) {
   const summary = state.summary || { xp: 0, gems: 0, correct: 0, total: 0 };
-  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">Das war eine gute Runde.</h1><p class="lede">Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.</p>${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Stempel</span></div></div>${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}</section>`);
+  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">Das war eine gute Runde.</h1><p class="lede">Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.</p>${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}${completionStamps(state)}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Stempel</span></div></div>${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}</section>`);
 }
 
 function library(state) {
   return shell(state, `<section class="utility-page" aria-labelledby="library-title">
     <p class="eyebrow">Dein Lernbuch</p><h1 id="library-title">Üben & verwalten</h1>
     <p class="lede">Dein Material und dein Fortschritt liegen nur auf diesem Gerät, bis du sie selbst exportierst.</p>
-    <div class="library-handoff">
+    <div class="import-preview__actions">${button('Meine Lernbücher', 'navigate', 'button button--secondary', 'data-view="books"')}${button('Sammelmappe', 'navigate', 'button button--secondary', 'data-view="album"')}${button('Alles sichern', 'export-profile', 'button button--quiet')}</div><div class="library-handoff">
       <article class="card utility-card"><div class="utility-icon">${icons.archive}</div><h2>Lernstoff importieren</h2><p>Kopiere die JSON-Antwort aus ChatGPT hierher oder wähle eine Datei. Erst in der Vorschau übernimmst du den neuen Lernstoff.</p><div class="import-entry-actions">${button('Text einfügen', 'navigate', 'button button--primary', 'data-view="import-text"')}<label class="button button--secondary file-button">Datei auswählen<input type="file" accept="application/json,.json" data-import-file></label></div></article>
       <div class="card authoring-entry scout-authoring-entry"><div class="authoring-entry__copy"><h2>Eigenen Lernstoff erstellen</h2><p>Aus deinem Schulmaterial wird dein eigener Lernpfad. Mit Anleitung und Prompt für Englisch oder Französisch.</p>${button('Anleitung & Prompt', 'navigate', 'button button--primary', 'data-view="authoring"')}</div>${fieldKitArtwork()}</div>
     </div>
     <div class="utility-grid">
-      <article class="card utility-card"><div class="utility-icon">${icons.route}</div><h2>Deine Sicherung</h2><p>Lade deinen Lernstand herunter, um ihn mitzunehmen.</p>${button('Sicherung exportieren', 'export-backup', 'button button--secondary')}</article>
+      <article class="card utility-card"><div class="utility-icon">${icons.route}</div><h2>Dieses Lernbuch sichern</h2><p>Sichere den aktuellen Lernstoff und seinen Lernstand. „Alles sichern“ enthält zusätzlich die anderen Lernbücher und deine Sammelmappe.</p>${button('Sicherung exportieren', 'export-backup', 'button button--secondary')}</article>
       <article class="card utility-card"><div class="utility-icon">${icons.spark}</div><h2>Lernstoff teilen</h2><p>Exportiere nur das Lernbuch ohne deinen Fortschritt.</p>${button('Lernstoff exportieren', 'export-curriculum', 'button button--secondary')}</article>
       <article class="card utility-card"><div class="utility-icon">${icons.book}</div><h2>Beispiel starten</h2><p>Öffne die kleine Holiday-Stories-Lernreise.</p>${button('Beispiel laden', 'load-example', 'button button--secondary')}</article>
     </div>
@@ -153,6 +156,7 @@ function importSourceText(source) {
 function importPrompt(exercise) { return exercise.question || exercise.prompt || exercise.modelAnswer || exercise.id || 'Ohne Vorschau'; }
 function importPreview(state) {
   const pending = state.pendingImport;
+  if (pending?.profile) return shell(state, profileImportView(state, esc, button));
   if (!pending?.curriculum) return library(state);
   const curriculum = pending.curriculum;
   const report = pending.report || {};
@@ -186,7 +190,7 @@ function importPreview(state) {
     <section class="import-preview__section" aria-labelledby="import-examples-title"><h2 id="import-examples-title">${exercises.length < 3 ? 'Beispielaufgaben' : 'Drei Beispielaufgaben'}</h2><p>Nur zur Orientierung: Die Vorschau verändert nichts.</p><details class="import-preview__details"><summary>Beispiele anzeigen</summary><ol>${exercises.slice(0, 3).map(exercise => `<li><span>${esc(exerciseLabel(exercise.type))}</span><p lang="${esc(curriculum.instructionLanguage || curriculum.sourceLanguage || 'de')}">${esc(importPrompt(exercise))}</p></li>`).join('') || '<li>Keine Beispielaufgabe vorhanden.</li>'}</ol></details></section>
     <section class="import-preview__section" aria-labelledby="import-sources-title"><h2 id="import-sources-title">Quellhinweise</h2><p>Die ${sourceText.length} Angabe${sourceText.length === 1 ? '' : 'n'} ${sourceText.length === 1 ? 'beschreibt' : 'beschreiben'} nur die Herkunft im Import. Lernpfad öffnet oder lädt daraus keine Dateien.</p><details class="import-preview__details"><summary>Quellhinweise anzeigen</summary><ul class="import-preview__sources">${sourceText.map(text => `<li>${esc(text)}</li>`).join('') || '<li>Keine Quellhinweise vorhanden.</li>'}</ul></details></section>
     <section class="import-preview__section import-preview__validation" aria-labelledby="import-validation-title"><h2 id="import-validation-title">Übungen ohne bisherigen Lernstand</h2><p><strong>${availability}</strong> Übung${availability === 1 ? '' : 'en'} ${availability === 1 ? 'wäre' : 'wären'} zu Beginn verfügbar. <strong>${locked}</strong> ${locked === 1 ? 'bliebe' : 'blieben'} zunächst gesperrt, weil ein vorausgesetztes Thema noch geübt werden muss.</p>${unreachable.length ? `<p class="import-preview__warning">${unreachable.length} Thema${unreachable.length === 1 ? ' ist' : 'en sind'} aus den Übungsbeziehungen nicht erreichbar: ${esc(unreachable.map(conceptLabel).join(', '))}.</p>` : unused.length ? '' : '<p class="import-preview__ok">Alle Themen sind über mindestens eine Übung erreichbar.</p>'}${unused.length ? `<p class="import-preview__warning">${unused.length} Thema${unused.length === 1 ? ' wird' : 'en werden'} von keiner Übung verwendet: ${esc(unused.map(conceptLabel).join(', '))}.</p>` : ''}</section>
-    <section class="import-preview__section import-preview__replacement" aria-labelledby="import-replacement-title"><h2 id="import-replacement-title">Was auf diesem Gerät ersetzt wird</h2><p>Der aktuelle Kurs${currentCourse ? ` „${esc(currentCourse.title || currentCourse.id)}“` : ''} und sein lokaler Lernstand werden durch diesen Import ersetzt.${currentSession ? ' Die pausierte Lernrunde wird beendet und nicht übernommen.' : ' Es gibt keine pausierte Lernrunde.'}</p><p>Du kannst vorher eine Sicherung deines <strong>aktuellen</strong> Kurses und Lernstands herunterladen. Das schließt diese Vorschau nicht.</p><div class="import-preview__actions">${button('Aktuelle Sicherung exportieren', 'export-backup', 'button button--secondary', disabledAttribute)}${button('Import übernehmen', 'confirm-import', 'button button--primary', disabledAttribute)}${pending.fromText ? button('Text bearbeiten', 'navigate', 'button button--secondary', 'data-view="import-text"') : ''}${button('Abbrechen', 'cancel-import', 'button button--quiet', disabledAttribute)}</div></section>
+    <section class="import-preview__section import-preview__replacement" aria-labelledby="import-replacement-title"><h2 id="import-replacement-title">Was beim Übernehmen passiert</h2>${bookImportMessage(state, esc)}<p>„Alles sichern“ enthält alle Lernbücher und deine Sammelmappe. „Aktuelle Sicherung exportieren“ enthält nur das gerade geöffnete Lernbuch.</p><div class="import-preview__actions">${button('Alles sichern', 'export-profile', 'button button--secondary', disabledAttribute)}${button('Aktuelle Sicherung exportieren', 'export-backup', 'button button--secondary', disabledAttribute)}${button('Import übernehmen', 'confirm-import', 'button button--primary', disabledAttribute)}${pending.fromText ? button('Text bearbeiten', 'navigate', 'button button--secondary', 'data-view="import-text"') : ''}${button('Abbrechen', 'cancel-import', 'button button--quiet', disabledAttribute)}</div></section>
   </section>`);
 }
 
@@ -199,13 +203,17 @@ export function renderApp(root, state, actions) {
   if (state.session?.id !== draftSession) { drafts.clear(); draftSession = state.session?.id; }
   const active = root.contains(document.activeElement) ? document.activeElement : null;
   const activeField = active?.matches('[data-draft-text], [data-draft-writing], [data-study-query], [data-import-text]') ? { selector: active.matches('[data-import-text]') ? '[data-import-text]' : active.matches('textarea') ? '[data-draft-writing]' : active.matches('[data-study-query]') ? '[data-study-query]' : '[data-draft-text]', start: active.selectionStart, end: active.selectionEnd } : null;
-  const views = { 'import-text': state => shell(state, importTextView(state, esc, button)), authoring: state => shell(state, authoringView(state, esc, button)), home, session, complete, library, progress: progressView, study, review, 'import-preview': importPreview };
+  const views = { books: state => shell(state, booksView(state, esc, button)), album: state => shell(state, albumView(state, esc, button)), rest: state => shell(state, restView(state, button)), 'import-text': state => shell(state, importTextView(state, esc, button)), authoring: state => shell(state, authoringView(state, esc, button)), home, session, complete, library, progress: progressView, study, review, 'import-preview': importPreview };
   root.innerHTML = (views[state.view] || home)(state);
   root.querySelectorAll('[data-action]').forEach(control => control.addEventListener('click', () => {
     const action = control.dataset.action;
     const exercise = state.session?.exercises?.[state.index];
     const key = `${state.session?.id || 'session'}:${state.index}`;
     if (action === 'validate-pasted-import') actions.validatePastedImport(root.querySelector('[data-import-text]')?.value);
+    if (action === 'open-book') actions.openBook(control.dataset.bookId);
+    if (action === 'rename-book') actions.renameBook(control.dataset.bookId, [...root.querySelectorAll('[data-book-title]')].find(input => input.dataset.bookId === control.dataset.bookId)?.value);
+    if (action === 'export-profile') actions.exportProfile();
+    if (action === 'continue-rest') actions.continueAfterRest();
     if (action === 'copy-authoring') actions.copyAuthoringPrompt();
     if (action === 'download-authoring') actions.downloadAuthoringPrompt();
     if (action === 'download-schema') actions.downloadSchema();
@@ -261,7 +269,7 @@ export function renderApp(root, state, actions) {
     if (submitControl) submitControl.disabled = isLocked(state) || !hasAnswer();
   }));
   root.querySelectorAll('[data-action]').forEach(control => {
-    const mutating = ['start-learn', 'start-review', 'practice-concept', 'load-example', 'submit', 'self-check', 'confirm-import', 'cancel-import', 'validate-pasted-import'].includes(control.dataset.action);
+    const mutating = ['start-learn', 'start-review', 'practice-concept', 'load-example', 'submit', 'self-check', 'confirm-import', 'cancel-import', 'validate-pasted-import', 'open-book', 'rename-book', 'continue-rest'].includes(control.dataset.action);
     control.disabled = control.disabled || Boolean(state.busy || (state.readOnly && mutating));
   });
   {

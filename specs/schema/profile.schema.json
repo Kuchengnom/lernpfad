@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://language-learning.local/schema/profile-1.0.json",
+  "title": "Local learning library and stamp collection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profileVersion", "activeBookId", "books", "stampAwards"],
+  "properties": {
+    "profileVersion": { "const": "1.0" },
+    "activeBookId": { "$ref": "#/$defs/id" },
+    "books": { "type": "array", "minItems": 1, "maxItems": 50, "items": { "$ref": "#/$defs/book" } },
+    "stampAwards": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/stampAward" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "^(?!__proto__$|constructor$|prototype$)[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "book": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "importedAt", "workspace"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
+        "importedAt": { "$ref": "#/$defs/date" },
+        "workspace": { "$ref": "#/$defs/workspace" }
+      }
+    },
+    "workspace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["curriculum", "learner", "session", "index", "feedback"],
+      "properties": {
+        "curriculum": { "$ref": "https://language-learning.local/schema/curriculum-1.0.json#/$defs/curriculum" },
+        "learner": { "$ref": "https://language-learning.local/schema/learner-state.v1.json" },
+        "session": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/session" }] },
+        "index": { "type": "integer", "minimum": 0, "maximum": 11 },
+        "feedback": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["correct", "selfCheck"],
+              "properties": {
+                "correct": { "type": ["boolean", "null"] },
+                "selfCheck": { "type": "boolean" },
+                "selfChecked": { "type": "boolean" },
+                "expectedAnswer": { "type": "string" },
+                "explanation": { "type": "string" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "session": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "curriculumId", "curriculumVersion", "exercises", "mode", "startedAt"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "curriculumId": { "type": "string", "minLength": 1 },
+        "curriculumVersion": { "type": "string", "minLength": 1 },
+        "exercises": { "type": "array", "minItems": 1, "maxItems": 12, "items": { "$ref": "https://language-learning.local/schema/curriculum-1.0.json#/$defs/exercise" } },
+        "mode": { "enum": ["learn", "review"] },
+        "startedAt": { "$ref": "#/$defs/date" },
+        "restAcknowledged": { "type": "boolean" },
+        "resting": { "type": "boolean" },
+        "conceptIds": { "type": "array", "uniqueItems": true, "maxItems": 2000, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "stampAward": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "stampId", "earnedAt", "bookId", "sessionId"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "stampId": { "enum": ["fox", "tent", "compass", "backpack", "pinecone", "bird"] },
+        "earnedAt": { "$ref": "#/$defs/date" },
+        "bookId": { "$ref": "#/$defs/id" },
+        "sessionId": { "$ref": "#/$defs/id" }
+      }
+    },
+    "package": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schemaVersion", "kind", "profile"],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "kind": { "const": "profile-backup" },
+        "profile": { "$ref": "#" }
+      }
+    }
+  }
+}

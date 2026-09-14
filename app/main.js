@@ -1,3 +1,7 @@
+import './books.css';
+import './journey.css';
+import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
+import { awardStamps } from './stamps.js';
 import './styles.css';
 import './scout.css';
 import './import-text.css';
@@ -7,12 +11,12 @@ import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
 import { analyzeReadiness } from './readiness.js';
 import { buildAuthoringPrompt, authoringSchema } from './authoring.js';
 import { validateCurriculum, validateLearner, parseImport, backupPackage, curriculumPackage, MAX_FILE_BYTES } from './validation.js';
-import { parsePastedImport } from './import-text.js';
+import { pastedImportText } from './import-text.js';
 import example from '../fixtures/unit-1a/curriculum.json';
 
 const root = document.querySelector('#app');
 let state = {
-  view: 'home', curriculum: validateCurriculum(example), learner: null,
+  profile: null, view: 'home', curriculum: validateCurriculum(example), learner: null,
   session: null, index: 0, feedback: null, summary: null, notice: null,
   offlineReady: false, busy: true, readOnly: false,
   studyQuery: '', studyKind: 'all',
@@ -32,8 +36,9 @@ async function commit(next) {
   state.busy = true;
   show();
   try {
-    await saveWorkspace(workspace(next));
-    state = { ...next, busy: false };
+    const profile = updateActiveBook(next.profile, workspace(next));
+    await saveWorkspace(profile);
+    state = { ...next, profile, busy: false };
     show();
     return true;
   } catch (error) {
@@ -61,12 +66,17 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 }
 const documentElement = tag => window.document.createElement(tag);
 
+function fromProfile(profile, extra = {}) {
+  return { ...state, ...activeBook(profile).workspace, profile, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
+}
+
 function previewImport(imported, fileName, fromText = false) {
-  state.pendingImport = { ...imported, fileName, fromText, report: analyzeReadiness(imported.curriculum) };
+  state.pendingImport = imported.profile
+    ? { ...imported, fileName, fromText }
+    : { ...imported, fileName, fromText, ...previewBookImport(state.profile, imported), report: analyzeReadiness(imported.curriculum) };
   state.view = 'import-preview';
   state.notice = null;
-  show();
-  focusMain();
+  show(); focusMain();
 }
 
 const actions = {
@@ -94,17 +104,36 @@ const actions = {
   downloadSchema() { download(authoringSchema, 'curriculum.schema.json'); },
   navigate(view) { if (!state.busy) { state.view = view; state.pendingImport = null; state.notice = null; show(); focusMain(); } },
   cancelImport() { if (!state.busy) actions.navigate('library'); },
+  async openBook(id) {
+    if (state.busy || state.readOnly) return;
+    try { await commit(fromProfile(selectBook(state.profile, id), { view: 'home', notice: null })); focusMain(); }
+    catch (error) { notify(error.message); }
+  },
+  async renameBook(id, title) {
+    if (state.busy || state.readOnly) return;
+    try { await commit({ ...state, profile: renameBook(state.profile, id, title), notice: { type: 'success', text: 'Name gespeichert.' } }); }
+    catch (error) { notify(error.message); }
+  },
+  exportProfile() {
+    try { download(profilePackage(state.profile), 'lernpfad-profil.json'); notify('Alles gesichert: deine Lernbücher, Lernstände und Sammelstempel.', 'success'); }
+    catch (error) { notify(error.message); }
+    root.querySelector('[data-action="export-profile"]')?.focus();
+  },
   async confirmImport() {
     if (state.busy || state.readOnly || !state.pendingImport) return;
-    const { curriculum, learner } = state.pendingImport;
-    await commit({ ...state, curriculum, learner: learner ?? newLearner(curriculum), pendingImport: null, session: null, index: 0, feedback: null, summary: null, studyQuery: '', studyKind: 'all', view: 'home', notice: { type: 'success', text: learner ? 'Deine Sicherung wurde wiederhergestellt. Du kannst hier weiterlernen.' : 'Dein Lernstoff ist bereit. Auf zur nächsten Lernrunde!' } });
-    focusMain();
+    try {
+      const pending = state.pendingImport;
+      const profile = pending.profile || importBook(state.profile, pending);
+      const text = pending.profile ? 'Dein gesamtes Profil wurde wiederhergestellt.' : pending.learner ? 'Deine Sicherung wurde wiederhergestellt. Die anderen Lernbücher bleiben erhalten.' : pending.action === 'open' ? 'Dein Lernbuch ist schon da. Du kannst weiterlernen.' : 'Dein Lernstoff ist bereit. Das neue Lernbuch wurde hinzugefügt.';
+      await commit(fromProfile(profile, { view: 'home', notice: { type: 'success', text } }));
+      focusMain();
+    } catch (error) { notify(error.message); }
   },
   setStudyQuery(query) { state.studyQuery = String(query).slice(0, 200); show(); },
   setStudyKind(kind) { state.studyKind = kind; show(); },
   resumeSession() {
     if (state.busy || state.readOnly || !state.session) return;
-    state.view = 'session'; state.notice = null; show(); focusMain();
+    state.view = state.session.resting ? 'rest' : 'session'; state.notice = null; show(); focusMain();
   },
   async startSession(mode = 'learn', conceptIds) {
     if (state.busy || state.readOnly) return;
@@ -139,10 +168,17 @@ const actions = {
     delete feedback.normalizedAnswer;
     if (await commit({ ...state, learner, feedback, notice: null })) root.querySelector('[data-action="next"]')?.focus();
   },
+  async continueAfterRest() {
+    if (state.busy || state.readOnly || !state.session) return;
+    if (await commit({ ...state, session: { ...state.session, resting: false }, view: 'session' })) focusMain();
+  },
   async next() {
     if (state.busy || !state.feedback || (state.feedback.correct === null && !state.feedback.selfCheck)) return;
     if (state.index + 1 < state.session.exercises.length) {
-      await commit({ ...state, index: state.index + 1, feedback: null, notice: null });
+      const nextIndex = state.index + 1;
+      const rest = state.session.exercises.length >= 8 && nextIndex === Math.ceil(state.session.exercises.length / 2) && !state.session.restAcknowledged;
+      const session = rest ? { ...state.session, restAcknowledged: true, resting: true } : state.session;
+      await commit({ ...state, session, index: nextIndex, feedback: null, notice: null, view: rest ? 'rest' : 'session' });
       focusMain();
       return;
     }
@@ -150,7 +186,10 @@ const actions = {
     const records = learner.answerRecords.filter(a => a.sessionId === state.session.id);
     const objective = records.filter(a => !a.selfCheck);
     const summary = { xp: learner.xp - state.learner.xp, gems: learner.gems - state.learner.gems, correct: objective.filter(a => a.correct).length, total: objective.length, selfChecks: records.length - objective.length };
-    await commit({ ...state, learner, session: null, index: 0, feedback: null, summary, view: 'complete', notice: null });
+    const updated = { ...state, learner, session: null, index: 0, feedback: null };
+    const profile = awardStamps(updateActiveBook(state.profile, workspace(updated)), state.session.id);
+    summary.newStampIds = profile.stampAwards.filter(award => !state.profile.stampAwards.some(old => old.id === award.id)).map(award => award.stampId);
+    await commit({ ...updated, profile, summary, view: 'complete', notice: null });
     focusMain();
   },
   exitSession() { state.view = 'home'; state.notice = { type: 'info', text: 'Deine geprüften Aufgaben sind gespeichert. Die Runde lässt sich fortsetzen. Noch nicht geprüfte Eingaben gehen beim Neuladen verloren.' }; show(); focusMain(); },
@@ -163,8 +202,8 @@ const actions = {
     state.notice = { type: 'info', text: 'Die Datei wird auf diesem Gerät geprüft …' };
     show();
     try {
-      if (file.size > MAX_FILE_BYTES) throw new Error('Die Datei ist zu groß. Bitte verwende eine JSON-Datei bis 5 MB.');
-      const imported = parseImport(await file.text());
+      if (file.size > MAX_PROFILE_BYTES) throw new Error('Die Datei ist zu groß. Profilsicherungen dürfen höchstens 25 MB haben; einzelne Lernbücher höchstens 5 MB.');
+      const imported = parseProfilePackage(await file.text());
       state.busy = false;
       previewImport(imported, file.name);
     } catch (error) { state.busy = false; notify(error.message); focusMain(); }
@@ -174,7 +213,7 @@ const actions = {
     state.importTextDraft = String(text ?? '');
     state.importTextError = null;
     try {
-      const imported = parsePastedImport(state.importTextDraft);
+      const imported = parseProfilePackage(pastedImportText(state.importTextDraft));
       previewImport(imported, 'Eingefügtes JSON', true);
     } catch (error) {
       state.importTextError = error.message;
@@ -199,18 +238,11 @@ async function initialize() {
   try {
     state.readOnly = !(await acquireWriter());
     const stored = await loadWorkspace();
-    if (stored) {
-      const curriculum = validateCurriculum(curriculumPackage(stored.curriculum));
-      const learner = validateLearner(stored.learner, curriculum);
-      state = { ...state, curriculum, learner };
-      // Restore only a session that refers exactly to this curriculum and valid answer records.
-      if (stored.session && stored.session.curriculumId === curriculum.id && stored.session.curriculumVersion === curriculum.version && Array.isArray(stored.session.exercises) && stored.session.exercises.length && new Set(stored.session.exercises.map(e => e.id)).size === stored.session.exercises.length && Number.isInteger(stored.index) && stored.index >= 0 && stored.index < stored.session.exercises.length && stored.session.exercises.every(e => curriculum.exercises.some(c => c.id === e.id)) && !learner.completedSessionIds.includes(stored.session.id)) {
-        const exercises = stored.session.exercises.map(e => curriculum.exercises.find(c => c.id === e.id));
-        const current = exercises[stored.index];
-        const answer = learner.answerRecords.find(a => a.sessionId === stored.session.id && a.exerciseId === current.id);
-        state = { ...state, session: { ...stored.session, exercises }, index: stored.index, feedback: answer ? { correct: answer.correct, selfCheck: answer.selfCheck, expectedAnswer: expectedAnswer(current), explanation: current.explanation || current.feedback || '' } : null };
-      }
-    } else if (!state.readOnly) await saveWorkspace(workspace(state));
+    const profile = stored?.profileVersion ? validateProfile(stored) : createProfile(stored || workspace(state));
+    state = fromProfile(profile);
+    // Persist legacy migration atomically only after complete validation.
+    if (!stored?.profileVersion && !state.readOnly) await saveWorkspace(profile);
+
   } catch (error) {
     // Preserve existing storage on failed validation instead of overwriting it with a demo.
     state.readOnly = true;
@@ -229,5 +261,7 @@ async function initialize() {
   }
 }
 
+document.addEventListener('keydown', () => { document.documentElement.dataset.keyboardInput = ''; });
+document.addEventListener('pointerdown', () => { delete document.documentElement.dataset.keyboardInput; });
 show();
 initialize();
