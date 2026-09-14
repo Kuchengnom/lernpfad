@@ -3,6 +3,7 @@ import { brandMark, fieldKitArtwork, heroArtwork } from './scout-art.js';
 import { authoringView } from './authoring-view.js';
 import { getReviewItems } from './engine.js';
 import { learnerText } from './study-language.js';
+import { speak } from './speech.js';
 
 const drafts = new Map();
 let pendingFocus = null;
@@ -194,10 +195,6 @@ function progressView(state) {
   return shell(state, `<section class="progress-page" aria-labelledby="progress-title"><p class="eyebrow">Dein Weg</p><h1 id="progress-title">Fortschritt</h1><p class="lede">Der Übungsstand zeigt, wie oft Antworten in Lernpfad richtig waren. Er ist keine Note oder Prüfung.</p><div class="progress-overview card"><div><span class="stamp">${items.length} Themen</span><h2>Du baust dein Wissen Schritt für Schritt auf.</h2></div><div class="compass" aria-hidden="true">${icons.route}</div></div><section class="concept-list" aria-label="Themenfortschritt">${items.length ? items.map(item => { const level = Math.round((item.mastery || 0) * 100); const label = item.concept.label || item.concept.learningGoal || item.concept.id; return `<article class="concept-row"><div><h2>${esc(label)}</h2><p>${!item.attempts ? 'Noch nicht geübt' : item.concept.kind === 'writing-skill' ? 'Selbst geprüft · ohne automatische Bewertung' : level >= 80 ? 'Oft richtig geübt' : level >= 45 ? 'Schon gut geübt' : isDue(item) ? 'Jetzt zum Wiederholen bereit' : 'Weiter üben'}</p></div><div class="mastery"><progress aria-label="${esc(label)}: Übungsstand ${level} Prozent" value="${level}" max="100">${level}%</progress><span>${level}%<small>Übungsstand</small></span></div></article>`; }).join('') : '<div class="empty-state"><h2>Deine ersten Spuren erscheinen nach einer Lernrunde.</h2><p>Starte eine kurze Runde und komm dann hierher zurück.</p></div>'}</section></section>`);
 }
 
-function speak(text) {
-  if ('speechSynthesis' in window && text) window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-}
-
 export function renderApp(root, state, actions) {
   if (state.session?.id !== draftSession) { drafts.clear(); draftSession = state.session?.id; }
   const active = root.contains(document.activeElement) ? document.activeElement : null;
@@ -251,7 +248,7 @@ export function renderApp(root, state, actions) {
   root.querySelectorAll('[data-import-text-form]').forEach(form => form.addEventListener('submit', event => { event.preventDefault(); actions.validatePastedImport(root.querySelector('[data-import-text]')?.value); }));
   root.querySelectorAll('[data-authoring-language]').forEach(input => input.addEventListener('change', () => actions.setAuthoringLanguage(input.value)));
   root.querySelectorAll('[data-import-file]').forEach(input => { input.disabled = Boolean(state.busy || state.readOnly); input.addEventListener('change', () => input.files?.[0] && actions.importFile(input.files[0])); });
-  root.querySelectorAll('[data-audio]').forEach(control => control.addEventListener('click', () => speak(control.dataset.audio)));
+  root.querySelectorAll('[data-audio]').forEach(control => control.addEventListener('click', () => speak(control.dataset.audio, state.curriculum?.targetLanguage)));
   const currentExercise = state.session?.exercises?.[state.index];
   const hasAnswer = () => {
     const value = drafts.get(`${state.session?.id || 'session'}:${state.index}`);
