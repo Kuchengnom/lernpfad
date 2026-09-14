@@ -1,0 +1,27 @@
+.collection-entry { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.collection-entry p { max-width: 42rem; line-height: 1.5; }
+.stamp-strip { display: flex; flex-shrink: 0; }
+.stamp-strip img { width: 5rem; height: 5rem; object-fit: contain; border-radius: 50%; margin-left: -.5rem; }
+.stamp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin: 2rem 0; }
+.stamp-card { text-align: center; }
+.stamp-card img { width: min(100%, 12rem); height: auto; border-radius: 1rem; }
+.stamp-card p { line-height: 1.5; }
+.stamp-card.is-future img { filter: grayscale(1); opacity: .6; }
+.stamp-card.is-earned { border-color: var(--sun); }
+.new-stamps { margin: 1.5rem 0; }
+.new-stamp img { width: 10rem; height: 10rem; border-radius: 1rem; animation: stamp-impression 250ms cubic-bezier(.23, 1, .32, 1) both; }
+@keyframes stamp-impression { from { opacity: 0; transform: scale(1.12) rotate(-6deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+.mountain-progress { width: clamp(10rem, 30vw, 22rem); text-align: center; color: var(--ink-muted); font-size: .8rem; font-weight: 800; }
+.mountain-progress svg { display: block; width: 100%; max-height: 5rem; overflow: visible; }
+.mountain-line { fill: none; stroke: var(--route); stroke-width: 3; stroke-linejoin: round; }
+.waypoint-done { fill: var(--action); }
+.waypoint-open { fill: var(--paper-muted); stroke: var(--ink-muted); stroke-width: 1; }
+.summit-flag { fill: var(--coral); stroke: var(--coral); stroke-width: 2; }
+.rest-page { max-width: 44rem; margin: 0 auto; text-align: center; }
+.rest-page h1 { font-size: clamp(2rem, 6vw, 3.3rem); }
+.rest-art { display: block; width: 100%; height: auto; max-height: 24rem; object-fit: cover; border-radius: var(--radius-lg); margin: 1.5rem 0; }
+.rest-page p { line-height: 1.6; }
+.rest-actions { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+@media (max-width: 760px) { .stamp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; } .collection-entry { flex-direction: column-reverse; align-items: start; } .mountain-progress { width: 9rem; } .stamp-card { padding: 1rem; } .stamp-card h2 { font-size: 1rem; overflow-wrap: anywhere; } }
+@media (prefers-reduced-motion: reduce) { .new-stamp img { animation: none; } }
+html[data-keyboard-input] .new-stamp img { animation: none; }
