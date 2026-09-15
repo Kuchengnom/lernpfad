@@ -1,6 +1,5 @@
 import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
 import { expectedAnswer } from './answer-format.js';
-import { numericInputMessage } from './math-messages.js';
 import { cancelSpeech, speak } from './speech.js';
 import { awardStamps } from './stamps.js';
 import './styles.css';
@@ -83,6 +82,17 @@ function previewImport(imported, fileName, fromText = false) {
   state.notice = null;
   show(); focusMain();
 }
+
+// ponytail: inlined from the former math-messages.js — one map, one caller (submit action below)
+const numericInputMessages = {
+  empty: 'Trage in jedes Zahlenfeld eine Zahl ein. Entferne Felder, die du nicht brauchst.',
+  'too-long': 'Eine Eingabe darf höchstens 32 Zeichen haben, einschließlich Leerzeichen.',
+  'non-digit': 'Gib eine ganze Zahl ohne Minuszeichen ein, zum Beispiel 24. Rechenzeichen, Brüche und Kommazahlen passen hier nicht.',
+  'out-of-range': 'Hier sind Zahlen von 0 bis 999999 möglich.',
+  'too-many-entries': 'Eine Liste darf höchstens 20 Zahlen enthalten.',
+  'duplicate-values': 'In einer Menge darf jede Zahl nur einmal stehen. Entferne doppelte Zahlen; auch 02 und 2 sind dieselbe Zahl.',
+};
+const numericInputMessage = reason => numericInputMessages[reason] || 'Prüfe deine Zahlen noch einmal. Diese Eingabe lässt sich noch nicht bewerten.';
 
 const actions = {
   playAudio(text) {
