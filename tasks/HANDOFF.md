@@ -128,3 +128,58 @@ Korrektur zur vorläufigen Diagnose oben: `continue-rest` existiert tatsächlich
 Letzter Log-Nachtrag: Auch nach Lunas Korrektur scheitert der Rundenfall mit 60-Sekunden-Timeout. Autorenfall läuft noch. Dies ist der erste konkrete offene Reparaturpunkt; Log und `test-results/` auswerten.
 
 Kontingent zuletzt 98 % (Woche 48 %). Der ausführliche Zwischenstand wurde bereits bei 61 % gesichert und bei 88 % erweitert. Astra beendet die aktive Arbeit jetzt zur manuellen Übergabe. Arbeitsbaum erhalten; Implementierung uncommitted, kein Push/Deployment.
+
+## Wiederaufnahme durch Opus — 2026-09-15, nach Astras Kontingentgrenze
+
+Astra endete bei 98 % mit einem baubaren, aber uncommitteten Arbeitsbaum und genau einem
+konkreten Reparaturpunkt. Der ist erledigt; die Integration ist jetzt committed.
+
+**Commit `af38f79`.** Verifiziert, nicht geschätzt: 82 Unit-Tests, Produktionsbuild,
+**24/24 Browserabläufe**, `git diff --check` sauber, Mathefixture per CLI gültig
+(8 Konzepte, 40 Aufgaben). Quellenfotos bleiben durch `.gitignore` ausgeschlossen; nur
+`MANIFEST.md` ist versioniert. **Kein Push, kein Deployment.**
+
+### Die drei Browserfehler waren Testfehler, keine Appfehler
+
+Astras vorläufige Diagnose „nicht abgewartete asynchrone Speicherung/Renderwechsel" war
+richtig, und die Korrektur zur `continue-rest`-Vermutung ebenfalls: der Selektor existiert.
+
+1. **Rennen nach Bergzeit.** Die Rundenschleife prüfte die Seite mit `count()`, das nicht
+   wartet. Nach dem Klick auf „Weiterwandern" war die nächste Aufgabe noch nicht gerendert,
+   also brach die Schleife mitten in der Runde ab. Sie wartet jetzt darauf, dass die App auf
+   einem von drei Zuständen zur Ruhe kommt: Aufgabe, Rastbildschirm oder Abschluss. Derselbe
+   Fehlertyp war am 14.09. schon in `milestone.spec.js` aufgetreten.
+2. **`start-review` auf dem Abschlussbildschirm.** Dort gibt es den Knopf nicht. Die
+   Wiederholungsseite ist nur über die Startseiten-Schnellaktionen erreichbar; die
+   Hauptnavigation bietet home/library/study/progress.
+3. **Leere Wiederholung war korrektes Verhalten.** Der Test setzte den Fehler auf die *erste*
+   Aufgabe. Deren Konzept `math.divisors` wird in derselben Runde noch viermal richtig
+   beantwortet, also ist nichts mehr fällig und die App zeigt ehrlich „Im Moment ist nichts
+   fällig." Der Fehler sitzt jetzt auf der letzten Aufgabe. **Hier hätte man beinahe die App
+   „repariert", obwohl der Test falsch lag.**
+4. **Kein Submit-Knopf im Einfügeformular.** Der geteilte `button()`-Helfer rendert
+   `type="button"`, der Test suchte `button[type="submit"]`. Richtiger Einstieg ist die Aktion
+   `validate-pasted-import`. Nebenbefund: der `submit`-Handler auf `[data-import-text-form]`
+   ist damit praktisch unerreichbar, weil ein Textarea Enter als Zeilenumbruch behandelt. Kein
+   Nutzerproblem, aber toter Pfad.
+
+### Definition of Done: weiterhin NICHT vollständig
+
+Die von Astra bei 88 % aufgelisteten Abnahmelücken bestehen unverändert. Nicht abhaken:
+
+- [ ] Gezielte UI-Fälle für Mengen-Dopplungen, Multimengen und Reihenfolge in der Oberfläche.
+      Die Logik ist in `tests/numeric.test.js` geprüft, die Bedienung nicht.
+- [ ] Zahlenfeld Add/Remove und Fokusverhalten nach dem Entfernen eines Feldes.
+- [ ] Gleiche Sitzungs-ID über Buchwechsel.
+- [ ] Gemischtes Sprach-/Mathe-Profil exportieren und auf frischem Browser wiederherstellen.
+- [ ] Mathe bei 320 px und offline. Bestehende Sprachregressionen belegen das nicht.
+- [ ] Der Autorenfall prüft den Prompttext, noch nicht den Inhalt der heruntergeladenen
+      v2-Schemadatei.
+- [ ] Physischer iPhone-Stimmen-/Flugmodustest und Eltern-/Kind-Pilot bleiben manuell.
+
+### Nächster sinnvoller Schritt
+
+Die sechs offenen Browserfälle in `tests/browser/math.spec.js` ergänzen. Sie sind unabhängig
+voneinander und berühren keine Anwendungsdatei, eignen sich also für einen einzelnen
+Agentenauftrag. Erst danach DoD abhaken, dann Push zusammen mit den neun bereits auf `main`
+wartenden Commits.
