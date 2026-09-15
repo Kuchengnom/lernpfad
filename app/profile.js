@@ -1,18 +1,12 @@
-import Ajv from 'ajv';
 import profileSchema from '../specs/schema/profile.schema.json' with { type: 'json' };
 import profileV2Schema from '../specs/schema/profile-v2.schema.json' with { type: 'json' };
-import curriculumSchema from '../specs/schema/curriculum.schema.json' with { type: 'json' };
-import learnerSchema from '../specs/schema/learner.schema.json' with { type: 'json' };
-import { curriculumPackage, parseImport, validateCurriculum, validateLearner } from './validation.js';
+import { ajv, curriculumPackage, parseImport, validateCurriculum, validateLearner } from './validation.js';
 import { newLearner } from './engine.js';
 import { expectedAnswer } from './answer-format.js';
 
 export const CURRENT_PROFILE_VERSION = '2.0';
 export const MAX_PROFILE_BYTES = 25 * 1024 * 1024;
-export const MAX_BOOKS = 50;
-const ajv = new Ajv({ allErrors: true, strict: false });
-ajv.addSchema(curriculumSchema);
-ajv.addSchema(learnerSchema, 'https://language-learning.local/schema/learner-state.v1.json');
+const MAX_BOOKS = 50; // ponytail: only used in this module, no longer exported
 const legacyShape = ajv.compile(profileSchema);
 const shape = ajv.compile(profileV2Schema);
 const workspaceShape = ajv.compile({ $ref: `${profileV2Schema.$id}#/$defs/workspace` });

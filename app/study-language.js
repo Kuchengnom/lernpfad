@@ -20,6 +20,6 @@ export function learnerText(text) {
 
 export const isMath = curriculum => curriculum?.subject === 'math';
 export const contentLanguage = curriculum => isMath(curriculum) ? (curriculum.instructionLanguage || 'de') : (curriculum?.targetLanguage || 'de');
-export const languageName = code => ({ de: 'Deutsch', en: 'Englisch', fr: 'Französisch' })[code] || code || 'unbekannt';
+const languageName = code => ({ de: 'Deutsch', en: 'Englisch', fr: 'Französisch' })[code] || code || 'unbekannt'; // ponytail: only used in this module, no longer exported
 export const subjectName = curriculum => isMath(curriculum) ? 'Mathematik' : languageName(curriculum?.targetLanguage);
 export const curriculumLanguageLabel = curriculum => isMath(curriculum) ? 'Mathematik · Aufgaben auf Deutsch' : `${languageName(curriculum?.sourceLanguage)} → ${languageName(curriculum?.targetLanguage)}`;

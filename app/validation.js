@@ -5,10 +5,15 @@ import learnerSchema from '../specs/schema/learner.schema.json' with { type: 'js
 import { newLearner, recordAnswer } from './engine.js';
 import { validateAuthorValues } from './numeric.js';
 
-const ajv = new Ajv({ allErrors: true, strict: false });
-const validateCurriculumShape = ajv.compile(curriculumSchema);
-const validateCurriculumV2Shape = ajv.compile(curriculumV2Schema);
-const validateLearnerShape = ajv.compile(learnerSchema);
+// ponytail: one Ajv instance shared with profile.js (which also registers the profile schemas on it),
+// so every schema $id is added here exactly once instead of being registered on two instances.
+export const ajv = new Ajv({ allErrors: true, strict: false });
+ajv.addSchema(curriculumSchema);
+ajv.addSchema(curriculumV2Schema);
+ajv.addSchema(learnerSchema, 'https://language-learning.local/schema/learner-state.v1.json');
+const validateCurriculumShape = ajv.getSchema(curriculumSchema.$id);
+const validateCurriculumV2Shape = ajv.getSchema(curriculumV2Schema.$id);
+const validateLearnerShape = ajv.getSchema('https://language-learning.local/schema/learner-state.v1.json');
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const fail = message => { throw new Error(message); };
 const unique = values => new Set(values).size === values.length;

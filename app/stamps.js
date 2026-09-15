@@ -1,4 +1,4 @@
-export const STAMPS = [
+const STAMPS = [ // ponytail: only used in this module, no longer exported
   { id: 'fox', title: 'Neugieriger Fuchs', rounds: 1 },
   { id: 'tent', title: 'Gemütliches Basislager', rounds: 3 },
   { id: 'compass', title: 'Dein eigener Kompass', rounds: 5 },
