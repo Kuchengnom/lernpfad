@@ -14,6 +14,7 @@ export function heroArtwork() {
 }
 
 /** Decorative field-kit image for authoring and calm completion moments. */
-export function fieldKitArtwork({ placement = 'authoring' } = {}) {
-  return `<div class="scout-art scout-art--field-kit scout-art--${placement}" aria-hidden="true"><img src="./illustrations/lernpfad-field-kit.webp" alt="" width="1536" height="1024" decoding="async" loading="lazy"></div>`;
+// ponytail: placement param dropped — only call site never passed one, so scout-art--${placement} was always scout-art--authoring
+export function fieldKitArtwork() {
+  return `<div class="scout-art scout-art--field-kit scout-art--authoring" aria-hidden="true"><img src="./illustrations/lernpfad-field-kit.webp" alt="" width="1536" height="1024" decoding="async" loading="lazy"></div>`;
 }
