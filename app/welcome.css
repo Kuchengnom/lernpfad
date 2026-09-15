@@ -1,24 +1,10 @@
 /* Landing page for parents. Standalone on purpose: it must render without the
    application bundle. Tokens mirror app/styles.css — that file stays the source
    of truth for the product itself; change both together. */
+/* ponytail: shared tokens live in tokens.css; only welcome.css-local tokens stay here. */
+@import "./tokens.css";
 :root {
-  --canvas: #f7f3ea;
-  --paper: #fffcf6;
-  --paper-muted: #f0e9da;
-  --ink: #18313a;
-  --ink-muted: #52666b;
-  --line: #d7d2c7;
-  --action: #066e66;
-  --action-strong: #05665f;
   --action-deep: #063f3b;
-  --action-on: #fff;
-  --sun: #e7a51b;
-  --coral: #d35d46;
-  --route: #a8c7c1;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-pill: 999px;
-  --shadow-card: 0 2px 0 rgba(24, 49, 58, 0.08), 0 8px 20px rgba(24, 49, 58, 0.06);
   --measure: 62ch;
   --page: 68rem;
   /* ponytail: no webfont request. A page promising that nothing leaves the

@@ -1,0 +1,23 @@
+/* Shared design tokens for app/styles.css and app/welcome.css. Keep values in
+   sync by editing only here — do not fork them back into either stylesheet.
+   ponytail: tokens present in only one of the two files (e.g. --success in
+   styles.css, --page in welcome.css) stay local to that file, not here. */
+:root {
+  --canvas: #f7f3ea;
+  --paper: #fffcf6;
+  --paper-muted: #f0e9da;
+  --ink: #18313a;
+  --ink-muted: #52666b;
+  --line: #d7d2c7;
+  --action: #066e66;
+  --action-strong: #05665f;
+  --action-on: #fff;
+  --sun: #e7a51b;
+  --coral: #d35d46;
+  --route: #a8c7c1;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+  --shadow-card:
+    0 2px 0 rgba(24, 49, 58, 0.08), 0 8px 20px rgba(24, 49, 58, 0.06);
+}
