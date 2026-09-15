@@ -1,13 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-
-async function workspace(page) {
-  return page.evaluate(() => new Promise((resolve,reject)=>{
-    const request=indexedDB.open('trailbook-local',1);
-    request.onerror=()=>reject(request.error);
-    request.onsuccess=()=>{const db=request.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result);db.close();};};
-  }));
-}
+import { readWorkspace as workspace } from './profile-db.js';
 async function openStudy(page) {
   await page.locator('[data-view="study"]:visible').first().click();
   await expect(page.locator('#study-title')).toBeVisible();

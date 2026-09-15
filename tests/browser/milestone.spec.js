@@ -2,12 +2,7 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import fixture from '../../fixtures/unit-1a/curriculum.json' with { type: 'json' };
-
-const getWorkspace = page => page.evaluate(() => new Promise((resolve, reject) => {
-  const open = indexedDB.open('trailbook-local', 1);
-  open.onsuccess = () => { const db = open.result; const req = db.transaction('workspace').objectStore('workspace').get('current'); req.onsuccess = () => { resolve(req.result?.profileVersion ? req.result.books.find(book => book.id === req.result.activeBookId).workspace : req.result); db.close(); }; req.onerror = reject; };
-  open.onerror = reject;
-}));
+import { readWorkspace as getWorkspace } from './profile-db.js';
 async function start(page) {
   await page.goto('/lernen.html');
   await expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();

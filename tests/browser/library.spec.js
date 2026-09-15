@@ -4,19 +4,10 @@ import { readFile } from 'node:fs/promises';
 import fixture from '../../fixtures/unit-1a/curriculum.json' with { type: 'json' };
 import french from '../../fixtures/french-smoke/curriculum.json' with { type: 'json' };
 import { newLearner, generateSession, recordAnswer } from '../../app/engine.js';
+import { readProfile } from './profile-db.js';
 
 const now = '2026-09-14T12:00:00.000Z';
 const active = profile => profile.books.find(book => book.id === profile.activeBookId);
-const readProfile = page => page.evaluate(() => new Promise((resolve, reject) => {
-  const open = indexedDB.open('trailbook-local', 1);
-  open.onerror = () => reject(open.error);
-  open.onsuccess = () => {
-    const db = open.result;
-    const get = db.transaction('workspace').objectStore('workspace').get('current');
-    get.onsuccess = () => { resolve(get.result); db.close(); };
-    get.onerror = () => { reject(get.error); db.close(); };
-  };
-}));
 const navigate = (page, view) => page.locator(`[data-view="${view}"]:visible`).first().click();
 const ready = page => expect(page.locator('[data-action="start-learn"]').first()).toBeEnabled();
 async function preview(page, document) {

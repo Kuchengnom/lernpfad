@@ -2,17 +2,9 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import french from '../../fixtures/french-smoke/curriculum.json' with { type: 'json' };
+import { readWorkspace as workspace } from './profile-db.js';
 
 const library = page => page.locator('[data-view="library"]:visible').first().click();
-const workspace = page => page.evaluate(() => new Promise((resolve, reject) => {
-  const request = indexedDB.open('trailbook-local', 1);
-  request.onerror = () => reject(request.error);
-  request.onsuccess = () => {
-    const db = request.result;
-    const get = db.transaction('workspace').objectStore('workspace').get('current');
-    get.onsuccess = () => { resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result); db.close(); };
-  };
-}));
 
 test('mobile pasted JSON preserves drafts and current progress through errors, edit, cancel and failed acceptance', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });

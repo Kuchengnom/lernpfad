@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import mathPackage from '../../fixtures/math-divisibility/curriculum.json' with { type: 'json' };
+import { readProfile } from './profile-db.js';
 
 const packageFile = (document, name = 'mathe.json') => ({
   name,
@@ -18,18 +19,8 @@ async function importMath(page) {
 }
 
 async function savedWorkspace(page) {
-  return page.evaluate(() => new Promise(resolve => {
-    const request = indexedDB.open('trailbook-local', 1);
-    request.onsuccess = () => {
-      const db = request.result;
-      const get = db.transaction('workspace').objectStore('workspace').get('current');
-      get.onsuccess = () => {
-        const profile = get.result;
-        resolve({ profile, workspace: profile.books.find(book => book.id === profile.activeBookId).workspace });
-        db.close();
-      };
-    };
-  }));
+  const profile = await readProfile(page);
+  return { profile, workspace: profile.books.find(book => book.id === profile.activeBookId).workspace };
 }
 
 function wrongAnswer(item) {
@@ -89,14 +80,8 @@ test('math import renders math controls and invalid numeric syntax does not crea
   // The scheduler may interleave the first few choices; advance through them
   // until the first numeric task while exercising the real rendered controls.
   for (let step = 0; step < 8 && !(await page.locator('[data-draft-numeric]').count()); step++) {
-    const exerciseId = await page.evaluate(async () => new Promise(resolve => {
-      const request = indexedDB.open('trailbook-local', 1);
-      request.onsuccess = () => {
-        const db = request.result;
-        const get = db.transaction('workspace').objectStore('workspace').get('current');
-        get.onsuccess = () => { const p = get.result; const w = p.books.find(b => b.id === p.activeBookId).workspace; resolve(w.session.exercises[w.index].id); db.close(); };
-      };
-    }));
+    const { workspace: w } = await savedWorkspace(page);
+    const exerciseId = w.session.exercises[w.index].id;
     const exercise = mathPackage.curriculum.exercises.find(item => item.id === exerciseId);
     expect(exercise).toBeTruthy();
     if (exercise.type === 'numeric-input') {
@@ -118,34 +103,11 @@ test('math import renders math controls and invalid numeric syntax does not crea
   await expect(page.locator('[data-draft-numeric]')).toBeVisible();
   expect(await page.locator('[data-draft-numeric]').evaluate(input => getComputedStyle(input).minHeight)).toBe('48px');
 
-  const before = await page.evaluate(async () => new Promise(resolve => {
-    const request = indexedDB.open('trailbook-local', 1);
-    request.onsuccess = () => {
-      const db = request.result;
-      const get = db.transaction('workspace').objectStore('workspace').get('current');
-      get.onsuccess = () => {
-        const profile = get.result;
-        const workspace = profile.books.find(book => book.id === profile.activeBookId).workspace;
-        resolve(workspace.learner.answerRecords.length);
-        db.close();
-      };
-    };
-  }));
+  const before = (await savedWorkspace(page)).workspace.learner.answerRecords.length;
   await page.locator('[data-draft-numeric]').fill('4abc');
   await page.keyboard.press('Enter');
   await expect(page.locator('#numeric-input-error')).toContainText('ganze Zahl');
-  const after = await page.evaluate(async () => new Promise(resolve => {
-    const request = indexedDB.open('trailbook-local', 1);
-    request.onsuccess = () => {
-      const db = request.result;
-      const get = db.transaction('workspace').objectStore('workspace').get('current');
-      get.onsuccess = () => {
-        const profile = get.result;
-        resolve(profile.books.find(book => book.id === profile.activeBookId).workspace.learner.answerRecords.length);
-        db.close();
-      };
-    };
-  }));
+  const after = (await savedWorkspace(page)).workspace.learner.answerRecords.length;
   expect(after).toBe(before);
 });
 

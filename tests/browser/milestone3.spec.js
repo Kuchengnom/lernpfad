@@ -3,12 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import fixture from '../../fixtures/unit-1a/curriculum.json' with { type: 'json' };
 import { newLearner, generateSession, recordAnswer, completeSession } from '../../app/engine.js';
-
-const workspace = page => page.evaluate(() => new Promise((resolve,reject) => {
-  const open=indexedDB.open('trailbook-local',1);
-  open.onerror=()=>reject(open.error);
-  open.onsuccess=()=>{const db=open.result;const get=db.transaction('workspace').objectStore('workspace').get('current');get.onsuccess=()=>{resolve(get.result?.profileVersion ? get.result.books.find(book => book.id === get.result.activeBookId).workspace : get.result);db.close();};};
-}));
+import { readWorkspace as workspace } from './profile-db.js';
 const file = (document,name='lesson.json') => ({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(document))});
 const library = page => page.locator('[data-view="library"]:visible').first().click();
 const choose = (page,document,name) => page.locator('[data-import-file]').setInputFiles(file(document,name));
