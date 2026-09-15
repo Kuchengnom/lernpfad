@@ -284,7 +284,6 @@ export function renderApp(root, state, actions) {
   root.querySelectorAll('[data-book-title]').forEach(input => input.addEventListener('input', () => { state.bookTitleDrafts[input.dataset.bookId] = input.value; }));
   root.querySelectorAll('[data-study-query]').forEach(input => input.addEventListener('input', () => actions.setStudyQuery(input.value)));
   root.querySelectorAll('[data-import-text]').forEach(input => input.addEventListener('input', () => { state.importTextDraft = input.value; state.importTextError = null; root.querySelector('#import-text-error')?.remove(); input.setAttribute('aria-invalid', 'false'); input.setAttribute('aria-describedby', 'import-text-help'); }));
-  root.querySelectorAll('[data-import-text-form]').forEach(form => form.addEventListener('submit', event => { event.preventDefault(); actions.validatePastedImport(root.querySelector('[data-import-text]')?.value); }));
   root.querySelectorAll('[data-authoring-subject]').forEach(input => input.addEventListener('change', () => actions.setAuthoringSubject(input.value)));
   root.querySelectorAll('[data-authoring-language]').forEach(input => input.addEventListener('change', () => actions.setAuthoringLanguage(input.value)));
   root.querySelectorAll('[data-import-file]').forEach(input => { input.disabled = Boolean(state.busy || state.readOnly); input.addEventListener('change', () => input.files?.[0] && actions.importFile(input.files[0])); });
