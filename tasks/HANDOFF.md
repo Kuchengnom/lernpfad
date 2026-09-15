@@ -183,3 +183,48 @@ Die sechs offenen Browserfälle in `tests/browser/math.spec.js` ergänzen. Sie s
 voneinander und berühren keine Anwendungsdatei, eignen sich also für einen einzelnen
 Agentenauftrag. Erst danach DoD abhaken, dann Push zusammen mit den neun bereits auf `main`
 wartenden Commits.
+
+## Abnahmelücken geschlossen — 2026-09-15
+
+Commit `20bf129`. Die sechs im Abschnitt davor offenen Browserfälle sind ergänzt, ausgeführt
+von einem Sonnet-Agenten mit Schreibrecht ausschließlich auf `tests/browser/math.spec.js`.
+
+**Unabhängig nachgeprüft, nicht aus dem Agentenbericht übernommen:** `npm test` 82/82,
+`npx playwright test` **30/30**, `git diff --check` sauber, nur die Spec-Datei geändert.
+`tests/browser/math.spec.js` enthält jetzt 9 Fälle.
+
+Abgedeckt:
+
+- Mengen-/Folgen-/Multimengensemantik durch die Oberfläche mit echten Fixture-Aufgaben
+  (`math.ex.teilers-22`, `math.ex.multiples-18`, `math.ex.prime-factors-84`). Die kanonische
+  Dopplung `02`/`2` wird abgewiesen, **bevor** sie ein Antwortereignis erzeugt; die Prüfung
+  vergleicht die Zahl der `answerRecords` vorher und nachher, nicht nur die Fehlermeldung.
+  Multimenge nimmt eine Umsortierung an und lehnt einen verlorenen Faktor ab.
+- Zahlenfelder hinzufügen/entfernen, Werte und Indizes nach dem Entfernen, Fokus landet auf
+  einem echten Feld statt auf `<body>`, Tastaturbedienung bleibt möglich.
+- Sitzungs-ID und beantworteter Fortschritt überstehen einen Buchwechsel.
+- Gemischtes Sprach-/Mathe-Profil exportiert und in einem frischen Browserkontext
+  wiederhergestellt, mit beiden Büchern, ihren Ergebnissen und den Stempeln.
+- Mathe bei 320 px ohne horizontales Überlaufen und eine vollständig offline beantwortete
+  Runde, sobald der Service Worker die Seite kontrolliert.
+- Die heruntergeladene Schemadatei wird geparst und als Mathe-v2-Schema geprüft, nicht mehr
+  nur der Prompttext.
+
+Anmerkung zur Testtechnik: ein Helfer `injectSession` schreibt für drei Fälle eine Sitzung mit
+handverlesenen Aufgaben direkt in IndexedDB, statt den Scheduler zu durchsuchen. Das umgeht
+bewusst die Aufgabenauswahl; der vollständige Rundenlauf deckt diesen Pfad weiterhin ab. Der
+Agent fand einen eigenen Testfehler (Buchliste vor der Navigation abgefragt) und korrigierte
+ihn selbst. **Kein Anwendungsfehler gefunden, keine Datei unter `app/` angefasst.**
+
+### Damit offen: nur noch manuelle Nachweise
+
+Die automatisierbaren Punkte der Definition of Done sind belegt. Es bleiben:
+
+- [ ] Physischer iPhone-Test: lokale Systemstimmen im Flugmodus. Bis dahin steht nirgends eine
+      Offline-Sprachzusage.
+- [ ] Eltern-/Kind-Pilot mit echtem Material.
+- [ ] Push und Deployment. Auf `main` warten jetzt **zwölf** Commits; die letzte
+      Live-Verifikation galt `156853d`, also geht mit dem Push auch der Wurzeltausch
+      (Startseite unter `/`, App unter `/lernen.html`) live.
+
+Kein Push, kein Deployment durch diese Sitzung.
