@@ -1,18 +1,23 @@
 import Ajv from 'ajv';
 import profileSchema from '../specs/schema/profile.schema.json' with { type: 'json' };
+import profileV2Schema from '../specs/schema/profile-v2.schema.json' with { type: 'json' };
 import curriculumSchema from '../specs/schema/curriculum.schema.json' with { type: 'json' };
 import learnerSchema from '../specs/schema/learner.schema.json' with { type: 'json' };
 import { curriculumPackage, parseImport, validateCurriculum, validateLearner } from './validation.js';
 import { newLearner } from './engine.js';
+import { expectedAnswer } from './answer-format.js';
 
+export const CURRENT_PROFILE_VERSION = '2.0';
 export const MAX_PROFILE_BYTES = 25 * 1024 * 1024;
 export const MAX_BOOKS = 50;
 const ajv = new Ajv({ allErrors: true, strict: false });
 ajv.addSchema(curriculumSchema);
 ajv.addSchema(learnerSchema, 'https://language-learning.local/schema/learner-state.v1.json');
-const shape = ajv.compile(profileSchema);
-const workspaceShape = ajv.compile({ $ref: `${profileSchema.$id}#/$defs/workspace` });
-const packageShape = ajv.compile({ $ref: `${profileSchema.$id}#/$defs/package` });
+const legacyShape = ajv.compile(profileSchema);
+const shape = ajv.compile(profileV2Schema);
+const workspaceShape = ajv.compile({ $ref: `${profileV2Schema.$id}#/$defs/workspace` });
+const legacyPackageShape = ajv.compile({ $ref: `${profileSchema.$id}#/$defs/package` });
+const packageShape = ajv.compile({ $ref: `${profileV2Schema.$id}#/$defs/package` });
 const fail = message => { throw new Error(message); };
 const unique = values => new Set(values).size === values.length;
 const canonical = value => JSON.stringify(sortKeys(value));
@@ -32,12 +37,6 @@ function timestamp(now = new Date()) {
   checkDate(value);
   return value;
 }
-function expectedAnswer(exercise) {
-  if (exercise.choices) return exercise.choices.find(c => c.id === exercise.correctChoiceIds[0]).text;
-  if (exercise.tiles) return exercise.correctOrder.map(id => exercise.tiles.find(t => t.id === id).text).join(' ');
-  return exercise.modelAnswer ?? exercise.acceptedAnswers[0];
-}
-
 // Session content and feedback are reconstructed from the validated course and
 // durable answer records. Stored feedback is never accepted as grading evidence.
 function safeWorkspace(workspace) {
@@ -65,7 +64,7 @@ function safeWorkspace(workspace) {
 }
 
 function portable(profile) {
-  return { schemaVersion: '1.0', kind: 'profile-backup', profile: { ...profile, books: profile.books.map(book => ({ ...book, workspace: { curriculum: book.workspace.curriculum, learner: book.workspace.learner, session: null, index: 0, feedback: null } })) } };
+  return { schemaVersion: CURRENT_PROFILE_VERSION, kind: 'profile-backup', profile: { ...profile, books: profile.books.map(book => ({ ...book, workspace: { curriculum: book.workspace.curriculum, learner: book.workspace.learner, session: null, index: 0, feedback: null } })) } };
 }
 function checkSize(profile) {
   // Match the human-readable export, including its envelope and whitespace.
@@ -74,14 +73,14 @@ function checkSize(profile) {
 
 /** Validate every book, including inactive books; return safe restored state. */
 export function validateProfile(profile) {
-  checkShape(shape, profile);
+  checkShape(profile?.profileVersion === '1.0' ? legacyShape : shape, profile);
   checkSize(profile);
   if (!unique(profile.books.map(book => book.id))) fail('Die Bibliothek enthält doppelte Lernbuch-IDs.');
   if (!unique(profile.books.map(book => canonical([book.workspace.curriculum.id, book.workspace.curriculum.version])))) fail('Die Bibliothek enthält dieselbe Lernstoff-Version mehrfach.');
   if (!profile.books.some(book => book.id === profile.activeBookId)) fail('Das ausgewählte Lernbuch fehlt in der Bibliothek.');
   if (!unique(profile.stampAwards.map(award => award.id)) || !unique(profile.stampAwards.map(award => award.stampId))) fail('Ein Stempel wurde mehrfach gespeichert.');
   for (const award of profile.stampAwards) checkDate(award.earnedAt);
-  return { ...profile, books: profile.books.map(book => {
+  return { ...profile, profileVersion: CURRENT_PROFILE_VERSION, books: profile.books.map(book => {
     checkDate(book.importedAt);
     return { ...book, workspace: safeWorkspace(book.workspace) };
   }) };
@@ -90,7 +89,7 @@ export function validateProfile(profile) {
 export function createProfile(workspace, now) {
   const safe = safeWorkspace(workspace);
   const id = crypto.randomUUID();
-  return validateProfile({ profileVersion: '1.0', activeBookId: id, books: [{ id, title: safe.curriculum.title, importedAt: timestamp(now), workspace: safe }], stampAwards: [] });
+  return validateProfile({ profileVersion: CURRENT_PROFILE_VERSION, activeBookId: id, books: [{ id, title: safe.curriculum.title, importedAt: timestamp(now), workspace: safe }], stampAwards: [] });
 }
 
 export function activeBook(profile) {
@@ -145,6 +144,6 @@ export function parseProfilePackage(text) {
   let data;
   try { data = JSON.parse(text); } catch { fail('Dieser Import enthält kein gültiges JSON.'); }
   if (data?.kind !== 'profile-backup') return parseImport(text);
-  checkShape(packageShape, data);
+  checkShape(data.schemaVersion === '1.0' ? legacyPackageShape : packageShape, data);
   return { profile: validateProfile(data.profile) };
 }

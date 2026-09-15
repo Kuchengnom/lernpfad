@@ -1,4 +1,4 @@
-const languageName = code => ({ en: 'Englisch', fr: 'Französisch', de: 'Deutsch' })[code] || code || 'Sprache nicht angegeben';
+import { subjectName } from './study-language.js';
 const bookTitle = book => book.title || book.workspace?.curriculum?.title || 'Lernbuch';
 const lock = state => state.busy || state.readOnly ? 'disabled aria-disabled="true"' : '';
 
@@ -29,7 +29,7 @@ function bookCard(book, index, state, esc, button) {
   const completed = Math.min(roundLength, Math.max(0, (Number.isInteger(workspace.index) ? workspace.index : 0) + (workspace.feedback ? 1 : 0)));
   const attributes = `data-book-id="${esc(book.id)}" ${lock(state)}`;
   return `<article class="card book-card ${selected ? 'book-card--selected' : ''}" aria-labelledby="book-title-${index}">
-    <div class="book-card__head"><p class="eyebrow">${esc(languageName(curriculum.targetLanguage))}</p>${selected ? '<span class="book-card__selected">Ausgewählt</span>' : ''}</div>
+    <div class="book-card__head"><p class="eyebrow">${esc(subjectName(curriculum))}</p>${selected ? '<span class="book-card__selected">Ausgewählt</span>' : ''}</div>
     <h2 id="book-title-${index}">${esc(title)}</h2>
     ${sources.length ? `<ul class="book-card__sources" aria-label="Quelldateien und Seiten">${sources.map(source => `<li>${esc(source)}</li>`).join('')}</ul>` : '<p class="book-card__meta">Keine Datei- oder Seitenangaben vorhanden.</p>'}
     <p class="book-card__meta">${imported ? `Importiert am ${esc(imported)}` : 'Importdatum nicht erfasst'}<br>${lastPractised ? `Zuletzt geübt am ${esc(lastPractised)}` : 'Noch keine Antwort gespeichert'}</p>
@@ -65,7 +65,7 @@ export function profileImportView(state, esc, button) {
     <p class="eyebrow">Gesamte Sicherung prüfen</p><h1 id="profile-import-title">Deine Sammlung wiederherstellen</h1>
     <p class="lede">Diese Sicherung enthält mehrere Bereiche deines Lernprofils. Die Vorschau verändert noch nichts.</p>
     <p class="import-preview__filename">${state.pendingImport.fromText ? 'Quelle' : 'Datei'}: ${esc(state.pendingImport.fileName || 'Profil-Sicherung')}</p>
-    <article class="card import-preview__course"><h2>Das steckt in der Sicherung</h2><div class="import-preview__counts"><div><strong>${books.length}</strong><span>Lernbücher</span></div><div><strong>${exerciseCount}</strong><span>Übungen</span></div><div><strong>${awards.length}</strong><span>gesammelte Stempel</span></div><div><strong>${paused}</strong><span>pausierte Runden</span></div></div><ul class="profile-import__books">${books.map(book => `<li><strong>${esc(bookTitle(book))}</strong><span>${esc(languageName(book.workspace?.curriculum?.targetLanguage))}${book.id === incoming.activeBookId ? ' · danach ausgewählt' : ''}</span></li>`).join('')}</ul></article>
+    <article class="card import-preview__course"><h2>Das steckt in der Sicherung</h2><div class="import-preview__counts"><div><strong>${books.length}</strong><span>Lernbücher</span></div><div><strong>${exerciseCount}</strong><span>Übungen</span></div><div><strong>${awards.length}</strong><span>gesammelte Stempel</span></div><div><strong>${paused}</strong><span>pausierte Runden</span></div></div><ul class="profile-import__books">${books.map(book => `<li><strong>${esc(bookTitle(book))}</strong><span>${esc(subjectName(book.workspace?.curriculum))}${book.id === incoming.activeBookId ? ' · danach ausgewählt' : ''}</span></li>`).join('')}</ul></article>
     <section class="import-preview__section import-preview__replacement" aria-labelledby="profile-replacement-title"><h2 id="profile-replacement-title">Deine aktuelle Sammlung wird ersetzt</h2><p>Beim Übernehmen werden alle ${current.length} aktuellen Lernbücher mit ihren Lernständen und pausierten Runden sowie ${currentAwards.length} gesammelte Stempel durch die Sicherung ersetzt. Die beiden Sammlungen werden nicht zusammengeführt.</p>${current.length ? `<p>Aktuelle Bücher: ${current.map(book => `„${esc(bookTitle(book))}“`).join(', ')}.</p>` : ''}<p>Sichere vorher deine aktuelle Sammlung mit „Alles sichern“. Die Vorschau bleibt dabei geöffnet.</p><div class="import-preview__actions">${button('Alles sichern', 'export-profile', 'button button--secondary', state.busy ? 'disabled aria-disabled="true"' : '')}${button('Sammlung ersetzen', 'confirm-import', 'button button--primary', lock(state))}${button('Abbrechen', 'cancel-import', 'button button--quiet', state.busy ? 'disabled aria-disabled="true"' : '')}</div></section>
   </section>`;
 }

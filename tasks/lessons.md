@@ -10,3 +10,5 @@
 
 - Wenn der Nutzer abgeschlossene parallele Arbeit meldet, zuerst Git-Log, Arbeitsbaum und konkrete Prüfnachweise abgleichen. Abgeschlossene Änderungen übernehmen und nur offene Kriterien verfolgen; keine veralteten Agentenzustände als aktuellen Projektstand darstellen.
 - Ein optionales UI-Feature muss mit einem schema-gültigen Datensatz vom Import bis zur Bedienung geprüft werden. Ein Synthesizer-Unit-Test allein beweist keinen erreichbaren Vorlesen-Button; Prompt, Schema und Laufzeit müssen denselben Vertrag nutzen.
+
+- Vor Aussagen zu untracked Dateien, veralteten Testbasen oder neuen Testzahlen den aktuellen Git-Stand und die Testnamen zählen. Am 17e3623 waren Profil-/Sprachtests committed: 55 vorhandene plus 13 neue Zahlentests ergeben 68, nicht 14 neue Tests.

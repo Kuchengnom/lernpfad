@@ -1,6 +1,6 @@
 # Mathe-Integration: Teilbarkeit und Primzahlen
 
-Stand: 14.09.2026. Konkreter Implementierungsplan nach Sichtung aller sieben neuen Quellen und Prüfung der bestehenden Schemas, Lernlogik und Bibliothek. **Mathe ist damit geplant, noch nicht implementiert oder importierbar.**
+Stand: 15.09.2026. Implementierungsplan nach Sichtung aller sieben Quellen. **Mathe ist im lokalen Arbeitsbaum implementiert und importierbar; die vollständige Browserabnahme ist noch offen.** 40 Aufgaben, v2-Verträge, Profilmigration und Autorenprompt sind vorhanden. Aktueller Prüfstand und manuelle Fortsetzung: [`tasks/HANDOFF.md`](../tasks/HANDOFF.md). Noch kein Push oder Deployment dieser Integration.
 
 ## Produktumfang
 
@@ -42,7 +42,7 @@ Prüfbeispiele (neu formulierte Akzeptanzfälle, keine importierbaren v1-Daten):
 - Multimenge: die Primfaktoren von 28 sind `2, 2, 7`; `7, 2, 2` zählt ebenfalls, `4, 7` und `2, 7` nicht. Wiederholte Primfaktoren müssen erhalten bleiben.
 - 1 ist keine Primzahl. Primfaktoraufträge verwenden Zahlen ab 2. ggT/kgV-Aufträge verwenden positive ganze Zahlen; der Null-Sonderfall bleibt außerhalb dieses Lernbuchs.
 
-Begrenzter Parser: maximal 32 Eingabezeichen je Feld, nur Ziffern nach äußerem Trimmen, Wert 0–999999; höchstens 20 Listeneinträge. Erst Grammatik und Länge prüfen, dann umwandeln. Kein `eval`, `Function`, HTML, Import-Code, Rundung oder toleranter Sprach-Stringvergleich. Ungültige Syntax verändert weder Lernstand noch Versuchsanzahl; eine gültige falsche Zahl wird normal als Fehler aufgezeichnet. Nur Ergebnisdaten werden gespeichert, keine Rohantworten oder Listenentwürfe — auch nicht beim Neuladen oder im Profilsicherungsexport.
+Begrenzter Parser: maximal 32 rohe Eingabezeichen je Feld (vor dem Trimmen), nur Ziffern nach äußerem Trimmen, Wert 0–999999; höchstens 20 Listeneinträge. Erst Grammatik und Länge prüfen, dann umwandeln. Kein `eval`, `Function`, HTML, Import-Code, Rundung oder toleranter Sprach-Stringvergleich. Ungültige Syntax verändert weder Lernstand noch Versuchsanzahl; eine gültige falsche Zahl wird normal als Fehler aufgezeichnet. Nur Ergebnisdaten werden gespeichert, keine Rohantworten oder Listenentwürfe — auch nicht beim Neuladen oder im Profilsicherungsexport.
 
 Dieselben Grenzen gelten für die Autorenlösungen: `acceptedValues` und `expectedValues` vor dem Import prüfen. Vollständige Teilermengen mit mehr als 20 Einträgen und kgV-Ergebnisse über 999999 sind in diesem Umfang unzulässig; das Fixture muss mit der angebotenen Eingabe vollständig beantwortbar sein. Vor Mengenprüfung kanonisieren: `02` und `2` sind dieselbe Zahl, bei `set` also doppelt, bei `multiset` zwei erhaltene Faktoren. Leere Listen/Zwischenfelder, nur Leerzeichen, 21 Einträge sowie 0/999999/1000000 bekommen eigene Grenztests.
 
@@ -94,3 +94,10 @@ Astra übernimmt fachlichen Umfang, Versionsentscheidung, Integration und Abschl
 Ausgangspunkt verifiziert: Bibliotheksinkrement einschließlich Sprachausgabefix ist auf `main` committed (bis `73e4205`). Erneuter Produktionsbuild und 21/21 Browserabläufe am 14.09.2026 bestanden. Die visuelle Handyprüfung von Opus wurde vom Nutzer bestätigt. Mathe verändert den laufenden App-Code in dieser Planungsphase noch nicht.
 
 Unabhängige Planprüfung: Datenvertrags-Agent bestätigt den begrenzten Umfang; dessen Ergänzungen zu Autorenlösungsgrenzen, kanonischen Mengen, Vertragsauswahl beim Export und erreichbaren Themen sind eingearbeitet. Die Quellenfotos wurden von Astra direkt geprüft; der unabhängige Agent prüfte Architektur und Abnahmekriterien.
+
+
+## Präzisierung nach Zahlenmodul — 17e3623
+
+Der Arbeitsbaum vor dem Modul war sauber; 55 bestehende und 13 neue Tests ergeben 68 bestandene Unit-Tests. Profil- und Sprachausgabetests waren bereits committed.
+
+Die Feldlänge gilt vor dem Trimmen, einschließlich äußerer Leerzeichen. Mengendopplungen werden zunächst an der ganzen Liste erklärt; einzelne Kollisionsindizes sind keine Voraussetzung. `sequence` erlaubt wiederholte Werte und vergleicht jede Position; `multiset` erlaubt Wiederholungen und zählt ihre Häufigkeit. Nur `set` verbietet Dopplungen nach Kanonisierung. Deutscher Fehlertext gehört zur Oberfläche, die Autorenlösungsprüfung an die Importgrenze.

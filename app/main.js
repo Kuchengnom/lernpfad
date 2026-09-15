@@ -1,7 +1,10 @@
 import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
+import { expectedAnswer } from './answer-format.js';
+import { numericInputMessage } from './math-messages.js';
 import { cancelSpeech, speak } from './speech.js';
 import { awardStamps } from './stamps.js';
 import './styles.css';
+import './math.css';
 import './scout.css';
 import './import-text.css';
 import './books.css';
@@ -10,10 +13,11 @@ import { renderApp } from './ui.js';
 import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from './engine.js';
 import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
 import { analyzeReadiness } from './readiness.js';
-import { buildAuthoringPrompt, authoringSchema } from './authoring.js';
+import { buildAuthoringPrompt, authoringSchemaFor } from './authoring.js';
 import { validateCurriculum, validateLearner, parseImport, backupPackage, curriculumPackage, MAX_FILE_BYTES } from './validation.js';
 import { pastedImportText } from './import-text.js';
 import example from '../fixtures/unit-1a/curriculum.json';
+import mathExample from '../fixtures/math-divisibility/curriculum.json';
 
 const root = document.querySelector('#app');
 let state = {
@@ -23,7 +27,7 @@ let state = {
   studyQuery: '', studyKind: 'all',
   pendingImport: null,
   importTextDraft: '', importTextError: null,
-  authoringLanguage: 'fr',
+  authoringLanguage: 'fr', authoringSubject: 'language', inputError: null,
 };
 state.learner = newLearner(state.curriculum);
 const workspace = value => ({ curriculum: value.curriculum, learner: value.learner, session: value.session, index: value.index, feedback: value.feedback });
@@ -55,12 +59,6 @@ async function commit(next) {
   }
 }
 
-function expectedAnswer(exercise) {
-  if (exercise.type === 'choice' || exercise.type === 'reading') return exercise.choices.find(c => c.id === exercise.correctChoiceIds[0]).text;
-  if (exercise.type === 'word-tiles') return exercise.correctOrder.map(id => exercise.tiles.find(t => t.id === id).text).join(' ');
-  if (exercise.type === 'writing') return exercise.modelAnswer;
-  return exercise.acceptedAnswers[0];
-}
 
 function download(document, filename) {
   downloadText(JSON.stringify(document, null, 2), filename, 'application/json');
@@ -74,7 +72,7 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 const documentElement = tag => window.document.createElement(tag);
 
 function fromProfile(profile, extra = {}) {
-  return { ...state, ...activeBook(profile).workspace, profile, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
+  return { ...state, ...activeBook(profile).workspace, profile, inputError: null, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
 }
 
 function previewImport(imported, fileName, fromText = false) {
@@ -88,11 +86,16 @@ function previewImport(imported, fileName, fromText = false) {
 
 const actions = {
   playAudio(text) {
-    const result = speak(text, state.curriculum?.targetLanguage);
+    const result = speak(text, state.curriculum?.targetLanguage || state.curriculum?.instructionLanguage);
     if (!result.spoken) {
       notify(result.reason === 'no-local-voice' ? 'Für diese Sprache ist gerade keine lokale Stimme verfügbar. Lade sie gegebenenfalls in den Spracheinstellungen deines Geräts herunter und versuche es erneut.' : 'Vorlesen ist auf diesem Gerät gerade nicht verfügbar.', 'info');
       root.querySelector('[data-audio]')?.focus();
     }
+  },
+  setAuthoringSubject(subject) {
+    if (state.busy || !['language', 'math'].includes(subject)) return;
+    state.authoringSubject = subject; state.notice = null; show();
+    root.querySelector('[data-authoring-subject]')?.focus();
   },
   setAuthoringLanguage(language) {
     if (state.busy || !['fr', 'en'].includes(language)) return;
@@ -101,7 +104,7 @@ const actions = {
   },
   async copyAuthoringPrompt() {
     try {
-      await navigator.clipboard.writeText(buildAuthoringPrompt(state.authoringLanguage));
+      await navigator.clipboard.writeText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject));
       if (state.view !== 'authoring') return;
       notify('Prompt mit Schema kopiert. Füge ihn in deine neue Unterhaltung ein.', 'success');
       root.querySelector('[data-action="copy-authoring"]')?.focus();
@@ -114,8 +117,8 @@ const actions = {
       field?.focus(); field?.select();
     }
   },
-  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage), `lernpfad-autorenprompt-${state.authoringLanguage}.md`); },
-  downloadSchema() { download(authoringSchema, 'curriculum.schema.json'); },
+  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject), `lernpfad-autorenprompt-${state.authoringSubject === 'math' ? 'mathe' : state.authoringLanguage}.md`); },
+  downloadSchema() { download(authoringSchemaFor(state.authoringSubject), 'curriculum.schema.json'); },
   navigate(view) { if (!state.busy) { state.view = view; state.pendingImport = null; state.notice = null; show(); focusMain(); } },
   cancelImport() { if (!state.busy) actions.navigate('library'); },
   async openBook(id) {
@@ -161,7 +164,7 @@ const actions = {
     catch (error) { return notify(error.message); }
     if (!session.exercises.length) return notify(mode === 'review' ? 'Gerade ist keine passende Wiederholung offen. Du kannst im Lernbuch etwas Neues entdecken.' : 'Für dieses Thema sind noch keine Übungen freigeschaltet. Schau dir zuerst die angegebenen Voraussetzungen an.', 'info');
     if (state.session && !window.confirm('Eine Runde ist noch offen. Jetzt eine andere Runde beginnen? Deine beantworteten Aufgaben bleiben gespeichert. Für die unvollständige Runde gibt es keinen Abschlussstempel.')) return;
-    await commit({ ...state, session, index: 0, feedback: null, view: 'session', notice: null });
+    await commit({ ...state, session, inputError: null, index: 0, feedback: null, view: 'session', notice: null });
     focusMain();
   },
   async submit(answer) {
@@ -177,6 +180,13 @@ const actions = {
       return;
     }
     const result = evaluateAnswer(exercise, answer);
+    if (result.invalid) {
+      state.inputError = numericInputMessage(result.reason);
+      show();
+      root.querySelector('[data-draft-numeric], [data-number-entry]')?.focus();
+      return;
+    }
+    state.inputError = null;
     const learner = recordAnswer(state.learner, exercise, { ...result, curriculumId: state.curriculum.id, curriculumVersion: state.curriculum.version, sessionId: state.session.id, answerId: `${state.session.id}:${exercise.id}` });
     const feedback = { ...result, expectedAnswer: expectedAnswer(exercise), explanation: exercise.explanation || exercise.feedback || '', selfCheck: exercise.type === 'writing' };
     delete feedback.normalizedAnswer;
@@ -192,7 +202,7 @@ const actions = {
       const nextIndex = state.index + 1;
       const rest = state.session.exercises.length >= 8 && nextIndex === Math.ceil(state.session.exercises.length / 2) && !state.session.restAcknowledged;
       const session = rest ? { ...state.session, restAcknowledged: true, resting: true } : state.session;
-      await commit({ ...state, session, index: nextIndex, feedback: null, notice: null, view: rest ? 'rest' : 'session' });
+      await commit({ ...state, session, index: nextIndex, feedback: null, inputError: null, notice: null, view: rest ? 'rest' : 'session' });
       focusMain();
       return;
     }
@@ -241,6 +251,11 @@ const actions = {
     root.querySelector('[data-action="export-backup"]')?.focus();
   },
   exportCurriculum() { download(curriculumPackage(state.curriculum), 'lernpfad-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
+  loadMathExample() {
+    if (state.busy || state.readOnly) return;
+    try { previewImport({ curriculum: validateCurriculum(mathExample), learner: null }, 'Mathe · Teilbarkeit & Primzahlen · Beispiel'); }
+    catch (error) { notify(error.message); }
+  },
   async loadExample() {
     if (state.busy || state.readOnly) return;
     if (state.curriculum.id === example.curriculum.id && state.curriculum.version === example.curriculum.version) { actions.navigate('home'); return; }
@@ -255,7 +270,7 @@ async function initialize() {
     const profile = stored?.profileVersion ? validateProfile(stored) : createProfile(stored || workspace(state));
     state = fromProfile(profile);
     // Persist legacy migration atomically only after complete validation.
-    if (!stored?.profileVersion && !state.readOnly) await saveWorkspace(profile);
+    if (stored?.profileVersion !== profile.profileVersion && !state.readOnly) await saveWorkspace(profile);
 
   } catch (error) {
     // Preserve existing storage on failed validation instead of overwriting it with a demo.

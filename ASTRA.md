@@ -1348,3 +1348,8 @@ It is:
 > "Practise exactly what you are currently learning at school, using a modern interactive learning experience."
 
 Everything in the architecture, curriculum model and UX should reinforce that distinction.
+## Active orchestration override — user instruction 2026-09-15
+
+Astra specifies, coordinates and reviews; all new programming work is assigned to **GPT-5.6 Luna subagents**. This explicit user instruction supersedes the earlier Terra/Luna routing for implementation. Astra may update plans and handoff documents and run inspections/verification, but does not directly implement code changes.
+
+Maintain `tasks/HANDOFF.md` before work and after every completed subtask. Check account usage before large delegations and after phases. At 70% of the five-hour window, write a full checkpoint before more work; at 85%, avoid starting large tasks and request bounded completion/handoffs from active agents. Checkpoint regularly even if usage is unavailable, because abrupt limits can interrupt any turn. Never imply guaranteed warning before a quota cutoff or automatically redeem reset credits.

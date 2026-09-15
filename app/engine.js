@@ -1,3 +1,5 @@
+import { checkNumericInput, checkNumberList } from './numeric.js';
+
 /** A deterministic, persistence-free learning engine for a JSON curriculum. */
 
 const DAY_MS = 86_400_000;
@@ -154,6 +156,12 @@ export function generateSession(curriculum, learner, { now = new Date().toISOStr
 
 export function evaluateAnswer(exercise, answer) {
   if (!exercise?.id || !exercise?.type) throw new TypeError('exercise requires id and type');
+  if (exercise.type === 'numeric-input' || exercise.type === 'number-list') {
+    const result = exercise.type === 'numeric-input'
+      ? checkNumericInput(answer, exercise.acceptedValues)
+      : checkNumberList(answer, exercise.expectedValues, exercise.comparison);
+    return result.invalid ? result : { correct: result.correct, selfCheck: false };
+  }
   if (exercise.selfCheck === true || exercise.type === 'writing') return { correct: null, selfCheck: true, selfChecked: answer?.selfChecked === true, normalizedAnswer: String(answer?.text ?? answer ?? '').trim() };
   if (exercise.type === 'choice' || exercise.type === 'reading') {
     if (!Array.isArray(exercise.correctChoiceIds) || exercise.correctChoiceIds.length !== 1) throw new TypeError(`choice exercise ${exercise.id} requires one correctChoiceId`);

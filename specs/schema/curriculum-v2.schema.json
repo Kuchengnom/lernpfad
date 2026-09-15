@@ -1,0 +1,859 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://language-learning.local/schema/curriculum-2.0.json",
+  "title": "Trailbook subject-aware curriculum package v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "curriculum"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0"
+    },
+    "kind": {
+      "const": "curriculum"
+    },
+    "curriculum": {
+      "$ref": "#/$defs/curriculum"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9.-]*$",
+      "minLength": 3
+    },
+    "provenance": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "description": "IDs from curriculum.sources. Semantic validation checks they exist."
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "file",
+        "notes"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "textbook-page",
+            "teacher-note",
+            "other"
+          ]
+        },
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mediaAvailable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "concept": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "learningGoal",
+        "dependsOn",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "vocabulary",
+            "grammar",
+            "phrase",
+            "reading-skill",
+            "writing-skill"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "learningGoal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dependsOn": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "native": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "examples": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "vocabulary"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target",
+              "native"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "grammar"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "rule",
+              "examples"
+            ]
+          }
+        }
+      ]
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "tile": {
+      "$ref": "#/$defs/choice"
+    },
+    "exerciseBase": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "conceptIds",
+        "difficulty",
+        "prompt",
+        "explanation",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "choice",
+            "text-input",
+            "word-tiles",
+            "reading",
+            "writing"
+          ]
+        },
+        "conceptIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "audioText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "exercise": {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "choice"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/choice"
+                  }
+                },
+                "correctChoiceIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 1,
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  }
+                },
+                "hint": {},
+                "audioText": {}
+              },
+              "required": [
+                "choices",
+                "correctChoiceIds"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "text-input"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "acceptedAnswers": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "hint": {},
+                "audioText": {}
+              },
+              "required": [
+                "acceptedAnswers"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "word-tiles"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "tiles": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/tile"
+                  }
+                },
+                "correctOrder": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  }
+                },
+                "hint": {},
+                "audioText": {}
+              },
+              "required": [
+                "tiles",
+                "correctOrder"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "reading"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "passage": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 500
+                },
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/choice"
+                  }
+                },
+                "correctChoiceIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 1,
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  }
+                },
+                "hint": {},
+                "audioText": {}
+              },
+              "required": [
+                "passage",
+                "choices",
+                "correctChoiceIds"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "writing"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "checklist": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "modelAnswer": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "selfCheck": {
+                  "const": true
+                },
+                "hint": {},
+                "audioText": {}
+              },
+              "required": [
+                "checklist",
+                "modelAnswer",
+                "selfCheck"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "curriculum": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/languageCurriculum"
+        },
+        {
+          "$ref": "#/$defs/mathCurriculum"
+        }
+      ]
+    },
+    "languageCurriculum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "title",
+        "sourceLanguage",
+        "targetLanguage",
+        "sources",
+        "concepts",
+        "exercises",
+        "subject",
+        "instructionLanguage"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceLanguage": {
+          "const": "de"
+        },
+        "targetLanguage": {
+          "enum": [
+            "en",
+            "fr"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "concepts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/concept"
+          }
+        },
+        "exercises": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/exercise"
+          }
+        },
+        "subject": {
+          "const": "language"
+        },
+        "instructionLanguage": {
+          "const": "de"
+        }
+      }
+    },
+    "mathCurriculum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "title",
+        "sources",
+        "concepts",
+        "exercises",
+        "subject",
+        "instructionLanguage"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "concepts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/mathConcept"
+          }
+        },
+        "exercises": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/mathExercise"
+          }
+        },
+        "subject": {
+          "const": "math"
+        },
+        "instructionLanguage": {
+          "const": "de"
+        }
+      }
+    },
+    "mathConcept": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "learningGoal",
+        "dependsOn",
+        "provenance",
+        "rule",
+        "examples"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "const": "math-skill"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "learningGoal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dependsOn": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "examples": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "mathExerciseBase": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "conceptIds",
+        "difficulty",
+        "prompt",
+        "explanation",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "choice",
+            "numeric-input",
+            "number-list"
+          ]
+        },
+        "conceptIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "authorValues": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,5})$",
+        "maxLength": 6
+      },
+      "description": "Canonical nonnegative integers 0–999999, at most 20 authored values."
+    },
+    "mathExercise": {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/mathExerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "choice"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/choice"
+                  }
+                },
+                "correctChoiceIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 1,
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  }
+                },
+                "hint": {}
+              },
+              "required": [
+                "choices",
+                "correctChoiceIds"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/mathExerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "numeric-input"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "hint": {},
+                "numberDomain": {
+                  "const": "nonnegative-integer"
+                },
+                "acceptedValues": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/authorValues"
+                    },
+                    {
+                      "uniqueItems": true
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "numberDomain",
+                "acceptedValues"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/mathExerciseBase"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {},
+                "type": {
+                  "const": "number-list"
+                },
+                "conceptIds": {},
+                "difficulty": {},
+                "prompt": {},
+                "explanation": {},
+                "provenance": {},
+                "hint": {},
+                "numberDomain": {
+                  "const": "nonnegative-integer"
+                },
+                "expectedValues": {
+                  "$ref": "#/$defs/authorValues"
+                },
+                "comparison": {
+                  "enum": [
+                    "set",
+                    "sequence",
+                    "multiset"
+                  ]
+                }
+              },
+              "required": [
+                "numberDomain",
+                "expectedValues",
+                "comparison"
+              ]
+            },
+            {
+              "if": {
+                "properties": {
+                  "comparison": {
+                    "const": "set"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "expectedValues": {
+                    "uniqueItems": true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

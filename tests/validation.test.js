@@ -25,7 +25,7 @@ test('source fixture validates, first session has diverse primitives, backup is 
 });
 test('reject malformed, future, oversized and unknown-property packages',()=>{
   assert.throws(()=>parseImport('{broken'),/gültiges JSON/);
-  assert.throws(()=>parseImport(JSON.stringify({...fixture,schemaVersion:'2.0'})),/version/);
+  assert.throws(()=>parseImport(JSON.stringify({...fixture,schemaVersion:'2.0'})),/schemaVersion/);
   assert.throws(()=>parseImport(' '.repeat(5*1024*1024+1)),/groß/);
   assert.throws(()=>parseImport(JSON.stringify({...fixture,script:'anything'})),/unbekannte/);
 });

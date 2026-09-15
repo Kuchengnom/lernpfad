@@ -121,7 +121,7 @@ test('existing curriculum and backup formats remain accepted through the profile
 test('malformed packages, unsupported versions, unknown properties and oversize payloads reject', () => {
   const valid = profilePackage(createProfile(workspace(), now));
   assert.throws(() => parseProfilePackage('{'), /JSON/);
-  assert.throws(() => parseProfilePackage(JSON.stringify({ ...valid, schemaVersion: '2.0' })), /Format/);
+  assert.throws(() => parseProfilePackage(JSON.stringify({ ...valid, schemaVersion: '3.0' })), /Format/);
   assert.throws(() => parseProfilePackage(JSON.stringify({ ...valid, extra: true })), /Format/);
   assert.throws(() => parseProfilePackage(' '.repeat(MAX_PROFILE_BYTES + 1)), /groß/);
   assert.throws(() => parseProfilePackage(JSON.stringify(fixture) + ' '.repeat(5 * 1024 * 1024)), /groß/);

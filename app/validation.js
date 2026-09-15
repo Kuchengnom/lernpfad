@@ -1,10 +1,13 @@
 import Ajv from 'ajv';
 import curriculumSchema from '../specs/schema/curriculum.schema.json' with { type: 'json' };
+import curriculumV2Schema from '../specs/schema/curriculum-v2.schema.json' with { type: 'json' };
 import learnerSchema from '../specs/schema/learner.schema.json' with { type: 'json' };
 import { newLearner, recordAnswer } from './engine.js';
+import { validateAuthorValues } from './numeric.js';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateCurriculumShape = ajv.compile(curriculumSchema);
+const validateCurriculumV2Shape = ajv.compile(curriculumV2Schema);
 const validateLearnerShape = ajv.compile(learnerSchema);
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const fail = message => { throw new Error(message); };
@@ -13,11 +16,12 @@ const unsafe = id => ['__proto__', 'constructor', 'prototype'].includes(id);
 const dateValid = value => value === null || (typeof value === 'string' && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value);
 function shapeError(validator, subject) {
   const errors = (validator.errors ?? []).slice(0, 4).map(e => `${e.instancePath || '/'} ${e.message}${e.params?.missingProperty ? ` (${e.params.missingProperty})` : ''}`).join('; ');
-  fail(`${subject} passt nicht zum unterstützten Format: ${errors}. Bitte mit dem Autoren-Prompt und Schema prüfen.`);
+  fail(`${subject} passt nicht zum unterstützten Format (schemaVersion und Inhalt): ${errors}. Bitte mit dem Autoren-Prompt und Schema prüfen.`);
 }
 
 export function validateCurriculum(document) {
-  if (!validateCurriculumShape(document)) shapeError(validateCurriculumShape, 'Der Lernstoff');
+  const shape = document?.schemaVersion === '2.0' ? validateCurriculumV2Shape : validateCurriculumShape;
+  if (!shape(document)) shapeError(shape, 'Der Lernstoff');
   const course = document.curriculum;
   const conceptIds = course.concepts.map(c => c.id);
   const exerciseIds = course.exercises.map(e => e.id);
@@ -40,6 +44,12 @@ export function validateCurriculum(document) {
   }
   for (const id of conceptIds) visit(id);
   for (const e of course.exercises) {
+    if (e.type === 'numeric-input' || e.type === 'number-list') {
+      const values = e.type === 'numeric-input' ? e.acceptedValues : e.expectedValues;
+      const result = validateAuthorValues(values);
+      if (!result.ok) fail(`Aufgabe ${e.id}: Die Zahlenlösung überschreitet das unterstützte Format (${result.reason}).`);
+      if (e.comparison === 'set' && !unique(values)) fail(`Aufgabe ${e.id}: Eine Lösungsmenge darf keine doppelten Zahlen enthalten.`);
+    }
     if (!unique(e.conceptIds) || e.conceptIds.some(id => !concepts.has(id))) fail(`Aufgabe ${e.id}: Ein verknüpftes Konzept fehlt oder kommt doppelt vor.`);
     if (e.choices) {
       if (!unique(e.choices.map(c => c.id)) || e.correctChoiceIds.some(id => !e.choices.some(c => c.id === id))) fail(`Aufgabe ${e.id}: Die richtige Antwort muss auf eine eindeutige Auswahl zeigen.`);
@@ -92,18 +102,18 @@ export function parseImport(text) {
   if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) fail('Die Datei ist zu groß. Bitte verwende eine JSON-Datei bis 5 MB.');
   let data;
   try { data = JSON.parse(text); } catch { fail('Dieser Import enthält kein gültiges JSON. Bitte kopiere die vollständige Antwort oder lasse den JSON-Text korrigieren.'); }
-  if (!data || data.schemaVersion !== '1.0') fail('Diese Dateiversion wird noch nicht unterstützt. Erwartet wird schemaVersion „1.0“. Dein bisheriger Lernstand bleibt erhalten.');
+  if (!data || !['1.0', '2.0'].includes(data.schemaVersion)) fail('Diese Dateiversion wird noch nicht unterstützt. Erwartet wird schemaVersion „1.0“ oder „2.0“. Dein bisheriger Lernstand bleibt erhalten.');
   if (!['curriculum', 'backup'].includes(data.kind)) fail('Bitte wähle einen Lernstoff oder eine vollständige Lernpfad-Sicherung.');
   const allowed = data.kind === 'backup' ? ['schemaVersion', 'kind', 'curriculum', 'learner'] : ['schemaVersion', 'kind', 'curriculum'];
   if (Object.keys(data).some(key => !allowed.includes(key))) fail('Die Datei enthält unbekannte Felder. Bitte verwende das veröffentlichte Schema.');
-  const curriculum = validateCurriculum({ schemaVersion: '1.0', kind: 'curriculum', curriculum: data.curriculum });
+  const curriculum = validateCurriculum({ schemaVersion: data.schemaVersion, kind: 'curriculum', curriculum: data.curriculum });
   const learner = data.kind === 'backup' ? validateLearner(data.learner, curriculum) : null;
   return { curriculum, learner };
 }
 
-export const curriculumPackage = curriculum => ({ schemaVersion: '1.0', kind: 'curriculum', curriculum });
+export const curriculumPackage = curriculum => ({ schemaVersion: Object.hasOwn(curriculum, 'subject') ? '2.0' : '1.0', kind: 'curriculum', curriculum });
 export function backupPackage(curriculum, learner) {
   validateCurriculum(curriculumPackage(curriculum));
   validateLearner(learner, curriculum);
-  return { schemaVersion: '1.0', kind: 'backup', curriculum, learner };
+  return { ...curriculumPackage(curriculum), kind: 'backup', learner };
 }

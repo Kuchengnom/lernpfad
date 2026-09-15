@@ -1,0 +1,1105 @@
+{
+  "schemaVersion": "2.0",
+  "kind": "curriculum",
+  "curriculum": {
+    "id": "course.math.divisibility",
+    "version": "1.0",
+    "title": "Mathe · Teilbarkeit & Primzahlen",
+    "subject": "math",
+    "instructionLanguage": "de",
+    "sources": [
+      {
+        "id": "src.math.5",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7071.HEIC",
+        "page": 5,
+        "notes": "Teiler und Faktorpaare, vollständige Teilermengen. Handschrift wurde nicht als Lösung verwendet. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.6",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7072.HEIC",
+        "page": 6,
+        "notes": "Positive Vielfache und begrenzte Folgen. Die gedruckte Regel beginnt beim einfachen Vielfachen; handschriftliche Folgen sind kein Lösungsschlüssel. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.7",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7073.HEIC",
+        "page": 7,
+        "notes": "Endziffernregeln für 2, 4, 5, 8, 10 und 25. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.8",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7074.HEIC",
+        "page": 8,
+        "notes": "Quersumme und Teilbarkeit durch 3 und 9. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.9",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7075.heic",
+        "page": 9,
+        "notes": "Gemeinsame Teiler und größter gemeinsamer Teiler. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.10",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7076.heic",
+        "page": 10,
+        "notes": "Gemeinsame positive Vielfache und kleinstes gemeinsames Vielfaches. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      },
+      {
+        "id": "src.math.primes",
+        "kind": "textbook-page",
+        "file": "references/textbook/mathe/IMG_7077.heic",
+        "page": 1,
+        "notes": "Cornelsen-Arbeitsblatt, Seite 1 von 2: Primzahlen und Primfaktorzerlegung. Seite 2 liegt nicht vor. Keine Klassenzuordnung belegt. Quelle am 14.09.2026 visuell geprüft. Aufgaben und Beispiele sind eigenständig formuliert und nachgerechnet; Fotos sind keine Laufzeitmedien."
+      }
+    ],
+    "concepts": [
+      {
+        "id": "math.divisors",
+        "kind": "math-skill",
+        "label": "Teiler und Faktorpaare",
+        "learningGoal": "Teiler erkennen und einen fehlenden Faktor bestimmen.",
+        "rule": "Ein positiver Teiler teilt eine Zahl ohne Rest. Multiplizierst du zwei Teiler zu dieser Zahl, bilden sie ein Faktorpaar.",
+        "examples": [
+          "65 = 5 · 13: 5 und 13 bilden ein Faktorpaar."
+        ],
+        "dependsOn": [],
+        "provenance": [
+          "src.math.5"
+        ]
+      },
+      {
+        "id": "math.divisor-sets",
+        "kind": "math-skill",
+        "label": "Alle Teiler finden",
+        "learningGoal": "Die vollständige Menge positiver Teiler angeben.",
+        "rule": "Suche Faktorpaare und sammle beide Faktoren. Jeder Teiler steht genau einmal in der Menge; 1 und die Zahl selbst gehören dazu.",
+        "examples": [
+          "Die positiven Teiler von 38 sind 1, 2, 19 und 38."
+        ],
+        "dependsOn": [
+          "math.divisors"
+        ],
+        "provenance": [
+          "src.math.5"
+        ]
+      },
+      {
+        "id": "math.multiples",
+        "kind": "math-skill",
+        "label": "Positive Vielfache",
+        "learningGoal": "Positive Vielfache erkennen und eine begrenzte Folge bilden.",
+        "rule": "Positive Vielfache entstehen durch Multiplikation mit 1, 2, 3 und so weiter. Beginne bei der Zahl selbst; 0 gehört nicht zu den positiven Vielfachen.",
+        "examples": [
+          "Die ersten drei positiven Vielfachen von 16 sind 16, 32, 48."
+        ],
+        "dependsOn": [],
+        "provenance": [
+          "src.math.6"
+        ]
+      },
+      {
+        "id": "math.end-digits",
+        "kind": "math-skill",
+        "label": "Die letzten Ziffern nutzen",
+        "learningGoal": "Teilbarkeit durch 2, 4, 5, 8, 10 und 25 mit Endziffern prüfen.",
+        "rule": "Für 2 muss die letzte Ziffer gerade sein, für 5 muss sie 0 oder 5 sein, für 10 muss sie 0 sein. Für 4 prüfst du die letzten zwei Ziffern, für 8 die letzten drei Ziffern. Für 25 sind die Endungen 00, 25, 50, 75 möglich.",
+        "examples": [
+          "9124 ist durch 4 teilbar: 24 ist durch 4 teilbar.",
+          "6175 ist durch 25 teilbar, denn die Endung ist 75."
+        ],
+        "dependsOn": [
+          "math.divisors"
+        ],
+        "provenance": [
+          "src.math.7"
+        ]
+      },
+      {
+        "id": "math.digit-sums",
+        "kind": "math-skill",
+        "label": "Quersummen nutzen",
+        "learningGoal": "Quersummen berechnen und Teilbarkeit durch 3 oder 9 prüfen.",
+        "rule": "Addiere alle Ziffern zur Quersumme. Eine Zahl ist durch 3 beziehungsweise 9 teilbar, wenn ihre Quersumme durch 3 beziehungsweise 9 teilbar ist.",
+        "examples": [
+          "5301 hat die Quersumme 9 und ist deshalb durch 3 und durch 9 teilbar."
+        ],
+        "dependsOn": [
+          "math.divisors"
+        ],
+        "provenance": [
+          "src.math.8"
+        ]
+      },
+      {
+        "id": "math.gcd",
+        "kind": "math-skill",
+        "label": "Gemeinsame Teiler und ggT",
+        "learningGoal": "Gemeinsame positive Teiler finden und den größten bestimmen.",
+        "rule": "Gemeinsame Teiler teilen beide Zahlen ohne Rest. Der größte davon heißt größter gemeinsamer Teiler, kurz ggT.",
+        "examples": [
+          "Die gemeinsamen Teiler von 14 und 49 sind 1 und 7; der ggT ist 7."
+        ],
+        "dependsOn": [
+          "math.divisor-sets"
+        ],
+        "provenance": [
+          "src.math.9"
+        ]
+      },
+      {
+        "id": "math.lcm",
+        "kind": "math-skill",
+        "label": "Gemeinsame Vielfache und kgV",
+        "learningGoal": "Gemeinsame positive Vielfache finden und das kleinste bestimmen.",
+        "rule": "Ein gemeinsames positives Vielfaches ist ein positives Vielfaches beider Zahlen. Das kleinste heißt kleinstes gemeinsames Vielfaches, kurz kgV.",
+        "examples": [
+          "Das kgV von 5 und 12 ist 60: 60 ist das erste gemeinsame positive Vielfache."
+        ],
+        "dependsOn": [
+          "math.multiples"
+        ],
+        "provenance": [
+          "src.math.10"
+        ]
+      },
+      {
+        "id": "math.primes",
+        "kind": "math-skill",
+        "label": "Primzahlen und Primfaktoren",
+        "learningGoal": "Primzahlen erkennen und eine Zahl vollständig in Primfaktoren zerlegen.",
+        "rule": "Eine Primzahl hat genau zwei positive Teiler: 1 und sich selbst. 1 ist keine Primzahl. Zerlege eine Zahl ab 2 so lange in Faktoren, bis alle Faktoren Primzahlen sind. Gleiche Faktoren bleiben mehrfach erhalten.",
+        "examples": [
+          "103 ist eine Primzahl.",
+          "50 = 2 · 5 · 5: Trage die 5 zweimal ein."
+        ],
+        "dependsOn": [
+          "math.divisor-sets"
+        ],
+        "provenance": [
+          "src.math.primes"
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "math.ex.divisor-66",
+        "type": "choice",
+        "conceptIds": [
+          "math.divisors"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl teilt 66 ohne Rest?",
+        "explanation": "66 = 3 · 22. Beim Teilen durch 4 oder 8 bleibt ein Rest.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "4"
+          },
+          {
+            "id": "option.2",
+            "text": "3"
+          },
+          {
+            "id": "option.3",
+            "text": "8"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.2"
+        ]
+      },
+      {
+        "id": "math.ex.factor-77",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.divisors"
+        ],
+        "difficulty": 1,
+        "prompt": "11 · welche Zahl ergibt 77?",
+        "explanation": "77 : 11 = 7, also 11 · 7 = 77.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "7"
+        ]
+      },
+      {
+        "id": "math.ex.factor-91",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.divisors"
+        ],
+        "difficulty": 2,
+        "prompt": "Ergänze das Faktorpaar: 13 · welche Zahl ergibt 91?",
+        "explanation": "13 · 7 = 91. Beide Faktoren sind Teiler von 91.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "7"
+        ]
+      },
+      {
+        "id": "math.ex.divisor-98",
+        "type": "choice",
+        "conceptIds": [
+          "math.divisors"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl gehört zu den Teilern von 98?",
+        "explanation": "98 = 7 · 14. Weder 6 noch 9 teilt 98 ohne Rest.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "6"
+          },
+          {
+            "id": "option.2",
+            "text": "9"
+          },
+          {
+            "id": "option.3",
+            "text": "7"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.pair-85",
+        "type": "choice",
+        "conceptIds": [
+          "math.divisors"
+        ],
+        "difficulty": 2,
+        "prompt": "Welches Faktorpaar ergibt zusammen das Produkt 85?",
+        "explanation": "5 · 17 = 85. Die anderen Produkte sind 80 und 91.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "5 · 17"
+          },
+          {
+            "id": "option.2",
+            "text": "5 · 16"
+          },
+          {
+            "id": "option.3",
+            "text": "7 · 13"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.1"
+        ]
+      },
+      {
+        "id": "math.ex.teilers-22",
+        "type": "number-list",
+        "conceptIds": [
+          "math.divisor-sets"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle positiven Teiler von 22. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "Die vollständige Teilermenge lautet: 1, 2, 11, 22.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "1",
+          "2",
+          "11",
+          "22"
+        ]
+      },
+      {
+        "id": "math.ex.teilers-26",
+        "type": "number-list",
+        "conceptIds": [
+          "math.divisor-sets"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle positiven Teiler von 26. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "Die vollständige Teilermenge lautet: 1, 2, 13, 26.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "1",
+          "2",
+          "13",
+          "26"
+        ]
+      },
+      {
+        "id": "math.ex.teilers-34",
+        "type": "number-list",
+        "conceptIds": [
+          "math.divisor-sets"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle positiven Teiler von 34. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "Die vollständige Teilermenge lautet: 1, 2, 17, 34.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "1",
+          "2",
+          "17",
+          "34"
+        ]
+      },
+      {
+        "id": "math.ex.teilers-44",
+        "type": "number-list",
+        "conceptIds": [
+          "math.divisor-sets"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle positiven Teiler von 44. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "Die vollständige Teilermenge lautet: 1, 2, 4, 11, 22, 44.",
+        "provenance": [
+          "src.math.5"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "1",
+          "2",
+          "4",
+          "11",
+          "22",
+          "44"
+        ]
+      },
+      {
+        "id": "math.ex.multiples-18",
+        "type": "number-list",
+        "conceptIds": [
+          "math.multiples"
+        ],
+        "difficulty": 2,
+        "prompt": "Trage die ersten 4 positiven Vielfachen von 18 ein, vom kleinsten zum größten.",
+        "explanation": "Beginne mit 18 und addiere jeweils 18: 18, 36, 54, 72.",
+        "provenance": [
+          "src.math.6"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "sequence",
+        "expectedValues": [
+          "18",
+          "36",
+          "54",
+          "72"
+        ]
+      },
+      {
+        "id": "math.ex.multiples-22",
+        "type": "number-list",
+        "conceptIds": [
+          "math.multiples"
+        ],
+        "difficulty": 2,
+        "prompt": "Trage die ersten 3 positiven Vielfachen von 22 ein, vom kleinsten zum größten.",
+        "explanation": "Beginne mit 22 und addiere jeweils 22: 22, 44, 66.",
+        "provenance": [
+          "src.math.6"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "sequence",
+        "expectedValues": [
+          "22",
+          "44",
+          "66"
+        ]
+      },
+      {
+        "id": "math.ex.multiples-31",
+        "type": "number-list",
+        "conceptIds": [
+          "math.multiples"
+        ],
+        "difficulty": 2,
+        "prompt": "Trage die ersten 4 positiven Vielfachen von 31 ein, vom kleinsten zum größten.",
+        "explanation": "Beginne mit 31 und addiere jeweils 31: 31, 62, 93, 124.",
+        "provenance": [
+          "src.math.6"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "sequence",
+        "expectedValues": [
+          "31",
+          "62",
+          "93",
+          "124"
+        ]
+      },
+      {
+        "id": "math.ex.positive-26",
+        "type": "choice",
+        "conceptIds": [
+          "math.multiples"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl ist ein positives Vielfaches von 26?",
+        "explanation": "78 = 3 · 26. 0 ist nicht positiv; 51 ist kein Vielfaches von 26.",
+        "provenance": [
+          "src.math.6"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "0"
+          },
+          {
+            "id": "option.2",
+            "text": "51"
+          },
+          {
+            "id": "option.3",
+            "text": "78"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.end-2",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl ist durch 2 teilbar?",
+        "explanation": "5832 endet auf 2 und ist daher durch 2 teilbar.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "5835"
+          },
+          {
+            "id": "option.2",
+            "text": "5832"
+          },
+          {
+            "id": "option.3",
+            "text": "5837"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.2"
+        ]
+      },
+      {
+        "id": "math.ex.end-4",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 2,
+        "prompt": "Welche Zahl ist durch 4 teilbar?",
+        "explanation": "Die letzten zwei Ziffern sind 12. 12 ist durch 4 teilbar.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "6414"
+          },
+          {
+            "id": "option.2",
+            "text": "6418"
+          },
+          {
+            "id": "option.3",
+            "text": "6412"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.end-5",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl ist durch 5 teilbar?",
+        "explanation": "7815 endet auf 5 und ist deshalb durch 5 teilbar.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "7815"
+          },
+          {
+            "id": "option.2",
+            "text": "7812"
+          },
+          {
+            "id": "option.3",
+            "text": "7813"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.1"
+        ]
+      },
+      {
+        "id": "math.ex.end-8",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 2,
+        "prompt": "Welche Zahl ist durch 8 teilbar?",
+        "explanation": "Die letzten drei Ziffern sind 136, und 136 = 17 · 8.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "5132"
+          },
+          {
+            "id": "option.2",
+            "text": "5136"
+          },
+          {
+            "id": "option.3",
+            "text": "5134"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.2"
+        ]
+      },
+      {
+        "id": "math.ex.end-10",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl ist durch 10 teilbar?",
+        "explanation": "8640 endet auf 0. Genau solche ganzen Zahlen sind durch 10 teilbar.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "8645"
+          },
+          {
+            "id": "option.2",
+            "text": "8642"
+          },
+          {
+            "id": "option.3",
+            "text": "8640"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.end-25",
+        "type": "choice",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 2,
+        "prompt": "Welche Zahl ist durch 25 teilbar?",
+        "explanation": "Die Endung 75 ist eine der vier möglichen Endungen für Teilbarkeit durch 25.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "4375"
+          },
+          {
+            "id": "option.2",
+            "text": "4370"
+          },
+          {
+            "id": "option.3",
+            "text": "4380"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.1"
+        ]
+      },
+      {
+        "id": "math.ex.missing-end-4",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.end-digits"
+        ],
+        "difficulty": 3,
+        "prompt": "Ersetze das Kästchen in 638□ durch eine Ziffer, sodass die Zahl durch 4 teilbar ist. Eine passende Ziffer genügt.",
+        "explanation": "Die Endungen 80, 84 und 88 sind durch 4 teilbar. Deshalb passen 0, 4 oder 8.",
+        "provenance": [
+          "src.math.7"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "0",
+          "4",
+          "8"
+        ]
+      },
+      {
+        "id": "math.ex.sum-6207",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.digit-sums"
+        ],
+        "difficulty": 1,
+        "prompt": "Wie groß ist die Quersumme von 6207?",
+        "explanation": "6 + 2 + 0 + 7 = 15.",
+        "provenance": [
+          "src.math.8"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "15"
+        ]
+      },
+      {
+        "id": "math.ex.sum-8046",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.digit-sums"
+        ],
+        "difficulty": 1,
+        "prompt": "Addiere die Ziffern von 8046. Welche Quersumme erhältst du?",
+        "explanation": "8 + 0 + 4 + 6 = 18.",
+        "provenance": [
+          "src.math.8"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "18"
+        ]
+      },
+      {
+        "id": "math.ex.sum-rule-3",
+        "type": "choice",
+        "conceptIds": [
+          "math.digit-sums"
+        ],
+        "difficulty": 2,
+        "prompt": "Welche Zahl ist durch 3 teilbar?",
+        "explanation": "7311 hat die Quersumme 12. 12 ist durch 3 teilbar; 13 und 14 sind es nicht.",
+        "provenance": [
+          "src.math.8"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "7312"
+          },
+          {
+            "id": "option.2",
+            "text": "7311"
+          },
+          {
+            "id": "option.3",
+            "text": "7313"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.2"
+        ]
+      },
+      {
+        "id": "math.ex.sum-rule-9",
+        "type": "choice",
+        "conceptIds": [
+          "math.digit-sums"
+        ],
+        "difficulty": 2,
+        "prompt": "Welche Zahl ist durch 9 teilbar?",
+        "explanation": "6426 hat die Quersumme 18. 18 ist durch 9 teilbar; 19 und 20 sind es nicht.",
+        "provenance": [
+          "src.math.8"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "6427"
+          },
+          {
+            "id": "option.2",
+            "text": "6428"
+          },
+          {
+            "id": "option.3",
+            "text": "6426"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.missing-sum-3",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.digit-sums"
+        ],
+        "difficulty": 3,
+        "prompt": "Ersetze das Kästchen in 42□ durch eine Ziffer, sodass die Zahl durch 3 teilbar ist. Eine passende Ziffer genügt.",
+        "explanation": "4 + 2 = 6. Mit 0, 3, 6 oder 9 bleibt die Quersumme durch 3 teilbar.",
+        "provenance": [
+          "src.math.8"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "0",
+          "3",
+          "6",
+          "9"
+        ]
+      },
+      {
+        "id": "math.ex.gcd-22-55",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.gcd"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist der ggT von 22 und 55?",
+        "explanation": "11 ist die größte positive Zahl, die 22 und 55 ohne Rest teilt.",
+        "provenance": [
+          "src.math.9"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "11"
+        ]
+      },
+      {
+        "id": "math.ex.gcd-26-39",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.gcd"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist der ggT von 26 und 39?",
+        "explanation": "13 ist die größte positive Zahl, die 26 und 39 ohne Rest teilt.",
+        "provenance": [
+          "src.math.9"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "13"
+        ]
+      },
+      {
+        "id": "math.ex.gcd-34-51",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.gcd"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist der ggT von 34 und 51?",
+        "explanation": "17 ist die größte positive Zahl, die 34 und 51 ohne Rest teilt.",
+        "provenance": [
+          "src.math.9"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "17"
+        ]
+      },
+      {
+        "id": "math.ex.gcd-25-32",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.gcd"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist der ggT von 25 und 32?",
+        "explanation": "1 ist die größte positive Zahl, die 25 und 32 ohne Rest teilt.",
+        "provenance": [
+          "src.math.9"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "1"
+        ]
+      },
+      {
+        "id": "math.ex.common-divisors-28-70",
+        "type": "number-list",
+        "conceptIds": [
+          "math.gcd"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle gemeinsamen positiven Teiler von 28 und 70. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "1, 2, 7 und 14 teilen beide Zahlen ohne Rest.",
+        "provenance": [
+          "src.math.9"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "1",
+          "2",
+          "7",
+          "14"
+        ]
+      },
+      {
+        "id": "math.ex.lcm-7-10",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.lcm"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist das kgV von 7 und 10?",
+        "explanation": "70 ist die kleinste positive Zahl, die ein Vielfaches von 7 und von 10 ist.",
+        "provenance": [
+          "src.math.10"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "70"
+        ]
+      },
+      {
+        "id": "math.ex.lcm-9-14",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.lcm"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist das kgV von 9 und 14?",
+        "explanation": "126 ist die kleinste positive Zahl, die ein Vielfaches von 9 und von 14 ist.",
+        "provenance": [
+          "src.math.10"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "126"
+        ]
+      },
+      {
+        "id": "math.ex.lcm-11-22",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.lcm"
+        ],
+        "difficulty": 2,
+        "prompt": "Wie groß ist das kgV von 11 und 22?",
+        "explanation": "22 ist die kleinste positive Zahl, die ein Vielfaches von 11 und von 22 ist.",
+        "provenance": [
+          "src.math.10"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "22"
+        ]
+      },
+      {
+        "id": "math.ex.common-multiples-4-7",
+        "type": "number-list",
+        "conceptIds": [
+          "math.lcm"
+        ],
+        "difficulty": 2,
+        "prompt": "Trage die ersten 3 gemeinsamen positiven Vielfachen von 4 und 7 ein, vom kleinsten zum größten.",
+        "explanation": "Das kgV ist 28. Seine ersten drei positiven Vielfachen sind 28, 56 und 84.",
+        "provenance": [
+          "src.math.10"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "sequence",
+        "expectedValues": [
+          "28",
+          "56",
+          "84"
+        ]
+      },
+      {
+        "id": "math.ex.lcm-timer-8-14",
+        "type": "numeric-input",
+        "conceptIds": [
+          "math.lcm"
+        ],
+        "difficulty": 3,
+        "prompt": "Zwei Timer piepen jetzt gemeinsam. Einer piept alle 8 Minuten, der andere alle 14 Minuten. Nach wie vielen Minuten piepen sie erstmals wieder gemeinsam?",
+        "explanation": "Gesucht ist das kgV von 8 und 14. 56 = 7 · 8 = 4 · 14.",
+        "provenance": [
+          "src.math.10"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "acceptedValues": [
+          "56"
+        ]
+      },
+      {
+        "id": "math.ex.prime-101",
+        "type": "choice",
+        "conceptIds": [
+          "math.primes"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche Zahl ist eine Primzahl?",
+        "explanation": "101 hat nur die positiven Teiler 1 und 101. 1 ist keine Primzahl; 121 = 11 · 11.",
+        "provenance": [
+          "src.math.primes"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "1"
+          },
+          {
+            "id": "option.2",
+            "text": "101"
+          },
+          {
+            "id": "option.3",
+            "text": "121"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.2"
+        ]
+      },
+      {
+        "id": "math.ex.prime-2",
+        "type": "choice",
+        "conceptIds": [
+          "math.primes"
+        ],
+        "difficulty": 1,
+        "prompt": "Welche der drei Zahlen hat genau zwei positive Teiler?",
+        "explanation": "2 hat die Teiler 1 und 2. 1 hat nur einen, 4 hat die drei Teiler 1, 2 und 4.",
+        "provenance": [
+          "src.math.primes"
+        ],
+        "choices": [
+          {
+            "id": "option.1",
+            "text": "1"
+          },
+          {
+            "id": "option.2",
+            "text": "4"
+          },
+          {
+            "id": "option.3",
+            "text": "2"
+          }
+        ],
+        "correctChoiceIds": [
+          "option.3"
+        ]
+      },
+      {
+        "id": "math.ex.prime-factors-84",
+        "type": "number-list",
+        "conceptIds": [
+          "math.primes"
+        ],
+        "difficulty": 2,
+        "prompt": "Zerlege 84 vollständig in Primfaktoren. Trage jeden Faktor einzeln ein, gleiche Faktoren mehrfach; die Reihenfolge ist egal.",
+        "explanation": "84 = 2 · 2 · 3 · 7. Alle Faktoren sind prim, und Wiederholungen gehören dazu.",
+        "provenance": [
+          "src.math.primes"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "multiset",
+        "expectedValues": [
+          "2",
+          "2",
+          "3",
+          "7"
+        ]
+      },
+      {
+        "id": "math.ex.prime-factors-99",
+        "type": "number-list",
+        "conceptIds": [
+          "math.primes"
+        ],
+        "difficulty": 2,
+        "prompt": "Zerlege 99 vollständig in Primfaktoren. Trage jeden Faktor einzeln ein, gleiche Faktoren mehrfach; die Reihenfolge ist egal.",
+        "explanation": "99 = 3 · 3 · 11. Alle Faktoren sind prim, und Wiederholungen gehören dazu.",
+        "provenance": [
+          "src.math.primes"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "multiset",
+        "expectedValues": [
+          "3",
+          "3",
+          "11"
+        ]
+      },
+      {
+        "id": "math.ex.primes-40-50",
+        "type": "number-list",
+        "conceptIds": [
+          "math.primes"
+        ],
+        "difficulty": 2,
+        "prompt": "Sammle alle Primzahlen von 40 bis einschließlich 50. Jede Zahl einmal; die Reihenfolge ist egal.",
+        "explanation": "In diesem Bereich haben nur 41, 43 und 47 genau zwei positive Teiler.",
+        "provenance": [
+          "src.math.primes"
+        ],
+        "numberDomain": "nonnegative-integer",
+        "comparison": "set",
+        "expectedValues": [
+          "41",
+          "43",
+          "47"
+        ]
+      }
+    ]
+  }
+}

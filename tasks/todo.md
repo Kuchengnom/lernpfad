@@ -326,3 +326,26 @@ feature was verified by unit tests against a fake synthesizer, never against rea
 - [ ] Geplanten Mathe-Meilenstein implementieren und gegen seine Definition of Done prüfen.
 
 Planungsreview: Umfang auf belegte Teilbarkeit/Primzahlen und ganze Zahlen begrenzt. Handschrift ist keine Lösungsvorlage. Bibliothek, Runden, Wiederholung und Sammelstempel werden fachübergreifend weiterverwendet; Mathe ist noch nicht im laufenden Build freigeschaltet.
+
+
+# Mathe-Implementierung — nach 17e3623
+
+- [x] Zahlenmodul und korrekte Testbasis übernommen; drei offene Listen-/Längenregeln präzisiert.
+- [ ] Verträge: v2-Curriculum/Backup, gemischtes Profil 2.0, validierte Migration und Autorenlösungen (Agent math_contracts).
+- [ ] Oberfläche: Fachwahl, Zahlen-/Listenfelder, verständliche Fehler und Mathe-Texte (Agent math_ui).
+- [ ] Lernstoff: 40 quellenbezogene Originalaufgaben, Autorenprompt und unabhängige Rechenprüfung (Agent math_content).
+- [ ] Astra: Engine-Dispatch, gemeinsames Antwortformat, Zustandsintegration und echte Import-/Lern-/Sicherungsabläufe.
+- [ ] Unabhängige QA, mobile/Offline-Prüfung, Korrekturen und vollständige Definition of Done.
+
+# Wiederaufnahme mit Luna — 2026-09-15
+
+Nutzer verlangt reine Astra-Orchestrierung und Luna für alle Programmieraufgaben. Zwischenstand zuerst in `tasks/HANDOFF.md` gesichert; Kontingent-Momentaufnahme 3 % / 33 %.
+
+- [x] Unterbrochene Arbeiten inventarisieren und manuell nutzbare Übergabe sichern.
+- [x] Luna: v2-Verträge und Migration abschließen, eigene Tests prüfen.
+- [x] Luna: 40er-Quellenfixture, fehlenden Mathe-Prompt und unabhängige Rechenprüfung abschließen.
+- [x] Luna: UI-/Zustandsintegration vervollständigen, erste gezielte Browserregression hinzufügen.
+- [x] Astra: Ergebnisse prüfen, unabhängige QA zuweisen, Inhaltskorrekturen an Luna zurückgeben und Übergabe aktualisieren.
+- [ ] Erweiterte Mathe-Browserabnahme abschließen: vollständige Runde/Feedback nach Reload, alle Listenvarianten, gemischte Sicherung, Entwurfsisolation und mobile/Offline-Fälle.
+
+Review 15.09.2026: Lokale Integration mit 82/82 Unit-Tests, Build und zunächst 22/22 Browserchecks verifiziert. Zwei danach ergänzte Browserfälle brauchen eine isolierte Abschlussprüfung. Kein reproduzierbarer Implementierungsfehler im unabhängigen Review; zusätzliche Abnahmen bleiben offen. Maßgeblicher aktueller Stand: `tasks/HANDOFF.md`; ältere Planungsnotizen oben beschreiben den damaligen Zustand.
