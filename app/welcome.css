@@ -3,14 +3,42 @@
    of truth for the product itself; change both together. */
 /* ponytail: shared tokens live in tokens.css; only welcome.css-local tokens stay here. */
 @import "./tokens.css";
+
+/* Display face hook. When the self-hosted display face is decided (owner call
+   pending, see experiment/welcome-page.md), exactly two things change: one
+   @font-face rule right here, loading a local file from ./fonts/, and
+   --font-display in tokens.css pointing at its family name. Nothing else in
+   this stylesheet names a font. No CDN, no network request — the page promises
+   that nothing leaves the device. */
+
 :root {
-  --action-deep: #063f3b;
-  --measure: 62ch;
+  /* --action-deep now lives in tokens.css, shared with the app. */
+  /* Text colours for the one inverted block. Local on purpose: they only make
+     sense on --action-deep, which app/styles.css does not use. */
+  --on-deep: #eef6f3;
+  --on-deep-muted: #cfe3dd;
+  --on-deep-rule: rgba(255, 255, 255, 0.2);
+  /* Hover shade for --action. --action-strong is only ~15 % darker in relative
+     luminance, which is ΔL* ≈ 3 — below the threshold where a parent notices the
+     button reacted. This sits between --action and --action-deep: ΔL* ≈ 11, and
+     white text on it is 9.0:1 (AA needs 4.5:1). Local on purpose — tokens.css is
+     shared with the app. */
+  --action-hover: #06524c;
+  /* Exponential ease-out: fast departure, long settle. No overshoot. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* 58ch, not 62ch: at 1.0625rem German body copy 62ch runs ~90 characters on a
+     wide screen, past the comfortable return sweep. --measure-lede is shorter
+     again because the lede sets larger. */
+  --measure: 58ch;
+  --measure-lede: 46ch;
   --page: 68rem;
-  /* ponytail: no webfont request. A page promising that nothing leaves the
-     device must not fetch fonts from a CDN. Self-hosted display face is a
-     defined follow-up asset, see experiment/welcome-page.md. */
-  font-family: "Nunito Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  --gutter: 1.5rem;
+  /* Rhythm: the page makes three arguments (WAS / WIE / WARUM). Sections inside
+     one argument sit close; a new argument gets --space-between on top. */
+  --space-within: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --space-between: clamp(3.5rem, 2rem + 5.5vw, 6rem);
+  --space-inset: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);
+  font-family: var(--font-text);
   color: var(--ink);
   background: var(--canvas);
   font-synthesis: none;
@@ -19,11 +47,37 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--canvas); min-width: 320px; }
 img { max-width: 100%; height: auto; }
-h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+/* Type scale. Three levels that are meant to be told apart at a glance, not
+   three sizes of the same thing:
+     display (h1)  800, very tight tracking, near-solid leading
+     head    (h2)  700, tight tracking, still clearly display-sized
+     sub     (h3)  600, neutral tracking, text-sized and set at reading leading
+   Tracking gets less negative as the type gets smaller — optical sizing by
+   hand, since the stack has no optical sizes. */
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1, h2 { font-family: var(--font-display); }
+h1 { font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
+h2 { font-weight: 700; letter-spacing: -0.024em; line-height: 1.1; }
+h3 { font-weight: 600; letter-spacing: -0.004em; line-height: 1.28; }
 p { margin: 0; }
+
+/* Anchor jumps: ease the movement so the reader keeps their place, and leave a
+   little air above the target so the heading never lands on the window edge.
+   Smooth scrolling is opt-in per motion preference, not opt-out. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+#inhalt, #etappen, #privatsphaere, #fragen { scroll-margin-top: 1.5rem; }
+
+/* Two-ring focus indicator (WCAG 2.2 SC 1.4.11). --sun alone reached only
+   1.94:1 on --canvas. The dark outer ring carries the light surfaces
+   (10.6:1 on canvas, 11.5:1 on paper, 9.8:1 on paper-muted); the warm inner
+   ring fills the offset gap and is what stays visible on the --action-deep
+   privacy block, where the outer ring blends in (sun on deep = 5.5:1). */
 a:focus-visible, summary:focus-visible {
-  outline: 3px solid var(--sun);
-  outline-offset: 3px;
+  outline: 3px solid var(--action-deep);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--sun);
   border-radius: 0.25rem;
 }
 
@@ -46,18 +100,20 @@ a:focus-visible, summary:focus-visible {
   gap: 1.5rem;
   max-width: var(--page);
   margin: 0 auto;
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem var(--gutter);
 }
 .wordmark {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.125rem;
-  letter-spacing: -0.01em;
+  font-size: 1.1875rem;
+  letter-spacing: -0.02em;
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
+  min-height: 2.75rem;
 }
 .wordmark__mark {
   display: grid;
@@ -72,11 +128,18 @@ a:focus-visible, summary:focus-visible {
   height: 1.4rem;
   fill: none;
   stroke: var(--action-on);
-  stroke-width: 1.9;
+  /* Same rendered weight as .route__pin svg, not the same number: this mark has
+     a 32-unit viewBox in 22.4px (scale 0.70), the pins have 24 in 22.4px (scale
+     0.93). 2.3 renders 1.61px against the pins' 1.68px — the last four percent
+     are deliberate, because a light stroke on the dark pill reads heavier. */
+  stroke-width: 2.3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .wordmark__mark .trail { stroke: var(--sun); }
+.wordmark__mark { transition: transform 180ms var(--ease-out-expo); }
+/* The mark steps forward, the word stays put — a nudge, not a wobble. */
+.wordmark:hover .wordmark__mark { transform: translateY(-2px); }
 .site-nav { display: flex; gap: 1.5rem; }
 .site-nav a {
   color: var(--ink-muted);
@@ -85,8 +148,11 @@ a:focus-visible, summary:focus-visible {
   font-size: 0.95rem;
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
+  transition: color 180ms var(--ease-out-expo), border-color 180ms var(--ease-out-expo);
 }
-.site-nav a:hover { color: var(--ink); border-bottom-color: var(--route); }
+/* --route underlined at 1.63:1 against --canvas; --action makes the hover
+   state visible on its own (5.53:1). */
+.site-nav a:hover { color: var(--ink); border-bottom-color: var(--action); }
 
 /* Buttons --------------------------------------------------------------- */
 .button {
@@ -100,29 +166,55 @@ a:focus-visible, summary:focus-visible {
   font-size: 1rem;
   text-decoration: none;
   border: 2px solid transparent;
-  transition: transform 140ms ease, background-color 140ms ease;
+  /* Paint-only transitions. Nothing here reflows. */
+  transition:
+    transform 180ms var(--ease-out-expo),
+    background-color 180ms var(--ease-out-expo),
+    border-color 180ms var(--ease-out-expo),
+    box-shadow 180ms var(--ease-out-expo);
 }
+/* Hover = the button lifts off a painted waymark. --sun for the primary, the
+   quieter trail colour for the secondary, so the two share one gesture without
+   sharing one weight. Both work without the transition (reduced motion): the
+   colour and the offset are end states, not keyframes. */
 .button--primary { background: var(--action); color: var(--action-on); }
-.button--primary:hover { background: var(--action-strong); }
-.button--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
-.button--quiet:hover { border-color: var(--ink-muted); }
+/* The button lifts off a painted waymark on hover and sets back down on press. */
+.button--primary:hover {
+  background: var(--action-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--sun);
+}
+.button--primary:active { background: var(--action-deep); box-shadow: none; }
+/* --line gave the secondary button a 1.36:1 edge against --canvas, i.e. no
+   visible boundary. --ink-muted reaches 5.46:1 and stays neutral, so the one
+   green primary keeps the hierarchy to itself. */
+.button--quiet { background: transparent; color: var(--ink); border-color: var(--ink-muted); }
+.button--quiet:hover {
+  background: var(--paper);
+  border-color: var(--action);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--route);
+}
+.button--quiet:active { background: var(--paper-muted); box-shadow: none; }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
-.wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
 .button:active { transform: translateY(1px); }
 
-/* Shared section frame. Hero, privacy and close use their own frames so their
-   padding never fights this rule. */
+/* Shared section frame. Hero, the trail band, privacy and close use their own
+   frames so their padding never fights this rule. */
 .section {
   max-width: var(--page);
   margin: 0 auto;
-  padding: 4.5rem 1.5rem;
+  padding: var(--space-within) var(--gutter);
 }
-.section__title { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2.25rem; }
+/* Section heads carry their sections alone (two eyebrows were dropped), so they
+   sit a full step above the 1.3125rem h3 rather than half a step. */
+.section__title { font-size: clamp(2rem, 1.35rem + 2.7vw, 2.95rem); margin-bottom: 2.25rem; }
 .eyebrow {
   font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--action);
   margin-bottom: 0.6rem;
@@ -137,11 +229,10 @@ a:focus-visible, summary:focus-visible {
   gap: 3rem;
   max-width: var(--page);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 2.5rem var(--gutter) var(--space-inset);
 }
 .hero h1 {
-  font-size: clamp(2.1rem, 1.3rem + 3.4vw, 3.5rem);
-  font-weight: 800;
+  font-size: clamp(2.35rem, 1.35rem + 4.3vw, 4.15rem);
   margin-bottom: 1.25rem;
 }
 .hero h1 em {
@@ -151,54 +242,75 @@ a:focus-visible, summary:focus-visible {
   background: linear-gradient(var(--route), var(--route)) left 92% / 100% 0.32em no-repeat;
   padding-bottom: 0.05em;
 }
+/* The lede is the one paragraph that sets above text size, so it gets its own
+   shorter measure and slightly tighter leading than body copy. */
 .lede {
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  line-height: 1.55;
   color: var(--ink-muted);
-  max-width: var(--measure);
+  max-width: var(--measure-lede);
 }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.75rem 0 0.85rem; }
 .hero__note { font-size: 0.9rem; color: var(--ink-muted); }
-.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 1.5rem 0 0; }
-.chips li {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--action-deep);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 0.4rem 0.85rem;
-}
 .hero__art img {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   display: block;
 }
 
+/* One orchestrated moment, once, on load: the hero walks in along the trail.
+   transform + opacity only. fill-mode is `backwards`, never `forwards`, so the
+   resting state IS the normal stylesheet — with CSS animation unsupported,
+   interrupted or switched off, every line is simply visible. */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(0.75rem); }
+}
+.hero__text > *,
+.hero__art {
+  animation: hero-rise 620ms var(--ease-out-expo) backwards;
+}
+.hero__text > h1 { animation-delay: 80ms; }
+.hero__text > .lede { animation-delay: 160ms; }
+.hero__art { animation-delay: 160ms; }
+.hero__text > .hero__actions { animation-delay: 240ms; }
+.hero__text > .hero__note { animation-delay: 300ms; }
+
 /* Pitch band ------------------------------------------------------------ */
 .band { background: var(--paper-muted); border-block: 1px solid var(--line); }
-.pitch { max-width: var(--page); margin: 0 auto; padding: 3.25rem 1.5rem; }
-.pitch h2 { font-size: clamp(1.4rem, 1.1rem + 1.3vw, 1.9rem); margin-bottom: 0.85rem; max-width: 28ch; }
-.pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.6; max-width: var(--measure); }
+  .pitch { max-width: var(--page); margin: 0 auto; padding: var(--space-inset) var(--gutter); }
+.pitch h2 {
+  font-size: clamp(1.7rem, 1.2rem + 2.1vw, 2.45rem);
+  margin-bottom: 0.85rem;
+  max-width: 24ch;
+}
+.pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
+
+/* The trail gets its own ground. It is the product metaphor, so it should read
+   as a map laid on the page, not as one more stack of text on the canvas. */
+.band--trail {
+  background: var(--paper);
+  margin-top: var(--space-between);
+}
+.band--trail > .section { padding-block: var(--space-inset); }
 
 /* Route: the three stops sit on a dashed trail, because the order is real. */
-.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.25rem; position: relative; }
-.route__stop { position: relative; padding-left: 3.75rem; }
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.5rem; position: relative; }
+.route__stop { position: relative; padding-left: 4.5rem; }
 .route__pin {
   position: absolute;
   left: 0;
   top: 0;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: var(--radius-pill);
-  background: var(--paper);
+  background: var(--canvas);
   border: 2px solid var(--action);
 }
 .route__pin svg {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.6rem;
+  height: 1.6rem;
   fill: none;
   stroke: var(--action);
   stroke-width: 1.8;
@@ -208,45 +320,70 @@ a:focus-visible, summary:focus-visible {
 .route__stop::before {
   content: "";
   position: absolute;
-  left: 1.3rem;
-  top: 3rem;
-  bottom: -2.25rem;
+  left: 1.55rem;
+  top: 3.5rem;
+  bottom: -2.5rem;
   border-left: 3px dashed var(--route);
 }
 .route__stop:last-child::before { display: none; }
-.route__stop h3 { font-size: 1.25rem; margin-bottom: 0.5rem; padding-top: 0.35rem; }
-.route__stop p { color: var(--ink-muted); line-height: 1.6; max-width: var(--measure); }
-.route__aside {
+  .route__stop h3 { font-size: 1.3125rem; margin-bottom: 0.5rem; padding-top: 0.6rem; }
+.route__stop p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
+/* Two classes deep on purpose: .route__stop p would otherwise out-specify a
+   bare .route__aside and drag the aside back to body size. */
+.route__stop .route__aside {
   margin-top: 0.65rem;
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   border-left: 3px solid var(--sun);
   padding-left: 0.75rem;
 }
+/* The reassurance sits at the stop where the doubt starts, not in the FAQ. */
+.route__stop .route__ready {
+  margin-bottom: 0.85rem;
+  color: var(--ink);
+  font-weight: 700;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--action);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem;
+  line-height: 1.5;
+}
 
 /* Exercise kinds -------------------------------------------------------- */
+/* Five half-sentences are a list, not five containers. Term left, gloss right:
+   one screen on a phone, no ragged hole at the end of an auto-fit grid. */
 .kinds {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  max-width: 52rem;
+  border-top: 1px solid var(--line);
 }
 .kinds li {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-card);
+  display: grid;
+  gap: 0.15rem 2rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
 }
-.kinds h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
-.kinds p { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
-.kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+  /* Row titles run one weight heavier than the h3 default: at 1.0625rem, 600
+   against the row's own body copy is not enough separation. */
+.kinds h3 { font-size: 1.0625rem; font-weight: 700; letter-spacing: 0; margin-bottom: 0.35rem; }
+.kinds p { color: var(--ink-muted); font-size: 0.9375rem; line-height: 1.55; }
+.kinds__note { margin-top: 1.5rem; color: var(--ink-muted); font-size: 0.9375rem; line-height: 1.6; max-width: var(--measure); }
+@media (min-width: 46rem) {
+  .kinds li { grid-template-columns: 13rem minmax(0, 1fr); align-items: baseline; }
+}
+.kinds__note + .kinds__note { margin-top: 0.5rem; }
 
 /* Privacy: the only saturated block on the page. */
-.privacy { background: var(--action-deep); color: #eef6f3; }
-.privacy__inner { max-width: var(--page); margin: 0 auto; padding: 4.5rem 1.5rem; }
-.privacy h2 { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2rem; }
+.privacy { background: var(--action-deep); color: var(--on-deep); margin-top: var(--space-between); }
+.privacy__inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(3rem, 2.2rem + 3vw, 4.5rem) var(--gutter);
+}
+.privacy h2 { font-size: clamp(2rem, 1.35rem + 2.7vw, 2.95rem); margin-bottom: 2rem; }
 .privacy__list {
   list-style: none;
   margin: 0 0 2rem;
@@ -255,78 +392,123 @@ a:focus-visible, summary:focus-visible {
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 1.5rem;
 }
-.privacy__list li { line-height: 1.6; color: #cfe3dd; }
-.privacy__list strong { display: block; color: #fff; margin-bottom: 0.2rem; }
+.privacy__list li { line-height: 1.6; color: var(--on-deep-muted); }
+.privacy__list strong { display: block; color: var(--action-on); margin-bottom: 0.2rem; }
 .privacy__caveat {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--on-deep-rule);
   padding-top: 1.5rem;
-  color: #cfe3dd;
+  color: var(--on-deep-muted);
   line-height: 1.6;
   max-width: var(--measure);
 }
 
 /* What it is not -------------------------------------------------------- */
-.nots { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; max-width: var(--measure); }
+/* This is the page's strongest argument, so it gets its own frame instead of
+   reading as small print between the privacy block and the FAQ. Paper tones
+   only — the privacy section stays the single saturated block. */
+.nots-panel {
+  max-width: 52rem;
+  margin: 0 auto;
+  background: var(--paper-muted);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.75rem, 1rem + 3vw, 3rem);
+}
+.nots-panel .section__title { margin-bottom: 1.5rem; }
+.nots { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; max-width: var(--measure); }
 .nots li {
   position: relative;
-  padding-left: 1.9rem;
-  line-height: 1.6;
-  color: var(--ink-muted);
+  padding-left: 2.6rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink);
 }
-.nots li::before {
+/* A crossed waymark: on a real trail it means "not this way", which is exactly
+   what the list says. Replaces the single coral dash. */
+.nots li::before,
+.nots li::after {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0.6rem;
-  width: 1rem;
-  height: 2px;
+  left: 0.25rem;
+  top: 0.8rem;
+  width: 1.2rem;
+  height: 3px;
+  border-radius: 2px;
   background: var(--coral);
 }
+.nots li::before { transform: rotate(45deg); }
+.nots li::after { transform: rotate(-45deg); }
 
-/* FAQ: native disclosure, no script. */
-.faq { display: grid; gap: 0.5rem; max-width: 46rem; }
-.faq details {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-}
+/* FAQ: native disclosure, no script. Flat rows, not six raised cards —
+   a question is not an object you pick up. */
+.faq { max-width: 46rem; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
 .faq summary {
   cursor: pointer;
+  font-size: 1.0625rem;
   font-weight: 700;
-  padding: 1rem 1.25rem;
+  line-height: 1.35;
+  padding: 1rem 0.25rem 1rem 0;
   list-style: none;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   align-items: center;
+  border-radius: var(--radius-md);
+  transition: background-color 180ms var(--ease-out-expo);
 }
+/* A whole clickable row with a pointer cursor and no hover state reads as dead.
+   Tint only — a row cannot lift without shifting the text under the cursor.
+   --ink on --paper-muted is 11.3:1. */
+.faq summary:hover { background: var(--paper-muted); }
+.faq details[open] summary { border-radius: var(--radius-md) var(--radius-md) 0 0; }
 .faq summary::-webkit-details-marker { display: none; }
+/* Chevron drawn from two borders rather than a "+"/"–" glyph: a text sign
+   changes size and baseline with the fallback font and jumps on toggle. This
+   keeps one shape that only rotates. The open/closed state is carried by the
+   native <details>, not by this decoration — hence content: "" with nothing for
+   a screen reader to read out. */
 .faq summary::after {
-  content: "+";
-  color: var(--action);
-  font-size: 1.35rem;
-  line-height: 1;
-  font-weight: 700;
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--action);
+  border-bottom: 2px solid var(--action);
+  transform: rotate(45deg);
+  transition: transform 140ms ease;
 }
-.faq details[open] summary::after { content: "–"; }
-.faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); line-height: 1.6; }
+.faq details[open] summary::after { transform: rotate(225deg); }
+.faq p { padding: 0 0 1.25rem; color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
 
 /* Closing call ---------------------------------------------------------- */
+/* On the page axis like everything else — it was the only section breaking left. */
 .close {
   max-width: var(--page);
   margin: 0 auto;
-  padding: 1rem 1.5rem 5rem;
-  text-align: center;
+  padding: var(--space-inset) var(--gutter) clamp(3.5rem, 2.5rem + 3vw, 5rem);
 }
-.close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; }
-.close p { color: var(--ink-muted); margin-bottom: 1.75rem; }
+  .close h2 {
+  font-size: clamp(1.85rem, 1.3rem + 2.4vw, 2.7rem);
+  margin-bottom: 0.75rem;
+  max-width: 22ch;
+}
+.close p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; margin-bottom: 1.75rem; max-width: var(--measure); }
 
 .site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
-.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
-.site-foot__links a:hover { color: var(--ink); }
+.site-foot__links a {
+  color: var(--ink-muted);
+  font-weight: 600;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  text-underline-offset: 0.2em;
+  transition: color 180ms var(--ease-out-expo);
+}
+.site-foot__links a:hover { color: var(--ink); text-decoration-thickness: 2px; }
 .site-foot {
   border-top: 1px solid var(--line);
-  padding: 2rem 1.5rem;
+  padding: 2rem var(--gutter);
   text-align: center;
   color: var(--ink-muted);
   font-size: 0.9rem;
@@ -336,20 +518,57 @@ a:focus-visible, summary:focus-visible {
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
-  .hero { grid-template-columns: 1fr; gap: 2rem; padding-bottom: 3rem; }
+  .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 1.5rem; padding-bottom: 3rem; }
   /* Headline first on a phone: the illustration is decorative and must not push
      the actual promise below the fold. */
   .hero__art { order: 1; }
-  .site-nav { display: none; }
+
+  /* The three jump targets stay on the phone — this is the platform the page is
+     built for. They move to their own row under logo and CTA and scroll
+     sideways when the labels do not fit; no menu to open, nothing to script. */
+  .site-head { flex-wrap: wrap; gap: 0.5rem 1rem; padding-bottom: 0; }
+  .site-nav {
+    order: 3;
+    width: 100%;
+    gap: 0.25rem;
+    /* Vertical air so the focus ring is not clipped: overflow-x: auto makes the
+       block axis scroll-clipped too. */
+    padding: 0.4rem 0;
+    border-top: 1px solid var(--line);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    /* Scroll affordance without script: the two "cover" layers scroll with the
+       content (attachment: local) and uncover a soft edge shade (attachment:
+       scroll) exactly on the side that has more to show. No overflow, no shade.
+       The opaque stops must match --canvas; the transparent ones are the same
+       colour at alpha 0 so Safari does not fade through grey. */
+    background:
+      linear-gradient(to right, #f7f3ea 45%, rgba(247, 243, 234, 0)) left center / 2.5rem 100% no-repeat local,
+      linear-gradient(to left, #f7f3ea 45%, rgba(247, 243, 234, 0)) right center / 2.5rem 100% no-repeat local,
+      linear-gradient(to right, rgba(24, 49, 58, 0.22), rgba(24, 49, 58, 0)) left center / 1.25rem 100% no-repeat scroll,
+      linear-gradient(to left, rgba(24, 49, 58, 0.22), rgba(24, 49, 58, 0)) right center / 1.25rem 100% no-repeat scroll;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a {
+    /* 44px minimum touch target, and labels never break mid-phrase. */
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding: 0 0.6rem;
+    white-space: nowrap;
+  }
+  .site-nav a:first-child { padding-left: 0; }
 }
 @media (min-width: 60rem) {
   /* Wide layout turns the trail horizontal so the three stops read as one route. */
-  .route { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .route__stop { padding-left: 0; padding-top: 3.75rem; }
+  .route { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+  .route__stop { padding-left: 0; padding-top: 4.5rem; }
   .route__stop::before {
-    left: 3.25rem;
-    right: -2rem;
-    top: 1.3rem;
+    left: 3.75rem;
+    right: -2.5rem;
+    top: 1.55rem;
     bottom: auto;
     border-left: 0;
     border-top: 3px dashed var(--route);
@@ -357,5 +576,14 @@ a:focus-visible, summary:focus-visible {
   .route__stop h3 { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  /* Pseudo-elements are not matched by `*`, and the FAQ chevron animates on one.
+     animation-delay matters as much as duration: with fill-mode backwards a
+     staggered delay would otherwise hold the hero hidden for 300ms. */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+  }
 }

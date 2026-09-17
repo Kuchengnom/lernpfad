@@ -12,3 +12,6 @@ references/**/*
 !references/**/
 !references/**/*.md
 experiment/evidence/
+
+# Claude Code agent worktrees
+.claude/worktrees/

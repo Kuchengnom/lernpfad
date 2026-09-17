@@ -39,8 +39,8 @@ and it matches the honesty standard the rest of this repository is held to.
 
 ## Claims and their basis
 
-Every claim is checked against shipped behaviour. Nothing is advertised that is unbuilt or
-unverified:
+Every claim is checked against shipped behaviour, with one deliberate exception marked in the
+table below. Nothing else is advertised that is unbuilt or unverified:
 
 | Claim on the page | Basis |
 | --- | --- |
@@ -52,6 +52,7 @@ unverified:
 | Paste school material from a chat, with a preview first | Shipped, `experiment/mobile-paste-evaluation.md` |
 | Read-aloud "where your device has a suitable voice" | Deliberately hedged; see `experiment/device-speech.md` |
 | Practice score is not a grade | `experiment/known-limitations.md` |
+| Hero: "Du fotografierst den Stoff aus dem Schulheft einfach ab" | **Deliberately loose.** Photographing the pages is what the parent does *for the AI chat*; Lernpfad itself still takes pasted text, not images. The author chose the shorter promotional line over the accurate one. Etappe 1 states the real mechanic ("zusammen mit den Fotos der Seiten … in einen KI-Chat … kopierst die Antwort zurück"). Revisit if image import is ever built. |
 
 Deliberately **not** claimed: the multi-book library and stamp album (in progress, unshipped),
 maths, QR sharing, device sync, efficacy, age ranges, user numbers, testimonials.
