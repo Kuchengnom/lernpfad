@@ -7,6 +7,12 @@
   --action-deep: #063f3b;
   --measure: 62ch;
   --page: 68rem;
+  --gutter: 1.5rem;
+  /* Rhythm: the page makes three arguments (WAS / WIE / WARUM). Sections inside
+     one argument sit close; a new argument gets --space-between on top. */
+  --space-within: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --space-between: clamp(3.5rem, 2rem + 5.5vw, 6rem);
+  --space-inset: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);
   /* ponytail: no webfont request. A page promising that nothing leaves the
      device must not fetch fonts from a CDN. Self-hosted display face is a
      defined follow-up asset, see experiment/welcome-page.md. */
@@ -46,7 +52,7 @@ a:focus-visible, summary:focus-visible {
   gap: 1.5rem;
   max-width: var(--page);
   margin: 0 auto;
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem var(--gutter);
 }
 .wordmark {
   display: inline-flex;
@@ -111,12 +117,12 @@ a:focus-visible, summary:focus-visible {
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
 .button:active { transform: translateY(1px); }
 
-/* Shared section frame. Hero, privacy and close use their own frames so their
-   padding never fights this rule. */
+/* Shared section frame. Hero, the trail band, privacy and close use their own
+   frames so their padding never fights this rule. */
 .section {
   max-width: var(--page);
   margin: 0 auto;
-  padding: 4.5rem 1.5rem;
+  padding: var(--space-within) var(--gutter);
 }
 .section__title { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2.25rem; }
 .eyebrow {
@@ -137,7 +143,7 @@ a:focus-visible, summary:focus-visible {
   gap: 3rem;
   max-width: var(--page);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 2.5rem var(--gutter) var(--space-inset);
 }
 .hero h1 {
   font-size: clamp(2.1rem, 1.3rem + 3.4vw, 3.5rem);
@@ -177,28 +183,36 @@ a:focus-visible, summary:focus-visible {
 
 /* Pitch band ------------------------------------------------------------ */
 .band { background: var(--paper-muted); border-block: 1px solid var(--line); }
-.pitch { max-width: var(--page); margin: 0 auto; padding: 3.25rem 1.5rem; }
+.pitch { max-width: var(--page); margin: 0 auto; padding: var(--space-inset) var(--gutter); }
 .pitch h2 { font-size: clamp(1.4rem, 1.1rem + 1.3vw, 1.9rem); margin-bottom: 0.85rem; max-width: 28ch; }
 .pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.6; max-width: var(--measure); }
 
+/* The trail gets its own ground. It is the product metaphor, so it should read
+   as a map laid on the page, not as one more stack of text on the canvas. */
+.band--trail {
+  background: var(--paper);
+  margin-top: var(--space-between);
+}
+.band--trail > .section { padding-block: var(--space-inset); }
+
 /* Route: the three stops sit on a dashed trail, because the order is real. */
-.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.25rem; position: relative; }
-.route__stop { position: relative; padding-left: 3.75rem; }
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.5rem; position: relative; }
+.route__stop { position: relative; padding-left: 4.5rem; }
 .route__pin {
   position: absolute;
   left: 0;
   top: 0;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: var(--radius-pill);
-  background: var(--paper);
+  background: var(--canvas);
   border: 2px solid var(--action);
 }
 .route__pin svg {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.6rem;
+  height: 1.6rem;
   fill: none;
   stroke: var(--action);
   stroke-width: 1.8;
@@ -208,13 +222,13 @@ a:focus-visible, summary:focus-visible {
 .route__stop::before {
   content: "";
   position: absolute;
-  left: 1.3rem;
-  top: 3rem;
-  bottom: -2.25rem;
+  left: 1.55rem;
+  top: 3.5rem;
+  bottom: -2.5rem;
   border-left: 3px dashed var(--route);
 }
 .route__stop:last-child::before { display: none; }
-.route__stop h3 { font-size: 1.25rem; margin-bottom: 0.5rem; padding-top: 0.35rem; }
+.route__stop h3 { font-size: 1.25rem; margin-bottom: 0.5rem; padding-top: 0.6rem; }
 .route__stop p { color: var(--ink-muted); line-height: 1.6; max-width: var(--measure); }
 .route__aside {
   margin-top: 0.65rem;
@@ -224,28 +238,35 @@ a:focus-visible, summary:focus-visible {
 }
 
 /* Exercise kinds -------------------------------------------------------- */
+/* Five half-sentences are a list, not five containers. Term left, gloss right:
+   one screen on a phone, no ragged hole at the end of an auto-fit grid. */
 .kinds {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  max-width: 52rem;
+  border-top: 1px solid var(--line);
 }
 .kinds li {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-card);
+  display: grid;
+  gap: 0.15rem 2rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
 }
-.kinds h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
+.kinds h3 { font-size: 1.05rem; }
 .kinds p { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
-.kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+.kinds__note { margin-top: 1.5rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+@media (min-width: 46rem) {
+  .kinds li { grid-template-columns: 13rem minmax(0, 1fr); align-items: baseline; }
+}
 
 /* Privacy: the only saturated block on the page. */
-.privacy { background: var(--action-deep); color: #eef6f3; }
-.privacy__inner { max-width: var(--page); margin: 0 auto; padding: 4.5rem 1.5rem; }
+.privacy { background: var(--action-deep); color: #eef6f3; margin-top: var(--space-between); }
+.privacy__inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(3rem, 2.2rem + 3vw, 4.5rem) var(--gutter);
+}
 .privacy h2 { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2rem; }
 .privacy__list {
   list-style: none;
@@ -283,17 +304,14 @@ a:focus-visible, summary:focus-visible {
   background: var(--coral);
 }
 
-/* FAQ: native disclosure, no script. */
-.faq { display: grid; gap: 0.5rem; max-width: 46rem; }
-.faq details {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-}
+/* FAQ: native disclosure, no script. Flat rows, not six raised cards —
+   a question is not an object you pick up. */
+.faq { max-width: 46rem; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
 .faq summary {
   cursor: pointer;
   font-weight: 700;
-  padding: 1rem 1.25rem;
+  padding: 1rem 0.25rem 1rem 0;
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -309,24 +327,24 @@ a:focus-visible, summary:focus-visible {
   font-weight: 700;
 }
 .faq details[open] summary::after { content: "–"; }
-.faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); line-height: 1.6; }
+.faq p { padding: 0 0 1.25rem; color: var(--ink-muted); line-height: 1.6; max-width: var(--measure); }
 
 /* Closing call ---------------------------------------------------------- */
+/* On the page axis like everything else — it was the only section breaking left. */
 .close {
   max-width: var(--page);
   margin: 0 auto;
-  padding: 1rem 1.5rem 5rem;
-  text-align: center;
+  padding: var(--space-inset) var(--gutter) clamp(3.5rem, 2.5rem + 3vw, 5rem);
 }
-.close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; }
-.close p { color: var(--ink-muted); margin-bottom: 1.75rem; }
+.close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; max-width: 24ch; }
+.close p { color: var(--ink-muted); margin-bottom: 1.75rem; max-width: var(--measure); }
 
 .site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
 .site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
 .site-foot__links a:hover { color: var(--ink); }
 .site-foot {
   border-top: 1px solid var(--line);
-  padding: 2rem 1.5rem;
+  padding: 2rem var(--gutter);
   text-align: center;
   color: var(--ink-muted);
   font-size: 0.9rem;
@@ -336,7 +354,7 @@ a:focus-visible, summary:focus-visible {
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
-  .hero { grid-template-columns: 1fr; gap: 2rem; padding-bottom: 3rem; }
+  .hero { grid-template-columns: 1fr; gap: 2rem; }
   /* Headline first on a phone: the illustration is decorative and must not push
      the actual promise below the fold. */
   .hero__art { order: 1; }
@@ -344,12 +362,12 @@ a:focus-visible, summary:focus-visible {
 }
 @media (min-width: 60rem) {
   /* Wide layout turns the trail horizontal so the three stops read as one route. */
-  .route { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .route__stop { padding-left: 0; padding-top: 3.75rem; }
+  .route { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+  .route__stop { padding-left: 0; padding-top: 4.5rem; }
   .route__stop::before {
-    left: 3.25rem;
-    right: -2rem;
-    top: 1.3rem;
+    left: 3.75rem;
+    right: -2.5rem;
+    top: 1.55rem;
     bottom: auto;
     border-left: 0;
     border-top: 3px dashed var(--route);
