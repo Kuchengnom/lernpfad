@@ -3,14 +3,23 @@
    of truth for the product itself; change both together. */
 /* ponytail: shared tokens live in tokens.css; only welcome.css-local tokens stay here. */
 @import "./tokens.css";
+
+/* Display face hook. When the self-hosted display face is decided (owner call
+   pending, see experiment/welcome-page.md), exactly two things change: one
+   @font-face rule right here, loading a local file from ./fonts/, and
+   --font-display in tokens.css pointing at its family name. Nothing else in
+   this stylesheet names a font. No CDN, no network request — the page promises
+   that nothing leaves the device. */
+
 :root {
   --action-deep: #063f3b;
-  --measure: 62ch;
+  /* 58ch, not 62ch: at 1.0625rem German body copy 62ch runs ~90 characters on a
+     wide screen, past the comfortable return sweep. --measure-lede is shorter
+     again because the lede sets larger. */
+  --measure: 58ch;
+  --measure-lede: 46ch;
   --page: 68rem;
-  /* ponytail: no webfont request. A page promising that nothing leaves the
-     device must not fetch fonts from a CDN. Self-hosted display face is a
-     defined follow-up asset, see experiment/welcome-page.md. */
-  font-family: "Nunito Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-family: var(--font-text);
   color: var(--ink);
   background: var(--canvas);
   font-synthesis: none;
@@ -19,7 +28,18 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--canvas); min-width: 320px; }
 img { max-width: 100%; height: auto; }
-h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+/* Type scale. Three levels that are meant to be told apart at a glance, not
+   three sizes of the same thing:
+     display (h1)  800, very tight tracking, near-solid leading
+     head    (h2)  700, tight tracking, still clearly display-sized
+     sub     (h3)  600, neutral tracking, text-sized and set at reading leading
+   Tracking gets less negative as the type gets smaller — optical sizing by
+   hand, since the stack has no optical sizes. */
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1, h2 { font-family: var(--font-display); }
+h1 { font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
+h2 { font-weight: 700; letter-spacing: -0.024em; line-height: 1.1; }
+h3 { font-weight: 600; letter-spacing: -0.004em; line-height: 1.28; }
 p { margin: 0; }
 a:focus-visible, summary:focus-visible {
   outline: 3px solid var(--sun);
@@ -52,9 +72,10 @@ a:focus-visible, summary:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.125rem;
-  letter-spacing: -0.01em;
+  font-size: 1.1875rem;
+  letter-spacing: -0.02em;
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
@@ -118,11 +139,14 @@ a:focus-visible, summary:focus-visible {
   margin: 0 auto;
   padding: 4.5rem 1.5rem;
 }
-.section__title { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2.25rem; }
+/* Section heads carry their sections alone (two eyebrows were dropped), so they
+   sit a full step above the 1.3125rem h3 rather than half a step. */
+.section__title { font-size: clamp(2rem, 1.35rem + 2.7vw, 2.95rem); margin-bottom: 2.25rem; }
 .eyebrow {
   font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--action);
   margin-bottom: 0.6rem;
@@ -140,8 +164,7 @@ a:focus-visible, summary:focus-visible {
   padding: 2.5rem 1.5rem 4rem;
 }
 .hero h1 {
-  font-size: clamp(2.1rem, 1.3rem + 3.4vw, 3.5rem);
-  font-weight: 800;
+  font-size: clamp(2.35rem, 1.35rem + 4.3vw, 4.15rem);
   margin-bottom: 1.25rem;
 }
 .hero h1 em {
@@ -151,11 +174,13 @@ a:focus-visible, summary:focus-visible {
   background: linear-gradient(var(--route), var(--route)) left 92% / 100% 0.32em no-repeat;
   padding-bottom: 0.05em;
 }
+/* The lede is the one paragraph that sets above text size, so it gets its own
+   shorter measure and slightly tighter leading than body copy. */
 .lede {
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  line-height: 1.55;
   color: var(--ink-muted);
-  max-width: var(--measure);
+  max-width: var(--measure-lede);
 }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.75rem 0 0.85rem; }
 .hero__note { font-size: 0.9rem; color: var(--ink-muted); }
@@ -178,8 +203,12 @@ a:focus-visible, summary:focus-visible {
 /* Pitch band ------------------------------------------------------------ */
 .band { background: var(--paper-muted); border-block: 1px solid var(--line); }
 .pitch { max-width: var(--page); margin: 0 auto; padding: 3.25rem 1.5rem; }
-.pitch h2 { font-size: clamp(1.4rem, 1.1rem + 1.3vw, 1.9rem); margin-bottom: 0.85rem; max-width: 28ch; }
-.pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.6; max-width: var(--measure); }
+.pitch h2 {
+  font-size: clamp(1.7rem, 1.2rem + 2.1vw, 2.45rem);
+  margin-bottom: 0.85rem;
+  max-width: 24ch;
+}
+.pitch p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
 
 /* Route: the three stops sit on a dashed trail, because the order is real. */
 .route { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.25rem; position: relative; }
@@ -214,11 +243,14 @@ a:focus-visible, summary:focus-visible {
   border-left: 3px dashed var(--route);
 }
 .route__stop:last-child::before { display: none; }
-.route__stop h3 { font-size: 1.25rem; margin-bottom: 0.5rem; padding-top: 0.35rem; }
-.route__stop p { color: var(--ink-muted); line-height: 1.6; max-width: var(--measure); }
-.route__aside {
+.route__stop h3 { font-size: 1.3125rem; margin-bottom: 0.5rem; padding-top: 0.35rem; }
+.route__stop p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
+/* Two classes deep on purpose: .route__stop p would otherwise out-specify a
+   bare .route__aside and drag the aside back to body size. */
+.route__stop .route__aside {
   margin-top: 0.65rem;
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   border-left: 3px solid var(--sun);
   padding-left: 0.75rem;
 }
@@ -239,14 +271,16 @@ a:focus-visible, summary:focus-visible {
   padding: 1.25rem;
   box-shadow: var(--shadow-card);
 }
-.kinds h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
-.kinds p { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
-.kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+/* Card titles run one weight heavier than the h3 default: at 1.0625rem, 600
+   against the card's own body copy is not enough separation. */
+.kinds h3 { font-size: 1.0625rem; font-weight: 700; letter-spacing: 0; margin-bottom: 0.35rem; }
+.kinds p { color: var(--ink-muted); font-size: 0.9375rem; line-height: 1.55; }
+.kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.9375rem; line-height: 1.6; max-width: var(--measure); }
 
 /* Privacy: the only saturated block on the page. */
 .privacy { background: var(--action-deep); color: #eef6f3; }
 .privacy__inner { max-width: var(--page); margin: 0 auto; padding: 4.5rem 1.5rem; }
-.privacy h2 { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2rem; }
+.privacy h2 { font-size: clamp(2rem, 1.35rem + 2.7vw, 2.95rem); margin-bottom: 2rem; }
 .privacy__list {
   list-style: none;
   margin: 0 0 2rem;
@@ -270,7 +304,8 @@ a:focus-visible, summary:focus-visible {
 .nots li {
   position: relative;
   padding-left: 1.9rem;
-  line-height: 1.6;
+  font-size: 1.0625rem;
+  line-height: 1.65;
   color: var(--ink-muted);
 }
 .nots li::before {
@@ -292,7 +327,9 @@ a:focus-visible, summary:focus-visible {
 }
 .faq summary {
   cursor: pointer;
+  font-size: 1.0625rem;
   font-weight: 700;
+  line-height: 1.35;
   padding: 1rem 1.25rem;
   list-style: none;
   display: flex;
@@ -309,7 +346,7 @@ a:focus-visible, summary:focus-visible {
   font-weight: 700;
 }
 .faq details[open] summary::after { content: "–"; }
-.faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); line-height: 1.6; }
+.faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
 
 /* Closing call ---------------------------------------------------------- */
 .close {
@@ -318,8 +355,13 @@ a:focus-visible, summary:focus-visible {
   padding: 1rem 1.5rem 5rem;
   text-align: center;
 }
-.close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; }
-.close p { color: var(--ink-muted); margin-bottom: 1.75rem; }
+.close h2 {
+  font-size: clamp(1.85rem, 1.3rem + 2.4vw, 2.7rem);
+  margin-bottom: 0.75rem;
+  max-width: 22ch;
+  margin-inline: auto;
+}
+.close p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.6; margin-bottom: 1.75rem; }
 
 .site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
 .site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
