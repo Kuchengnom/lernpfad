@@ -222,6 +222,18 @@ a:focus-visible, summary:focus-visible {
   border-left: 3px solid var(--sun);
   padding-left: 0.75rem;
 }
+/* The reassurance sits at the stop where the doubt starts, not in the FAQ. */
+.route__stop .route__ready {
+  margin-bottom: 0.85rem;
+  color: var(--ink);
+  font-weight: 700;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--action);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem;
+  line-height: 1.5;
+}
 
 /* Exercise kinds -------------------------------------------------------- */
 .kinds {
@@ -242,6 +254,7 @@ a:focus-visible, summary:focus-visible {
 .kinds h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
 .kinds p { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
 .kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
+.kinds__note + .kinds__note { margin-top: 0.5rem; }
 
 /* Privacy: the only saturated block on the page. */
 .privacy { background: var(--action-deep); color: #eef6f3; }
@@ -266,22 +279,41 @@ a:focus-visible, summary:focus-visible {
 }
 
 /* What it is not -------------------------------------------------------- */
-.nots { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; max-width: var(--measure); }
+/* This is the page's strongest argument, so it gets its own frame instead of
+   reading as small print between the privacy block and the FAQ. Paper tones
+   only — the privacy section stays the single saturated block. */
+.nots-panel {
+  max-width: 52rem;
+  margin: 0 auto;
+  background: var(--paper-muted);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.75rem, 1rem + 3vw, 3rem);
+}
+.nots-panel .section__title { margin-bottom: 1.5rem; }
+.nots { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; max-width: var(--measure); }
 .nots li {
   position: relative;
-  padding-left: 1.9rem;
+  padding-left: 2.6rem;
   line-height: 1.6;
-  color: var(--ink-muted);
+  font-size: 1.0625rem;
+  color: var(--ink);
 }
-.nots li::before {
+/* A crossed waymark: on a real trail it means "not this way", which is exactly
+   what the list says. Replaces the single coral dash. */
+.nots li::before,
+.nots li::after {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0.6rem;
-  width: 1rem;
-  height: 2px;
+  left: 0.25rem;
+  top: 0.8rem;
+  width: 1.2rem;
+  height: 3px;
+  border-radius: 2px;
   background: var(--coral);
 }
+.nots li::before { transform: rotate(45deg); }
+.nots li::after { transform: rotate(-45deg); }
 
 /* FAQ: native disclosure, no script. */
 .faq { display: grid; gap: 0.5rem; max-width: 46rem; }
