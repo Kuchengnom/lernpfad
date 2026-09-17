@@ -13,6 +13,11 @@
 
 :root {
   /* --action-deep now lives in tokens.css, shared with the app. */
+  /* Text colours for the one inverted block. Local on purpose: they only make
+     sense on --action-deep, which app/styles.css does not use. */
+  --on-deep: #eef6f3;
+  --on-deep-muted: #cfe3dd;
+  --on-deep-rule: rgba(255, 255, 255, 0.2);
   /* Hover shade for --action. --action-strong is only ~15 % darker in relative
      luminance, which is ΔL* ≈ 3 — below the threshold where a parent notices the
      button reacted. This sits between --action and --action-deep: ΔL* ≈ 11, and
@@ -108,6 +113,7 @@ a:focus-visible, summary:focus-visible {
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
+  min-height: 2.75rem;
 }
 .wordmark__mark {
   display: grid;
@@ -122,7 +128,11 @@ a:focus-visible, summary:focus-visible {
   height: 1.4rem;
   fill: none;
   stroke: var(--action-on);
-  stroke-width: 1.9;
+  /* Same rendered weight as .route__pin svg, not the same number: this mark has
+     a 32-unit viewBox in 22.4px (scale 0.70), the pins have 24 in 22.4px (scale
+     0.93). 2.3 renders 1.61px against the pins' 1.68px — the last four percent
+     are deliberate, because a light stroke on the dark pill reads heavier. */
+  stroke-width: 2.3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -187,7 +197,6 @@ a:focus-visible, summary:focus-visible {
 }
 .button--quiet:active { background: var(--paper-muted); box-shadow: none; }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
-.wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
 .button:active { transform: translateY(1px); }
 
@@ -369,7 +378,7 @@ a:focus-visible, summary:focus-visible {
 .kinds__note + .kinds__note { margin-top: 0.5rem; }
 
 /* Privacy: the only saturated block on the page. */
-.privacy { background: var(--action-deep); color: #eef6f3; margin-top: var(--space-between); }
+.privacy { background: var(--action-deep); color: var(--on-deep); margin-top: var(--space-between); }
 .privacy__inner {
   max-width: var(--page);
   margin: 0 auto;
@@ -384,12 +393,12 @@ a:focus-visible, summary:focus-visible {
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 1.5rem;
 }
-.privacy__list li { line-height: 1.6; color: #cfe3dd; }
-.privacy__list strong { display: block; color: #fff; margin-bottom: 0.2rem; }
+.privacy__list li { line-height: 1.6; color: var(--on-deep-muted); }
+.privacy__list strong { display: block; color: var(--action-on); margin-bottom: 0.2rem; }
 .privacy__caveat {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--on-deep-rule);
   padding-top: 1.5rem;
-  color: #cfe3dd;
+  color: var(--on-deep-muted);
   line-height: 1.6;
   max-width: var(--measure);
 }
@@ -455,15 +464,23 @@ a:focus-visible, summary:focus-visible {
 .faq summary:hover { background: var(--paper-muted); }
 .faq details[open] summary { border-radius: var(--radius-md) var(--radius-md) 0 0; }
 .faq summary::-webkit-details-marker { display: none; }
+/* Chevron drawn from two borders rather than a "+"/"–" glyph: a text sign
+   changes size and baseline with the fallback font and jumps on toggle. This
+   keeps one shape that only rotates. The open/closed state is carried by the
+   native <details>, not by this decoration — hence content: "" with nothing for
+   a screen reader to read out. */
 .faq summary::after {
-  content: "+";
-  color: var(--action);
-  font-size: 1.35rem;
-  line-height: 1;
-  font-weight: 700;
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--action);
+  border-bottom: 2px solid var(--action);
+  transform: rotate(45deg);
+  transition: transform 140ms ease;
 }
-.faq details[open] summary::after { content: "–"; }
-  .faq p { padding: 0 0 1.25rem; color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
+.faq details[open] summary::after { transform: rotate(225deg); }
+.faq p { padding: 0 0 1.25rem; color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; max-width: var(--measure); }
 
 /* Closing call ---------------------------------------------------------- */
 /* On the page axis like everything else — it was the only section breaking left. */
@@ -480,8 +497,12 @@ a:focus-visible, summary:focus-visible {
 .close p { color: var(--ink-muted); font-size: 1.0625rem; line-height: 1.65; margin-bottom: 1.75rem; max-width: var(--measure); }
 
 .site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
-.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
 .site-foot__links a {
+  color: var(--ink-muted);
+  font-weight: 600;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
   text-underline-offset: 0.2em;
   transition: color 180ms var(--ease-out-expo);
 }
@@ -495,6 +516,9 @@ a:focus-visible, summary:focus-visible {
   display: grid;
   gap: 0.35rem;
 }
+.site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
+.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
+.site-foot__links a:hover { color: var(--ink); }
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
@@ -556,9 +580,12 @@ a:focus-visible, summary:focus-visible {
   .route__stop h3 { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  /* animation-delay matters as much as duration here: with fill-mode backwards a
+  /* Pseudo-elements are not matched by `*`, and the FAQ chevron animates on one.
+     animation-delay matters as much as duration: with fill-mode backwards a
      staggered delay would otherwise hold the hero hidden for 300ms. */
-  * {
+  *,
+  *::before,
+  *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-delay: 0.01ms !important;
