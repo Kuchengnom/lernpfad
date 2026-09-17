@@ -13,6 +13,14 @@
 
 :root {
   /* --action-deep now lives in tokens.css, shared with the app. */
+  /* Hover shade for --action. --action-strong is only ~15 % darker in relative
+     luminance, which is ΔL* ≈ 3 — below the threshold where a parent notices the
+     button reacted. This sits between --action and --action-deep: ΔL* ≈ 11, and
+     white text on it is 9.0:1 (AA needs 4.5:1). Local on purpose — tokens.css is
+     shared with the app. */
+  --action-hover: #06524c;
+  /* Exponential ease-out: fast departure, long settle. No overshoot. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   /* 58ch, not 62ch: at 1.0625rem German body copy 62ch runs ~90 characters on a
      wide screen, past the comfortable return sweep. --measure-lede is shorter
      again because the lede sets larger. */
@@ -119,6 +127,9 @@ a:focus-visible, summary:focus-visible {
   stroke-linejoin: round;
 }
 .wordmark__mark .trail { stroke: var(--sun); }
+.wordmark__mark { transition: transform 180ms var(--ease-out-expo); }
+/* The mark steps forward, the word stays put — a nudge, not a wobble. */
+.wordmark:hover .wordmark__mark { transform: translateY(-2px); }
 .site-nav { display: flex; gap: 1.5rem; }
 .site-nav a {
   color: var(--ink-muted);
@@ -127,6 +138,7 @@ a:focus-visible, summary:focus-visible {
   font-size: 0.95rem;
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
+  transition: color 180ms var(--ease-out-expo), border-color 180ms var(--ease-out-expo);
 }
 /* --route underlined at 1.63:1 against --canvas; --action makes the hover
    state visible on its own (5.53:1). */
@@ -144,15 +156,36 @@ a:focus-visible, summary:focus-visible {
   font-size: 1rem;
   text-decoration: none;
   border: 2px solid transparent;
-  transition: transform 140ms ease, background-color 140ms ease;
+  /* Paint-only transitions. Nothing here reflows. */
+  transition:
+    transform 180ms var(--ease-out-expo),
+    background-color 180ms var(--ease-out-expo),
+    border-color 180ms var(--ease-out-expo),
+    box-shadow 180ms var(--ease-out-expo);
 }
+/* Hover = the button lifts off a painted waymark. --sun for the primary, the
+   quieter trail colour for the secondary, so the two share one gesture without
+   sharing one weight. Both work without the transition (reduced motion): the
+   colour and the offset are end states, not keyframes. */
 .button--primary { background: var(--action); color: var(--action-on); }
-.button--primary:hover { background: var(--action-strong); }
+/* The button lifts off a painted waymark on hover and sets back down on press. */
+.button--primary:hover {
+  background: var(--action-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--sun);
+}
+.button--primary:active { background: var(--action-deep); box-shadow: none; }
 /* --line gave the secondary button a 1.36:1 edge against --canvas, i.e. no
    visible boundary. --ink-muted reaches 5.46:1 and stays neutral, so the one
    green primary keeps the hierarchy to itself. */
 .button--quiet { background: transparent; color: var(--ink); border-color: var(--ink-muted); }
-.button--quiet:hover { border-color: var(--ink); }
+.button--quiet:hover {
+  background: var(--paper);
+  border-color: var(--action);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--route);
+}
+.button--quiet:active { background: var(--paper-muted); box-shadow: none; }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
 .wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
@@ -215,6 +248,24 @@ a:focus-visible, summary:focus-visible {
   box-shadow: var(--shadow-card);
   display: block;
 }
+
+/* One orchestrated moment, once, on load: the hero walks in along the trail.
+   transform + opacity only. fill-mode is `backwards`, never `forwards`, so the
+   resting state IS the normal stylesheet — with CSS animation unsupported,
+   interrupted or switched off, every line is simply visible. */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(0.75rem); }
+}
+.hero__text > *,
+.hero__art {
+  animation: hero-rise 620ms var(--ease-out-expo) backwards;
+}
+.hero__text > h1 { animation-delay: 80ms; }
+.hero__text > .lede { animation-delay: 160ms; }
+.hero__art { animation-delay: 160ms; }
+.hero__text > .hero__actions { animation-delay: 240ms; }
+.hero__text > .hero__note { animation-delay: 300ms; }
+.hero__text > .chips { animation-delay: 300ms; }
 
 /* Pitch band ------------------------------------------------------------ */
 .band { background: var(--paper-muted); border-block: 1px solid var(--line); }
@@ -395,7 +446,14 @@ a:focus-visible, summary:focus-visible {
   justify-content: space-between;
   gap: 1rem;
   align-items: center;
+  border-radius: var(--radius-md);
+  transition: background-color 180ms var(--ease-out-expo);
 }
+/* A whole clickable row with a pointer cursor and no hover state reads as dead.
+   Tint only — a row cannot lift without shifting the text under the cursor.
+   --ink on --paper-muted is 11.3:1. */
+.faq summary:hover { background: var(--paper-muted); }
+.faq details[open] summary { border-radius: var(--radius-md) var(--radius-md) 0 0; }
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after {
   content: "+";
@@ -423,7 +481,11 @@ a:focus-visible, summary:focus-visible {
 
 .site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
 .site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
-.site-foot__links a:hover { color: var(--ink); }
+.site-foot__links a {
+  text-underline-offset: 0.2em;
+  transition: color 180ms var(--ease-out-expo);
+}
+.site-foot__links a:hover { color: var(--ink); text-decoration-thickness: 2px; }
 .site-foot {
   border-top: 1px solid var(--line);
   padding: 2rem var(--gutter);
@@ -494,5 +556,11 @@ a:focus-visible, summary:focus-visible {
   .route__stop h3 { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  /* animation-delay matters as much as duration here: with fill-mode backwards a
+     staggered delay would otherwise hold the hero hidden for 300ms. */
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+  }
 }
