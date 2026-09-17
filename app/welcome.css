@@ -12,7 +12,7 @@
    that nothing leaves the device. */
 
 :root {
-  --action-deep: #063f3b;
+  /* --action-deep now lives in tokens.css, shared with the app. */
   /* 58ch, not 62ch: at 1.0625rem German body copy 62ch runs ~90 characters on a
      wide screen, past the comfortable return sweep. --measure-lede is shorter
      again because the lede sets larger. */
@@ -47,9 +47,15 @@ h1 { font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
 h2 { font-weight: 700; letter-spacing: -0.024em; line-height: 1.1; }
 h3 { font-weight: 600; letter-spacing: -0.004em; line-height: 1.28; }
 p { margin: 0; }
+/* Two-ring focus indicator (WCAG 2.2 SC 1.4.11). --sun alone reached only
+   1.94:1 on --canvas. The dark outer ring carries the light surfaces
+   (10.6:1 on canvas, 11.5:1 on paper, 9.8:1 on paper-muted); the warm inner
+   ring fills the offset gap and is what stays visible on the --action-deep
+   privacy block, where the outer ring blends in (sun on deep = 5.5:1). */
 a:focus-visible, summary:focus-visible {
-  outline: 3px solid var(--sun);
-  outline-offset: 3px;
+  outline: 3px solid var(--action-deep);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--sun);
   border-radius: 0.25rem;
 }
 
@@ -113,7 +119,9 @@ a:focus-visible, summary:focus-visible {
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
 }
-.site-nav a:hover { color: var(--ink); border-bottom-color: var(--route); }
+/* --route underlined at 1.63:1 against --canvas; --action makes the hover
+   state visible on its own (5.53:1). */
+.site-nav a:hover { color: var(--ink); border-bottom-color: var(--action); }
 
 /* Buttons --------------------------------------------------------------- */
 .button {
@@ -131,8 +139,11 @@ a:focus-visible, summary:focus-visible {
 }
 .button--primary { background: var(--action); color: var(--action-on); }
 .button--primary:hover { background: var(--action-strong); }
-.button--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
-.button--quiet:hover { border-color: var(--ink-muted); }
+/* --line gave the secondary button a 1.36:1 edge against --canvas, i.e. no
+   visible boundary. --ink-muted reaches 5.46:1 and stays neutral, so the one
+   green primary keeps the hierarchy to itself. */
+.button--quiet { background: transparent; color: var(--ink); border-color: var(--ink-muted); }
+.button--quiet:hover { border-color: var(--ink); }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
 .wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
