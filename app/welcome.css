@@ -274,7 +274,6 @@ a:focus-visible, summary:focus-visible {
 .hero__art { animation-delay: 160ms; }
 .hero__text > .hero__actions { animation-delay: 240ms; }
 .hero__text > .hero__note { animation-delay: 300ms; }
-.hero__text > .chips { animation-delay: 300ms; }
 
 /* Pitch band ------------------------------------------------------------ */
 .band { background: var(--paper-muted); border-block: 1px solid var(--line); }
@@ -516,9 +515,6 @@ a:focus-visible, summary:focus-visible {
   display: grid;
   gap: 0.35rem;
 }
-.site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
-.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
-.site-foot__links a:hover { color: var(--ink); }
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
