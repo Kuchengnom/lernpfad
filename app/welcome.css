@@ -4,7 +4,6 @@
 /* ponytail: shared tokens live in tokens.css; only welcome.css-local tokens stay here. */
 @import "./tokens.css";
 :root {
-  --action-deep: #063f3b;
   --measure: 62ch;
   --page: 68rem;
   /* ponytail: no webfont request. A page promising that nothing leaves the
@@ -21,9 +20,15 @@ body { margin: 0; background: var(--canvas); min-width: 320px; }
 img { max-width: 100%; height: auto; }
 h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
 p { margin: 0; }
+/* Two-ring focus indicator (WCAG 2.2 SC 1.4.11). --sun alone reached only
+   1.94:1 on --canvas. The dark outer ring carries the light surfaces
+   (10.6:1 on canvas, 11.5:1 on paper, 9.8:1 on paper-muted); the warm inner
+   ring fills the offset gap and is what stays visible on the --action-deep
+   privacy block, where the outer ring blends in (sun on deep = 5.5:1). */
 a:focus-visible, summary:focus-visible {
-  outline: 3px solid var(--sun);
-  outline-offset: 3px;
+  outline: 3px solid var(--action-deep);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--sun);
   border-radius: 0.25rem;
 }
 
@@ -86,7 +91,9 @@ a:focus-visible, summary:focus-visible {
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
 }
-.site-nav a:hover { color: var(--ink); border-bottom-color: var(--route); }
+/* --route underlined at 1.63:1 against --canvas; --action makes the hover
+   state visible on its own (5.53:1). */
+.site-nav a:hover { color: var(--ink); border-bottom-color: var(--action); }
 
 /* Buttons --------------------------------------------------------------- */
 .button {
@@ -104,8 +111,11 @@ a:focus-visible, summary:focus-visible {
 }
 .button--primary { background: var(--action); color: var(--action-on); }
 .button--primary:hover { background: var(--action-strong); }
-.button--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
-.button--quiet:hover { border-color: var(--ink-muted); }
+/* --line gave the secondary button a 1.36:1 edge against --canvas, i.e. no
+   visible boundary. --ink-muted reaches 5.46:1 and stays neutral, so the one
+   green primary keeps the hierarchy to itself. */
+.button--quiet { background: transparent; color: var(--ink); border-color: var(--ink-muted); }
+.button--quiet:hover { border-color: var(--ink); }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
 .wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
