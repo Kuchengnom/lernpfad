@@ -5,6 +5,11 @@
 @import "./tokens.css";
 :root {
   --action-deep: #063f3b;
+  /* Text colours for the one inverted block. Local on purpose: they only make
+     sense on --action-deep, which app/styles.css does not use. */
+  --on-deep: #eef6f3;
+  --on-deep-muted: #cfe3dd;
+  --on-deep-rule: rgba(255, 255, 255, 0.2);
   --measure: 62ch;
   --page: 68rem;
   /* ponytail: no webfont request. A page promising that nothing leaves the
@@ -58,6 +63,7 @@ a:focus-visible, summary:focus-visible {
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
+  min-height: 2.75rem;
 }
 .wordmark__mark {
   display: grid;
@@ -72,7 +78,11 @@ a:focus-visible, summary:focus-visible {
   height: 1.4rem;
   fill: none;
   stroke: var(--action-on);
-  stroke-width: 1.9;
+  /* Same rendered weight as .route__pin svg, not the same number: this mark has
+     a 32-unit viewBox in 22.4px (scale 0.70), the pins have 24 in 22.4px (scale
+     0.93). 2.3 renders 1.61px against the pins' 1.68px — the last four percent
+     are deliberate, because a light stroke on the dark pill reads heavier. */
+  stroke-width: 2.3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -107,7 +117,6 @@ a:focus-visible, summary:focus-visible {
 .button--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
 .button--quiet:hover { border-color: var(--ink-muted); }
 .button--small { padding: 0.72rem 1.15rem; font-size: 0.9rem; }
-.wordmark { min-height: 2.75rem; }
 .button--large { padding: 1.05rem 2rem; font-size: 1.0625rem; }
 .button:active { transform: translateY(1px); }
 
@@ -244,7 +253,7 @@ a:focus-visible, summary:focus-visible {
 .kinds__note { margin-top: 1.25rem; color: var(--ink-muted); font-size: 0.95rem; max-width: var(--measure); }
 
 /* Privacy: the only saturated block on the page. */
-.privacy { background: var(--action-deep); color: #eef6f3; }
+.privacy { background: var(--action-deep); color: var(--on-deep); }
 .privacy__inner { max-width: var(--page); margin: 0 auto; padding: 4.5rem 1.5rem; }
 .privacy h2 { font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.35rem); margin-bottom: 2rem; }
 .privacy__list {
@@ -255,12 +264,12 @@ a:focus-visible, summary:focus-visible {
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 1.5rem;
 }
-.privacy__list li { line-height: 1.6; color: #cfe3dd; }
-.privacy__list strong { display: block; color: #fff; margin-bottom: 0.2rem; }
+.privacy__list li { line-height: 1.6; color: var(--on-deep-muted); }
+.privacy__list strong { display: block; color: var(--action-on); margin-bottom: 0.2rem; }
 .privacy__caveat {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--on-deep-rule);
   padding-top: 1.5rem;
-  color: #cfe3dd;
+  color: var(--on-deep-muted);
   line-height: 1.6;
   max-width: var(--measure);
 }
@@ -301,14 +310,22 @@ a:focus-visible, summary:focus-visible {
   align-items: center;
 }
 .faq summary::-webkit-details-marker { display: none; }
+/* Chevron drawn from two borders rather than a "+"/"–" glyph: a text sign
+   changes size and baseline with the fallback font and jumps on toggle. This
+   keeps one shape that only rotates. The open/closed state is carried by the
+   native <details>, not by this decoration — hence content: "" with nothing for
+   a screen reader to read out. */
 .faq summary::after {
-  content: "+";
-  color: var(--action);
-  font-size: 1.35rem;
-  line-height: 1;
-  font-weight: 700;
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--action);
+  border-bottom: 2px solid var(--action);
+  transform: rotate(45deg);
+  transition: transform 140ms ease;
 }
-.faq details[open] summary::after { content: "–"; }
+.faq details[open] summary::after { transform: rotate(225deg); }
 .faq p { padding: 0 1.25rem 1.25rem; color: var(--ink-muted); line-height: 1.6; }
 
 /* Closing call ---------------------------------------------------------- */
@@ -321,9 +338,6 @@ a:focus-visible, summary:focus-visible {
 .close h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); margin-bottom: 0.75rem; }
 .close p { color: var(--ink-muted); margin-bottom: 1.75rem; }
 
-.site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
-.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
-.site-foot__links a:hover { color: var(--ink); }
 .site-foot {
   border-top: 1px solid var(--line);
   padding: 2rem 1.5rem;
@@ -333,6 +347,9 @@ a:focus-visible, summary:focus-visible {
   display: grid;
   gap: 0.35rem;
 }
+.site-foot__links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 0.5rem; }
+.site-foot__links a { color: var(--ink-muted); font-weight: 600; min-height: 2.75rem; display: inline-flex; align-items: center; }
+.site-foot__links a:hover { color: var(--ink); }
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
@@ -357,5 +374,11 @@ a:focus-visible, summary:focus-visible {
   .route__stop h3 { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  /* Pseudo-elements are not matched by `*`, and the FAQ chevron animates on one. */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
