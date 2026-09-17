@@ -16,6 +16,7 @@ import { buildAuthoringPrompt, authoringSchemaFor } from './authoring.js';
 import { validateCurriculum, validateLearner, parseImport, backupPackage, curriculumPackage, MAX_FILE_BYTES } from './validation.js';
 import { pastedImportText } from './import-text.js';
 import example from '../fixtures/unit-1a/curriculum.json';
+import frenchExample from '../fixtures/french-smoke/curriculum.json';
 import mathExample from '../fixtures/math-divisibility/curriculum.json';
 
 const root = document.querySelector('#app');
@@ -74,10 +75,10 @@ function fromProfile(profile, extra = {}) {
   return { ...state, ...activeBook(profile).workspace, profile, inputError: null, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
 }
 
-function previewImport(imported, fileName, fromText = false) {
+function previewImport(imported, fileName, fromText = false, extra = {}) {
   state.pendingImport = imported.profile
     ? { ...imported, fileName, fromText }
-    : { ...imported, fileName, fromText, ...previewBookImport(state.profile, imported), report: analyzeReadiness(imported.curriculum) };
+    : { ...imported, fileName, fromText, ...extra, ...previewBookImport(state.profile, imported), report: analyzeReadiness(imported.curriculum) };
   state.view = 'import-preview';
   state.notice = null;
   show(); focusMain();
@@ -150,8 +151,9 @@ const actions = {
     if (state.busy || state.readOnly || !state.pendingImport) return;
     try {
       const pending = state.pendingImport;
-      const profile = pending.profile || importBook(state.profile, pending);
-      const text = pending.profile ? 'Dein gesamtes Profil wurde wiederhergestellt.' : pending.learner ? 'Deine Sicherung wurde wiederhergestellt. Die anderen Lernbücher bleiben erhalten.' : pending.action === 'open' ? 'Dein Lernbuch ist schon da. Du kannst weiterlernen.' : 'Dein Lernstoff ist bereit. Das neue Lernbuch wurde hinzugefügt.';
+      let profile = pending.profile || importBook(state.profile, pending);
+      if (pending.keepActiveBook && !pending.profile) profile = selectBook(profile, state.profile.activeBookId);
+      const text = pending.profile ? 'Dein gesamtes Profil wurde wiederhergestellt.' : pending.learner ? 'Deine Sicherung wurde wiederhergestellt. Die anderen Lernbücher bleiben erhalten.' : pending.keepActiveBook && pending.action === 'open' ? 'Dieses Beispiel ist schon in deiner Sammlung. Es wurde nicht doppelt angelegt; dein ausgewähltes Lernbuch bleibt geöffnet.' : pending.keepActiveBook ? 'Das Beispiel wurde hinzugefügt. Dein ausgewähltes Lernbuch und sein Lernstand bleiben erhalten.' : pending.action === 'open' ? 'Dein Lernbuch ist schon da. Du kannst weiterlernen.' : 'Dein Lernstoff ist bereit. Das neue Lernbuch wurde hinzugefügt.';
       await commit(fromProfile(profile, { view: 'home', notice: { type: 'success', text } }));
       focusMain();
     } catch (error) { notify(error.message); }
@@ -261,13 +263,18 @@ const actions = {
     root.querySelector('[data-action="export-backup"]')?.focus();
   },
   exportCurriculum() { download(curriculumPackage(state.curriculum), 'lernpfad-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
-  loadMathExample() {
+  previewBundledExample(curriculum, fileName, keepActiveBook = false) {
     if (state.busy || state.readOnly) return;
-    try { previewImport({ curriculum: validateCurriculum(mathExample), learner: null }, 'Mathe · Teilbarkeit & Primzahlen · Beispiel'); }
+    try { previewImport({ curriculum: validateCurriculum(curriculum), learner: null }, fileName, false, { keepActiveBook }); }
     catch (error) { notify(error.message); }
   },
-  async loadExample() {
+  loadMathExample({ keepActiveBook = false } = {}) { actions.previewBundledExample(mathExample, 'Mathe · Teilbarkeit & Primzahlen · Beispiel', keepActiveBook); },
+  async loadExample({ example: bundledExample, keepActiveBook = false } = {}) {
     if (state.busy || state.readOnly) return;
+    if (bundledExample === 'french') {
+      actions.previewBundledExample(frenchExample, 'Französisch · Technischer Testkurs · Beispiel', keepActiveBook);
+      return;
+    }
     if (state.curriculum.id === example.curriculum.id && state.curriculum.version === example.curriculum.version) { actions.navigate('home'); return; }
     previewImport({ curriculum: validateCurriculum(example), learner: null }, 'Holiday Stories · Beispiel');
   },

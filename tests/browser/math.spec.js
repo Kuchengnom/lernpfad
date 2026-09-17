@@ -65,7 +65,7 @@ async function answerCurrent(page, item, answer) {
   else if (item.type === 'numeric-input') await page.locator('[data-draft-numeric]').fill(answer);
   else {
     for (const [index, value] of answer.entries()) {
-      if (index) await page.locator('[data-action="add-number"]').click();
+      if (index && item.comparison !== 'sequence') await page.locator('[data-action="add-number"]').click();
       await page.locator(`[data-number-entry="${index}"]`).fill(value);
     }
   }
@@ -91,7 +91,7 @@ test('math import renders math controls and invalid numeric syntax does not crea
       await page.locator(`[data-choice="${exercise.correctChoiceIds[0]}"]`).click();
     } else if (exercise.type === 'number-list') {
       for (const [index, value] of exercise.expectedValues.entries()) {
-        if (index) await page.locator('[data-action="add-number"]').click();
+        if (index && exercise.comparison !== 'sequence') await page.locator('[data-action="add-number"]').click();
         await page.locator(`[data-number-entry="${index}"]`).fill(value);
       }
     } else {
@@ -206,6 +206,21 @@ test('number-list comparison semantics are enforced through the UI for set, sequ
   await injectSession(page, [multisetEx]);
   await answerCurrent(page, multisetEx, [...new Set(multisetEx.expectedValues)]);
   expect((await savedWorkspace(page)).workspace.feedback.correct).toBe(false);
+});
+
+test('sequence number lists immediately show their worksheet-sized row', async ({ page }) => {
+  await importMath(page);
+  const sequenceEx = mathPackage.curriculum.exercises.find(item => item.id === 'math.ex.multiples-18');
+  await injectSession(page, [sequenceEx]);
+
+  await expect(page.locator('[data-number-entry]')).toHaveCount(sequenceEx.expectedValues.length);
+  await expect(page.locator('[data-action="add-number"], [data-action="remove-number"]')).toHaveCount(0);
+  await expect(page.locator('.number-list__separator')).toHaveCount(sequenceEx.expectedValues.length - 1);
+  await expect(page.locator('.number-list__separator').first()).toHaveAttribute('aria-hidden', 'true');
+  await expect(page.getByLabel(`Zahl 1 von ${sequenceEx.expectedValues.length}`)).toBeVisible();
+
+  await answerCurrent(page, sequenceEx, sequenceEx.expectedValues);
+  expect((await savedWorkspace(page)).workspace.feedback.correct).toBe(true);
 });
 
 test('number fields can be added and removed, keep correct values and indices, and stay keyboard-reachable', async ({ page }) => {
@@ -349,10 +364,10 @@ test('a mixed language and math profile round-trips through export/import on a f
 
 test('math stays usable at 320px and offline after the service worker is ready', async ({ page, context }) => {
   await importMath(page);
-  const setEx = mathPackage.curriculum.exercises.find(item => item.id === 'math.ex.teilers-22');
-  await injectSession(page, [setEx]);
+  const sequenceEx = mathPackage.curriculum.exercises.find(item => item.id === 'math.ex.multiples-18');
+  await injectSession(page, [sequenceEx]);
 
-  // 320px: a number-list exercise must not force horizontal scrolling.
+  // 320px: a fixed worksheet row must not force horizontal scrolling.
   await page.setViewportSize({ width: 320, height: 740 });
   await expect(page.locator('[data-number-entry="0"]')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth)).toBe(true);

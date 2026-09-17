@@ -10,8 +10,14 @@
 .number-list__row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) auto; align-items: center; gap: .75rem; }
 .number-list__row label { font-weight: 600; }
 .number-list__row .button { min-height: 44px; padding-inline: .75rem; }
+.number-list__fixed-fields { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin: 1rem 0; min-width: 0; }
+.number-list__fixed-item { flex: 0 1 4.75rem; width: 4.75rem; min-width: 0; }
+.number-list__separator { color: var(--ink-muted); font-size: 1.35rem; font-weight: 700; line-height: 1; }
+.number-list__fixed-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .authoring-tools .study-search + .study-search { margin-top: 1rem; }
 @media (max-width: 400px) {
   .number-list__row { grid-template-columns: minmax(0, 1fr) auto; gap: .4rem .6rem; }
   .number-list__row label { grid-column: 1 / -1; }
+  .number-list__fixed-fields { gap: .4rem; }
+  .number-list__fixed-item { flex-basis: 4.25rem; width: 4.25rem; }
 }

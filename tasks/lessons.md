@@ -12,3 +12,5 @@
 - Ein optionales UI-Feature muss mit einem schema-gültigen Datensatz vom Import bis zur Bedienung geprüft werden. Ein Synthesizer-Unit-Test allein beweist keinen erreichbaren Vorlesen-Button; Prompt, Schema und Laufzeit müssen denselben Vertrag nutzen.
 
 - Vor Aussagen zu untracked Dateien, veralteten Testbasen oder neuen Testzahlen den aktuellen Git-Stand und die Testnamen zählen. Am 17e3623 waren Profil-/Sprachtests committed: 55 vorhandene plus 13 neue Zahlentests ergeben 68, nicht 14 neue Tests.
+
+- Bei strukturierten Lernaufgaben die im Aufgabentext bereits festgelegte Antwortanzahl direkt als Eingabeform anbieten. Lernende dürfen nicht erst Felder erzeugen müssen, wenn „erste drei/vier/fünf“ die benötigte Zahl schon nennt; visuelle Trennzeichen dürfen keine zweite, anders bewertete Komma-Syntax schaffen.

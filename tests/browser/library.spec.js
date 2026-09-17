@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import fixture from '../../fixtures/unit-1a/curriculum.json' with { type: 'json' };
 import french from '../../fixtures/french-smoke/curriculum.json' with { type: 'json' };
+import math from '../../fixtures/math-divisibility/curriculum.json' with { type: 'json' };
 import { newLearner, generateSession, recordAnswer } from '../../app/engine.js';
 import { readProfile } from './profile-db.js';
 
@@ -71,6 +72,52 @@ test('legacy IndexedDB migration preserves answers and a paused round exactly ac
   await expect(page.locator('[data-action="next"]')).toBeEnabled();
   await page.reload(); await ready(page);
   expect(await readProfile(page)).toEqual(migrated);
+});
+
+test('bundled math and French examples add through the library without changing the selected book or creating duplicates', async ({ page }) => {
+  await page.goto('/lernen.html'); await ready(page);
+  const initial = await readProfile(page);
+  const initialBookId = initial.activeBookId;
+  await navigate(page, 'books');
+  await expect(page.getByRole('button', { name: 'Französisch-Beispiel hinzufügen' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mathe-Beispiel hinzufügen' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Französisch-Beispiel hinzufügen' }).click();
+  await expect(page.getByRole('heading', { name: french.curriculum.title })).toBeVisible();
+  await expect(page.getByText(/aktuell ausgewähltes Buch bleibt geöffnet/)).toBeVisible();
+  await page.locator('[data-action="confirm-import"]').click(); await ready(page);
+  let profile = await readProfile(page);
+  expect(profile.activeBookId).toBe(initialBookId);
+  expect(profile.books.map(book => book.workspace.curriculum.id)).toEqual([fixture.curriculum.id, french.curriculum.id]);
+
+  await navigate(page, 'books');
+  await page.getByRole('button', { name: 'Mathe-Beispiel hinzufügen' }).click();
+  await expect(page.getByRole('heading', { name: math.curriculum.title })).toBeVisible();
+  await page.locator('[data-action="confirm-import"]').click(); await ready(page);
+  profile = await readProfile(page);
+  expect(profile.activeBookId).toBe(initialBookId);
+  expect(profile.books.map(book => book.workspace.curriculum.id)).toEqual([fixture.curriculum.id, french.curriculum.id, math.curriculum.id]);
+
+  await navigate(page, 'books');
+  await expect(page.locator('.book-card')).toHaveCount(3);
+  await expect(page.locator('.book-card').filter({ hasText: french.curriculum.title }).getByText('Französisch', { exact: true })).toBeVisible();
+  await expect(page.locator('.book-card').filter({ hasText: math.curriculum.title }).getByText('Mathematik', { exact: true })).toBeVisible();
+  const beforeDuplicate = structuredClone(profile);
+  await page.getByRole('button', { name: 'Französisch-Beispiel hinzufügen' }).click();
+  await expect(page.getByText(/wird nicht doppelt angelegt/)).toBeVisible();
+  await page.locator('[data-action="confirm-import"]').click(); await ready(page);
+  expect(await readProfile(page)).toEqual(beforeDuplicate);
+  await page.reload(); await ready(page);
+  expect(await readProfile(page)).toEqual(beforeDuplicate);
+
+  await navigate(page, 'books');
+  const frenchCard = page.locator('.book-card').filter({ hasText: french.curriculum.title });
+  await frenchCard.getByRole('button', { name: 'Buch öffnen', exact: true }).click(); await ready(page);
+  expect(active(await readProfile(page)).workspace.curriculum.id).toBe(french.curriculum.id);
+  await navigate(page, 'books');
+  const mathCard = page.locator('.book-card').filter({ hasText: math.curriculum.title });
+  await mathCard.getByRole('button', { name: 'Buch öffnen', exact: true }).click(); await ready(page);
+  expect(active(await readProfile(page)).workspace.curriculum.id).toBe(math.curriculum.id);
 });
 
 test('two paused books rename and switch independently; duplicates preserve and conflicting revisions reject; full backup restores on a fresh device', async ({ page, browser }) => {

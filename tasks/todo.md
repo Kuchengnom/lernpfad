@@ -349,3 +349,25 @@ Nutzer verlangt reine Astra-Orchestrierung und Luna für alle Programmieraufgabe
 - [ ] Erweiterte Mathe-Browserabnahme abschließen: vollständige Runde/Feedback nach Reload, alle Listenvarianten, gemischte Sicherung, Entwurfsisolation und mobile/Offline-Fälle.
 
 Review 15.09.2026: Lokale Integration mit 82/82 Unit-Tests, Build und zunächst 22/22 Browserchecks verifiziert. Zwei danach ergänzte Browserfälle brauchen eine isolierte Abschlussprüfung. Kein reproduzierbarer Implementierungsfehler im unabhängigen Review; zusätzliche Abnahmen bleiben offen. Maßgeblicher aktueller Stand: `tasks/HANDOFF.md`; ältere Planungsnotizen oben beschreiben den damaligen Zustand.
+
+# Schnellzugriff auf Beispiel-Lernbücher — 2026-09-15
+
+- [x] Vorhandene Beispielpakete und den sicheren Mehrbuch-Importpfad prüfen.
+- [x] In „Meine Lernbücher“ gut bezeichnete Schnellaktionen für das französische und das Mathe-Beispiel ergänzen.
+- [x] Den bestehenden Vorschau-/Duplikatpfad über einen Browserablauf für beide Beispiele prüfen.
+- [x] Unit-, Build- und betroffene Browserprüfungen ausführen; Ergebnis unten dokumentieren.
+
+## Review
+
+Die Schnellaktionen verwenden die vorhandene Importvorschau. Sie bewahren das ausgewählte Buch samt Lernstand und pausierter Runde; identische Pakete werden nicht doppelt angelegt. Abnahme: `npm test` 82/82, `npm run build`, `npx playwright test tests/browser/library.spec.js --workers=1` 6/6 sowie `git diff --check` bestanden. Zusätzlich lokal gerendert: Beide Schnellaktionen zeigen ihre jeweilige Vorschau; nach dem Übernehmen erscheinen die drei getrennten Karten für Holiday Stories, Mathe und Französisch.
+
+# Zahlenlisten ohne manuelles Hinzufügen — 2026-09-15
+
+- [x] Bestehende Zahlenlisten, Aufgabenanzahlen und die mobile Darstellung prüfen.
+- [x] Für Aufgaben mit ausdrücklich vorgegebener Anzahl die passenden Eingabefelder unmittelbar anzeigen und als Reihe mit sichtbaren Trennzeichen gestalten.
+- [x] Bei offenen Mengen/Primfaktoraufgaben die flexible Anzahl ohne verdeckten Lösungshinweis erhalten.
+- [x] Eingabewerte, Mengen-/Folgen-/Multimengenbewertung, Tastaturfokus und 320px im Browser prüfen.
+
+## Review
+
+Folgen zeigen direkt die durch „erste 3/4 …“ verlangte Feldzahl als Arbeitsblattzeile mit visuellen Kommas. Jede Zelle bleibt ein eigener, einzeln validierter ganzzahliger Wert; es gibt keine zweite Komma-Textsyntax. Mengen und Multimengen bleiben dynamisch, damit die Oberfläche deren richtige Länge nicht vorwegnimmt. Abnahme: `npm test` 82/82, `npm run build`, `npx playwright test tests/browser/math.spec.js --workers=1` 10/10 und `git diff --check` bestanden.

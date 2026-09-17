@@ -22,7 +22,7 @@ export function parseNumericField(raw) {
   return { ok: true, value };
 }
 
-/** Parse a list of raw field values (one per "Zahl hinzufügen" entry) into canonical integers. */
+/** Parse a list of raw field values (one per rendered number field) into canonical integers. */
 export function parseNumberListField(rawEntries) {
   if (!Array.isArray(rawEntries) || rawEntries.length === 0) return { ok: false, reason: 'empty' };
   if (rawEntries.length > MAX_LIST_ENTRIES) return { ok: false, reason: 'too-many-entries' };

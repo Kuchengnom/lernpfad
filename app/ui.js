@@ -101,12 +101,16 @@ function exerciseBody(exercise, state) {
   if (exercise.type === 'numeric-input' || exercise.type === 'number-list') {
     const error = state.inputError;
     const describedBy = `math-input-help${error ? ' numeric-input-error' : ''}`;
-    const input = (value, index = null) => `<input id="math-number-${index ?? 'answer'}" ${index === null ? 'data-draft-numeric' : `data-number-entry="${index}"`} type="text" inputmode="numeric" maxlength="32" autocomplete="off" spellcheck="false" value="${esc(value)}" aria-describedby="${describedBy}" aria-invalid="${Boolean(error)}" ${locked ? 'readonly' : ''}>`;
+    const input = (value, index = null, fixedFieldCount = null) => `<input id="math-number-${index ?? 'answer'}" ${index === null ? 'data-draft-numeric' : `data-number-entry="${index}"${fixedFieldCount === null ? '' : ` data-number-fields="${fixedFieldCount}"`}`} type="text" inputmode="numeric" maxlength="32" autocomplete="off" spellcheck="false" value="${esc(value)}" aria-describedby="${describedBy}" aria-invalid="${Boolean(error)}" ${locked ? 'readonly' : ''}>`;
     const errorView = error ? `<p id="numeric-input-error" class="numeric-input-error" role="alert">${esc(error)}</p>` : '';
     if (exercise.type === 'numeric-input') return `<div class="math-answer"><label class="text-field" for="math-number-answer"><span>Deine Zahl</span>${input(draft || '')}</label><p id="math-input-help" class="math-input-help">Gib eine ganze Zahl von 0 bis 999999 ein.</p>${errorView}</div>`;
-    const values = Array.isArray(draft) && draft.length ? draft : [''];
+    const fixedSequence = exercise.comparison === 'sequence';
+    const draftValues = Array.isArray(draft) ? draft : [];
+    const values = fixedSequence ? exercise.expectedValues.map((_, index) => draftValues[index] ?? '') : draftValues.length ? draftValues : [''];
     const comparisonHint = { set: 'Die Reihenfolge ist egal. Trage jede Zahl nur einmal ein.', sequence: 'Die Reihenfolge zählt. Trage die Zahlen in der geforderten Reihenfolge ein.', multiset: 'Die Reihenfolge ist egal. Trage gleiche Faktoren so oft ein, wie sie vorkommen.' }[exercise.comparison];
-    return `<fieldset class="math-answer number-list"><legend>Deine Zahlen</legend><p id="math-input-help" class="math-input-help">${esc(comparisonHint)} Ganze Zahlen von 0 bis 999999; höchstens 20 Zahlen.</p><div class="number-list__fields">${values.map((value, index) => `<div class="number-list__row"><label for="math-number-${index}">Zahl ${index + 1}</label>${input(value, index)}${button('Entfernen', 'remove-number', 'button button--quiet', `data-number-index="${index}" aria-label="Zahl ${index + 1} entfernen" ${locked || values.length === 1 ? 'disabled' : ''}`)}</div>`).join('')}</div>${button('Zahl hinzufügen', 'add-number', 'button button--secondary', locked || values.length >= 20 ? 'disabled' : '')}${errorView}</fieldset>`;
+    const fixedFields = `<div class="number-list__fixed-fields">${values.map((value, index) => `${index ? '<span class="number-list__separator" aria-hidden="true">,</span>' : ''}<div class="number-list__fixed-item"><label class="number-list__fixed-label" for="math-number-${index}">Zahl ${index + 1} von ${values.length}</label>${input(value, index, values.length)}</div>`).join('')}</div>`;
+    const flexibleFields = `<div class="number-list__fields">${values.map((value, index) => `<div class="number-list__row"><label for="math-number-${index}">Zahl ${index + 1}</label>${input(value, index)}${button('Entfernen', 'remove-number', 'button button--quiet', `data-number-index="${index}" aria-label="Zahl ${index + 1} entfernen" ${locked || values.length === 1 ? 'disabled' : ''}`)}</div>`).join('')}</div>`;
+    return `<fieldset class="math-answer number-list ${fixedSequence ? 'number-list--fixed' : ''}"><legend>Deine Zahlen</legend><p id="math-input-help" class="math-input-help">${esc(comparisonHint)} Ganze Zahlen von 0 bis 999999; höchstens 20 Zahlen.</p>${fixedSequence ? fixedFields : flexibleFields}${fixedSequence ? '' : button('Zahl hinzufügen', 'add-number', 'button button--secondary', locked || values.length >= 20 ? 'disabled' : '')}${errorView}</fieldset>`;
   }
   if (exercise.type === 'writing') {
     return `<label class="writing-field"><span>Dein Satz auf ${esc(subjectName(state.curriculum))}</span><textarea data-draft-writing rows="5" lang="${esc(contentLanguage(state.curriculum))}" placeholder="Schreibe hier deine Antwort …" ${locked ? 'readonly' : ''}>${esc(draft || '')}</textarea><small>Du vergleichst deine Antwort gleich selbst mit einem Beispiel.</small></label>`;
@@ -235,8 +239,8 @@ export function renderApp(root, state, actions) {
     if (action === 'study-kind') { pendingFocus = { type: 'study-kind', id: control.dataset.kind }; actions.setStudyKind(control.dataset.kind); }
     if (action === 'exit') actions.exitSession();
     if (action === 'next') actions.next();
-    if (action === 'load-example') actions.loadExample();
-    if (action === 'load-math-example') actions.loadMathExample();
+    if (action === 'load-example') actions.loadExample({ example: control.dataset.example, keepActiveBook: control.dataset.keepActiveBook === 'true' });
+    if (action === 'load-math-example') actions.loadMathExample({ keepActiveBook: control.dataset.keepActiveBook === 'true' });
     if (action === 'export-backup') actions.exportBackup();
     if (action === 'export-curriculum') actions.exportCurriculum();
     if (action === 'confirm-import') actions.confirmImport();
@@ -273,7 +277,13 @@ export function renderApp(root, state, actions) {
   root.querySelectorAll('[data-draft-numeric], [data-number-entry]').forEach(input => {
     input.addEventListener('input', () => {
       const key = draftKey(state, state.index);
-      if (input.matches('[data-number-entry]')) { const values = Array.isArray(drafts.get(key)) ? [...drafts.get(key)] : ['']; values[Number(input.dataset.numberEntry)] = input.value; drafts.set(key, values); }
+      if (input.matches('[data-number-entry]')) {
+        const existing = Array.isArray(drafts.get(key)) ? drafts.get(key) : [];
+        const fixedFieldCount = Number(input.dataset.numberFields);
+        const values = fixedFieldCount ? Array.from({ length: fixedFieldCount }, (_, index) => existing[index] ?? '') : [...existing.length ? existing : ['']];
+        values[Number(input.dataset.numberEntry)] = input.value;
+        drafts.set(key, values);
+      }
       else drafts.set(key, input.value);
       state.inputError = null;
       root.querySelector('#numeric-input-error')?.remove();
