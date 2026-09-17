@@ -47,6 +47,15 @@ h1 { font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
 h2 { font-weight: 700; letter-spacing: -0.024em; line-height: 1.1; }
 h3 { font-weight: 600; letter-spacing: -0.004em; line-height: 1.28; }
 p { margin: 0; }
+
+/* Anchor jumps: ease the movement so the reader keeps their place, and leave a
+   little air above the target so the heading never lands on the window edge.
+   Smooth scrolling is opt-in per motion preference, not opt-out. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+#inhalt, #etappen, #privatsphaere, #fragen { scroll-margin-top: 1.5rem; }
+
 /* Two-ring focus indicator (WCAG 2.2 SC 1.4.11). --sun alone reached only
    1.94:1 on --canvas. The dark outer ring carries the light surfaces
    (10.6:1 on canvas, 11.5:1 on paper, 9.8:1 on paper-muted); the warm inner
@@ -201,16 +210,6 @@ a:focus-visible, summary:focus-visible {
 }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.75rem 0 0.85rem; }
 .hero__note { font-size: 0.9rem; color: var(--ink-muted); }
-.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 1.5rem 0 0; }
-.chips li {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--action-deep);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 0.4rem 0.85rem;
-}
 .hero__art img {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
@@ -437,11 +436,48 @@ a:focus-visible, summary:focus-visible {
 
 /* Responsive ------------------------------------------------------------ */
 @media (max-width: 60rem) {
-  .hero { grid-template-columns: 1fr; gap: 2rem; }
+  .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 1.5rem; padding-bottom: 3rem; }
   /* Headline first on a phone: the illustration is decorative and must not push
      the actual promise below the fold. */
   .hero__art { order: 1; }
-  .site-nav { display: none; }
+
+  /* The three jump targets stay on the phone — this is the platform the page is
+     built for. They move to their own row under logo and CTA and scroll
+     sideways when the labels do not fit; no menu to open, nothing to script. */
+  .site-head { flex-wrap: wrap; gap: 0.5rem 1rem; padding-bottom: 0; }
+  .site-nav {
+    order: 3;
+    width: 100%;
+    gap: 0.25rem;
+    /* Vertical air so the focus ring is not clipped: overflow-x: auto makes the
+       block axis scroll-clipped too. */
+    padding: 0.4rem 0;
+    border-top: 1px solid var(--line);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    /* Scroll affordance without script: the two "cover" layers scroll with the
+       content (attachment: local) and uncover a soft edge shade (attachment:
+       scroll) exactly on the side that has more to show. No overflow, no shade.
+       The opaque stops must match --canvas; the transparent ones are the same
+       colour at alpha 0 so Safari does not fade through grey. */
+    background:
+      linear-gradient(to right, #f7f3ea 45%, rgba(247, 243, 234, 0)) left center / 2.5rem 100% no-repeat local,
+      linear-gradient(to left, #f7f3ea 45%, rgba(247, 243, 234, 0)) right center / 2.5rem 100% no-repeat local,
+      linear-gradient(to right, rgba(24, 49, 58, 0.22), rgba(24, 49, 58, 0)) left center / 1.25rem 100% no-repeat scroll,
+      linear-gradient(to left, rgba(24, 49, 58, 0.22), rgba(24, 49, 58, 0)) right center / 1.25rem 100% no-repeat scroll;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a {
+    /* 44px minimum touch target, and labels never break mid-phrase. */
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding: 0 0.6rem;
+    white-space: nowrap;
+  }
+  .site-nav a:first-child { padding-left: 0; }
 }
 @media (min-width: 60rem) {
   /* Wide layout turns the trail horizontal so the three stops read as one route. */
