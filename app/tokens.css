@@ -15,6 +15,11 @@
   --sun: #e7a51b;
   --coral: #d35d46;
   --route: #a8c7c1;
+  /* Two font roles, one system stack for now. --font-display is the only thing
+     a future self-hosted display face has to change; --font-text stays as is.
+     See the @font-face hook in welcome.css and experiment/welcome-page.md. */
+  --font-text: "Nunito Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  --font-display: var(--font-text);
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
   --radius-pill: 999px;
