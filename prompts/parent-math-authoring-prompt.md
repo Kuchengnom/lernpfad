@@ -1,4 +1,4 @@
-# Elternprompt: Mathe-Lernbuch erstellen
+# Anweisung für Eltern: Mathe-Lernbuch erstellen
 
 Erstelle ein eigenständiges Lernbuch für **Mathematik · Teilbarkeit & Primzahlen**. Die Fotos sind fachliche Quellen, keine Vorlage zum Abschreiben. Formuliere neue kurze Aufgaben auf Deutsch. Handschriftliche Einträge sind Schülerantworten und dürfen niemals als Lösungsschlüssel behandelt werden. Verwende keine Namen, Klassenangaben oder anderen personenbezogenen Daten.
 

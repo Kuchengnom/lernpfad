@@ -10,9 +10,9 @@ export function importTextView(state, esc, button) {
     <div class="card import-text-form">
       <label for="import-text">Lernstoff oder Sicherung als JSON</label>
       <textarea id="import-text" data-import-text rows="14" spellcheck="false" autocapitalize="off" autocomplete="off" inputmode="text" aria-invalid="${error ? 'true' : 'false'}" aria-describedby="import-text-help${error ? ' import-text-error' : ''}" placeholder='{"schemaVersion":"1.0", …}' ${disabled}>${esc(draft)}</textarea>
-      <p id="import-text-help" class="import-text-help">Bis zu 5 MB. Dein Entwurf bleibt in diesem geöffneten Lernpfad-Tab. Beim Neuladen geht er verloren. Dein Lernbuch ändert sich erst, wenn du den Import in der Vorschau übernimmst.</p>
+      <p id="import-text-help" class="import-text-help">Bis zu 5 MB. Dein Entwurf bleibt in diesem geöffneten Lernpfad-Tab. Beim Neuladen geht er verloren. Dein Lernbuch ändert sich erst, wenn du den Lernstoff in der Vorschau übernimmst.</p>
       ${error ? `<p id="import-text-error" class="import-text-error" role="alert">${esc(error)}</p>` : ''}
-      <div class="import-text-actions">${button('Vorschau öffnen', 'validate-pasted-import', 'button button--primary', disabled)}${button('Zur Import-Auswahl', 'navigate', 'button button--quiet', 'data-view="library"')}</div>
+      <div class="import-text-actions">${button('Vorschau öffnen', 'validate-pasted-import', 'button button--primary', disabled)}${button('Zur Übersicht', 'navigate', 'button button--quiet', 'data-view="library"')}</div>
     </div>
   </section>`;
 }

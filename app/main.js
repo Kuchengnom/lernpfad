@@ -126,18 +126,18 @@ const actions = {
     try {
       await navigator.clipboard.writeText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject));
       if (state.view !== 'authoring') return;
-      notify('Prompt mit Schema kopiert. Füge ihn in deine neue Unterhaltung ein.', 'success');
+      notify('Anweisung mit Schema kopiert. Füge sie in deine neue Unterhaltung ein.', 'success');
       root.querySelector('[data-action="copy-authoring"]')?.focus();
     } catch {
       if (state.view !== 'authoring') return;
-      notify('Kopieren ist hier nicht verfügbar. Der Prompt ist unten markiert; kopiere ihn manuell oder lade ihn herunter.', 'info');
+      notify('Kopieren ist hier nicht verfügbar. Die Anweisung ist unten markiert; kopiere sie manuell oder lade sie herunter.', 'info');
       const details = root.querySelector('[data-authoring-details]');
       if (details) details.open = true;
       const field = root.querySelector('[data-authoring-prompt]');
       field?.focus(); field?.select();
     }
   },
-  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject), `lernpfad-autorenprompt-${state.authoringSubject === 'math' ? 'mathe' : state.authoringLanguage}.md`); },
+  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject), `lernpfad-anweisung-${state.authoringSubject === 'math' ? 'mathe' : state.authoringLanguage}.md`); },
   downloadSchema() { download(authoringSchemaFor(state.authoringSubject), 'curriculum.schema.json'); },
   navigate(view) { if (!state.busy) { state.view = view; state.pendingImport = null; state.notice = null; show(); focusMain(); } },
   cancelImport() { if (!state.busy) actions.navigate('library'); },
