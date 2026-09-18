@@ -78,11 +78,6 @@ export function bookImportMessage(state, esc) {
   if (pending.keepActiveBook && pending.action === 'open' && existing) return `<p>„${esc(bookTitle(existing))}“ ist bereits in deiner Sammlung. Es wird nicht doppelt angelegt; dein aktuell ausgewähltes Buch bleibt geöffnet.</p>`;
   if (pending.keepActiveBook) return '<p>Dieses Beispiel fügt deiner Sammlung ein neues Lernbuch hinzu. Dein aktuell ausgewähltes Buch bleibt geöffnet; sein Lernstand und seine pausierte Runde bleiben unverändert.</p>';
   if (pending.action === 'open' && existing) return `<p>„${esc(bookTitle(existing))}“ ist mit diesem Inhalt bereits in deiner Sammlung. Beim Übernehmen öffnest du das vorhandene Buch. Sein bisheriger Lernstand und seine pausierte Runde bleiben erhalten.</p>`;
-<<<<<<< HEAD
   if (pending.action === 'replace' && existing) return `<p>Diese Sicherung ersetzt den Lernstand von „${esc(bookTitle(existing))}“. Eine Sicherung enthält nie eine pausierte Runde: Falls gerade eine offen ist, geht sie beim Übernehmen verloren. Die anderen Bücher und deine gesammelten Stempel bleiben erhalten. Mit „Alles sichern“ kannst du vorher die aktuelle Sammlung herunterladen.</p>`;
-  return '<p>Dieser Import fügt deiner Sammlung ein neues Lernbuch hinzu. Deine bisherigen Bücher, Lernstände, pausierten Runden und gesammelten Stempel bleiben erhalten. Auch eine neue Version eines Buches wird getrennt aufgenommen.</p>';
-=======
-  if (pending.action === 'replace' && existing) return `<p>Diese Sicherung ersetzt den Lernstand und die pausierte Runde von „${esc(bookTitle(existing))}“. Die anderen Bücher und deine gesammelten Stempel bleiben erhalten. Mit „Alles sichern“ kannst du vorher die aktuelle Sammlung herunterladen.</p>`;
   return '<p>Dieser Lernstoff fügt deiner Sammlung ein neues Lernbuch hinzu. Deine bisherigen Bücher, Lernstände, pausierten Runden und gesammelten Stempel bleiben erhalten. Auch eine neue Version eines Buches wird getrennt aufgenommen.</p>';
->>>>>>> worktree-agent-a3d7b36f6256ada12
 }
