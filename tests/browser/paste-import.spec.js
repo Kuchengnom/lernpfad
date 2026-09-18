@@ -48,11 +48,11 @@ test('mobile pasted JSON preserves drafts and current progress through errors, e
     window.originalPut = IDBObjectStore.prototype.put;
     IDBObjectStore.prototype.put = function (...args) { const request = window.originalPut.apply(this, args); this.transaction.abort(); return request; };
   });
-  await page.getByRole('button', { name: 'Import übernehmen' }).click();
+  await page.getByRole('button', { name: 'Lernstoff übernehmen' }).click();
   await expect(page.getByText(/Speichern (wurde abgebrochen|fehlgeschlagen)/)).toBeVisible();
   expect(await workspace(page)).toEqual(original);
   await page.evaluate(() => { IDBObjectStore.prototype.put = window.originalPut; });
-  await page.getByRole('button', { name: 'Import übernehmen' }).click();
+  await page.getByRole('button', { name: 'Lernstoff übernehmen' }).click();
   await expect(page.getByText(/Dein Lernstoff ist bereit/)).toBeVisible();
   await page.reload();
   await library(page);
@@ -90,7 +90,7 @@ test('scout assets and direct authoring-to-paste flow work offline, without clip
   await page.locator('.scout-art--field-kit img').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
   await page.screenshot({ path: 'experiment/evidence/scout-library-mobile.png', fullPage: true });
-  await page.getByRole('button', { name: 'Anleitung & Prompt' }).click();
+  await page.getByRole('button', { name: 'Lernstoff erstellen' }).click();
   expect(await page.locator('[data-authoring-prompt]').inputValue()).toContain('nicht nur als Download-Link');
   await page.getByRole('button', { name: 'Text einfügen', exact: true }).click();
   await page.setViewportSize({ width: 320, height: 740 });
@@ -100,7 +100,7 @@ test('scout assets and direct authoring-to-paste flow work offline, without clip
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByRole('button', { name: 'Vorschau öffnen' }).focus();
   await page.keyboard.press('Enter');
-  await page.getByRole('button', { name: 'Import übernehmen' }).click();
+  await page.getByRole('button', { name: 'Lernstoff übernehmen' }).click();
   await page.locator('[data-view="home"]:visible').first().click();
   await page.locator('[data-action="start-learn"]').first().click();
   await expect(page.locator('#exercise-title')).toBeVisible();

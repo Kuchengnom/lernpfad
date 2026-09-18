@@ -11,13 +11,13 @@ const downloadText=async(page,action)=>{
 
 test('authoring guide supplies the selected prompt with exact schema, working clipboard, downloads and offline fallback',async({page,context})=>{
   await context.grantPermissions(['clipboard-read','clipboard-write']);
-  await page.goto('/lernen.html');await library(page);await page.getByRole('button',{name:'Anleitung & Prompt'}).click();
+  await page.goto('/lernen.html');await library(page);await page.getByRole('button',{name:'Lernstoff erstellen'}).click();
   await expect(page.locator('[data-authoring-language]')).toHaveValue('fr');
   const prompt=await page.locator('[data-authoring-prompt]').inputValue();
   expect(prompt).toContain('targetLanguage: "fr"');expect(prompt).not.toContain('{{TARGET_');
   expect(JSON.parse(prompt.split('```json\n').at(-1).split('\n```')[0])).toEqual(schema);
   await page.locator('[data-action="copy-authoring"]').click();
-  await expect(page.getByText(/Prompt mit Schema kopiert/)).toBeVisible();
+  await expect(page.getByText(/Anweisung mit Schema kopiert/)).toBeVisible();
   expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe(prompt);
   expect(await downloadText(page,'download-authoring')).toBe(prompt);
   expect(JSON.parse(await downloadText(page,'download-schema'))).toEqual(schema);
@@ -30,10 +30,10 @@ test('authoring guide supplies the selected prompt with exact schema, working cl
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await page.screenshot({path:'experiment/evidence/authoring-guide-mobile.png',fullPage:true});
   await page.evaluate(()=>navigator.serviceWorker.ready);await context.setOffline(true);await page.reload();
-  await library(page);await page.getByRole('button',{name:'Anleitung & Prompt'}).click();
+  await library(page);await page.getByRole('button',{name:'Lernstoff erstellen'}).click();
   await page.evaluate(()=>{Object.defineProperty(navigator,'clipboard',{value:{writeText:async()=>{throw new Error('Unavailable');}},configurable:true});});
   await page.locator('[data-action="copy-authoring"]').click();
-  await expect(page.getByText(/Der Prompt ist unten markiert/)).toBeVisible();
+  await expect(page.getByText(/Die Anweisung ist unten markiert/)).toBeVisible();
   await expect(page.locator('[data-authoring-prompt]')).toBeFocused();
   expect(await page.locator('[data-authoring-prompt]').evaluate(e=>e.selectionEnd-e.selectionStart)).toBe(prompt.length);
 });

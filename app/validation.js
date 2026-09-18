@@ -21,7 +21,7 @@ const unsafe = id => ['__proto__', 'constructor', 'prototype'].includes(id);
 const dateValid = value => value === null || (typeof value === 'string' && Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value);
 function shapeError(validator, subject) {
   const errors = (validator.errors ?? []).slice(0, 4).map(e => `${e.instancePath || '/'} ${e.message}${e.params?.missingProperty ? ` (${e.params.missingProperty})` : ''}`).join('; ');
-  fail(`${subject} passt nicht zum unterstützten Format (schemaVersion und Inhalt): ${errors}. Bitte mit dem Autoren-Prompt und Schema prüfen.`);
+  fail(`${subject} passt nicht zum unterstützten Format (schemaVersion und Inhalt): ${errors}. Bitte mit der Anweisung für den KI-Chat und dem Schema prüfen.`);
 }
 
 export function validateCurriculum(document) {
@@ -37,7 +37,7 @@ export function validateCurriculum(document) {
   if (sources.size !== course.sources.length) fail('Quellen-IDs müssen eindeutig sein.');
   for (const item of [...course.concepts, ...course.exercises]) if (item.provenance.some(id => !sources.has(id))) fail(`${item.id}: Eine angegebene Quelle fehlt im Lernstoff.`);
   for (const c of course.concepts) {
-    if ((c.dependsOn ?? []).some(id => !concepts.has(id))) fail(`Konzept ${c.id}: Eine Voraussetzung fehlt im Lernstoff.`);
+    if ((c.dependsOn ?? []).some(id => !concepts.has(id))) fail(`Konzept ${c.id}: Eine Voraussetzung fehlt im Lernstoff. Bitte die KI-Unterhaltung bitten, die fehlende Voraussetzung zu ergänzen oder dieses Konzept zu entfernen.`);
   }
   const visiting = new Set(), visited = new Set();
   function visit(id) {
