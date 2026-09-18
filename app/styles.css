@@ -29,12 +29,20 @@ textarea {
 button {
   cursor: pointer;
 }
+/* Two-ring focus indicator (WCAG 2.2 SC 1.4.11), mirroring app/welcome.css.
+   --sun alone reached only 1.94:1 on --canvas and 2.09:1 on --paper. The dark
+   outer ring carries the light surfaces (10.6:1 canvas, 11.5:1 paper, 10.3:1 on
+   the green feedback panel); on the dark nav and the dark cards it disappears
+   and the warm inner ring carries instead (6.4:1 on --ink, 4.7:1 on #28464d).
+   The offset keeps both rings outside the control, so the green primary button
+   is measured against the page, not against itself. */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid var(--sun);
-  outline-offset: 3px;
+  outline: 3px solid var(--action-deep);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--sun);
 }
 button:disabled {
   cursor: not-allowed;
