@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { completeSession, evaluateAnswer, generateSession, getReviewItems, newLearner, recordAnswer } from '../app/engine.js';
+import { completeSession, evaluateAnswer, generateSession, getReviewItems, isNearMiss, newLearner, recordAnswer } from '../app/engine.js';
 
 const NOW = '2026-09-09T10:00:00.000Z';
 const course = {
@@ -27,6 +27,13 @@ test('session is deterministic, unique, bounded, and changes priority after a mi
   const afterMistake = generateSession(course, missed, { now: NOW, length: 8 });
   assert.ok(afterMistake.exercises[0].conceptIds.includes('train'));
   assert.equal(missed.conceptProgress.train.nextDueAt, NOW);
+});
+
+test('a near miss is a small edit distance or an accent/case-only difference, not a wrong word', () => {
+  assert.equal(isNearMiss('mountain', 'beach'), false);
+  assert.equal(isNearMiss('beech', 'beach'), true);
+  assert.equal(isNearMiss('cafe', 'café'), true);
+  assert.equal(isNearMiss('Beach', 'beach'), true);
 });
 
 test('objective evaluator uses the authoring keys for each objective type', () => {

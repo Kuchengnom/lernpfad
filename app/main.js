@@ -9,7 +9,7 @@ import './import-text.css';
 import './books.css';
 import './journey.css';
 import { renderApp } from './ui.js';
-import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from './engine.js';
+import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession, isNearMiss } from './engine.js';
 import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
 import { analyzeReadiness } from './readiness.js';
 import { buildAuthoringPrompt, authoringSchemaFor } from './authoring.js';
@@ -200,7 +200,9 @@ const actions = {
     }
     state.inputError = null;
     const learner = recordAnswer(state.learner, exercise, { ...result, curriculumId: state.curriculum.id, curriculumVersion: state.curriculum.version, sessionId: state.session.id, answerId: `${state.session.id}:${exercise.id}` });
-    const feedback = { ...result, expectedAnswer: expectedAnswer(exercise), explanation: exercise.explanation || exercise.feedback || '', selfCheck: exercise.type === 'writing' };
+    // Only a free-text answer can be an honest "almost" — choices, tiles, and numbers are exact by nature.
+    const near = exercise.type === 'text-input' && result.correct === false && (exercise.acceptedAnswers || []).some(expected => isNearMiss(text, expected));
+    const feedback = { ...result, near, expectedAnswer: expectedAnswer(exercise), explanation: exercise.explanation || exercise.feedback || '', selfCheck: exercise.type === 'writing' };
     delete feedback.normalizedAnswer;
     if (await commit({ ...state, learner, feedback, notice: null })) root.querySelector('[data-action="next"]')?.focus();
   },
@@ -221,7 +223,11 @@ const actions = {
     const learner = completeSession(state.learner, state.session);
     const records = learner.answerRecords.filter(a => a.sessionId === state.session.id);
     const objective = records.filter(a => !a.selfCheck);
-    const summary = { xp: learner.xp - state.learner.xp, gems: learner.gems - state.learner.gems, correct: objective.filter(a => a.correct).length, total: objective.length, selfChecks: records.length - objective.length };
+    const conceptIdsOf = exercise => exercise.conceptIds ?? (exercise.conceptId ? [exercise.conceptId] : []);
+    const conceptLabel = id => { const concept = state.curriculum.concepts.find(c => c.id === id); return concept?.target || concept?.label || id; };
+    const missedConceptIds = [...new Set(objective.filter(a => a.correct === false).flatMap(a => conceptIdsOf(state.session.exercises.find(e => e.id === a.exerciseId) || {})))];
+    const summary = { xp: learner.xp - state.learner.xp, gems: learner.gems - state.learner.gems, correct: objective.filter(a => a.correct).length, total: objective.length, selfChecks: records.length - objective.length, mode: state.session.mode, missedConcepts: missedConceptIds.map(id => ({ id, label: conceptLabel(id) })) };
+    if (state.session.mode === 'review' && state.session.conceptIds) summary.resolvedConcepts = state.session.conceptIds.filter(id => !missedConceptIds.includes(id)).map(id => ({ id, label: conceptLabel(id) }));
     const updated = { ...state, learner, session: null, index: 0, feedback: null };
     const profile = awardStamps(updateActiveBook(state.profile, workspace(updated)), state.session.id);
     summary.newStampIds = profile.stampAwards.filter(award => !state.profile.stampAwards.some(old => old.id === award.id)).map(award => award.stampId);
