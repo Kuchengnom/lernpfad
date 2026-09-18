@@ -21,6 +21,29 @@ const stableHash = (value) => {
   return (hash >>> 0).toString(36);
 };
 const emptyConceptProgress = () => ({ attempts: 0, correct: 0, incorrect: 0, correctStreak: 0, mastery: 0, lastAnsweredAt: null, nextDueAt: null });
+const stripAccents = (value) => value.normalize('NFD').replace(/[̀-ͯ]/g, '');
+// ponytail: plain Levenshtein, no diff library — the answers here are single words/short phrases.
+function levenshtein(a, b) {
+  const rows = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 0; j <= b.length; j++) rows[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) rows[i][j] = a[i - 1] === b[j - 1] ? rows[i - 1][j - 1] : 1 + Math.min(rows[i - 1][j - 1], rows[i - 1][j], rows[i][j - 1]);
+  }
+  return rows[a.length][b.length];
+}
+/**
+ * True when a wrong free-text answer is close enough to be an honest "almost":
+ * a difference of only accents/case (folded away by `normalize`+NFD), or a
+ * small edit distance relative to the expected word's length. Anything else
+ * — a different word entirely — is not "fast", it's just not yet correct.
+ */
+export function isNearMiss(given, expected) {
+  const a = stripAccents(normalize(given));
+  const b = stripAccents(normalize(expected));
+  if (!a || !b || a === b) return a === b;
+  const threshold = b.length <= 4 ? 1 : 2;
+  return levenshtein(a, b) <= threshold;
+}
 
 function conceptIds(exercise) {
   const ids = exercise.conceptIds ?? (exercise.conceptId ? [exercise.conceptId] : []);

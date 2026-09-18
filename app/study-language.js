@@ -23,3 +23,13 @@ export const contentLanguage = curriculum => isMath(curriculum) ? (curriculum.in
 const languageName = code => ({ de: 'Deutsch', en: 'Englisch', fr: 'Französisch' })[code] || code || 'unbekannt'; // ponytail: only used in this module, no longer exported
 export const subjectName = curriculum => isMath(curriculum) ? 'Mathematik' : languageName(curriculum?.targetLanguage);
 export const curriculumLanguageLabel = curriculum => isMath(curriculum) ? 'Mathematik · Aufgaben auf Deutsch' : `${languageName(curriculum?.sourceLanguage)} → ${languageName(curriculum?.targetLanguage)}`;
+
+// ponytail: one fold for both sides of the study search, no search library. A
+// child looking up a word rarely reproduces accents or ß exactly — "ete" has to
+// find "l'été" and "regelmassige" has to find "Regelmäßige".
+export const foldForSearch = (value) => String(value ?? '')
+  .replace(/ß/g, 'ss')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .trim()
+  .toLocaleLowerCase();

@@ -4,7 +4,7 @@ import fixture from '../fixtures/unit-1a/curriculum.json' with { type: 'json' };
 import french from '../fixtures/french-smoke/curriculum.json' with { type: 'json' };
 import { newLearner, generateSession, recordAnswer } from '../app/engine.js';
 import { backupPackage } from '../app/validation.js';
-import { createProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, validateProfile, MAX_PROFILE_BYTES } from '../app/profile.js';
+import { createProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, validateProfile, markExported, backupReminder, MAX_PROFILE_BYTES } from '../app/profile.js';
 
 const now = '2026-09-12T12:00:00.000Z';
 const course = fixture.curriculum;
@@ -175,6 +175,24 @@ test('collection rejects unknown artwork, image bytes, duplicate awards and inva
     [award, { ...award, id: 'award-two', bookId: 'another-book', sessionId: 'another-session' }],
     [{ ...award, earnedAt: '2026-02-30T12:00:00.000Z' }],
   ]) assert.throws(() => validateProfile({ ...profile, stampAwards: awards }));
+});
+
+test('a new profile has no export yet; markExported stamps it and quiets the reminder', () => {
+  const profile = createProfile(workspace(), now);
+  assert.equal(profile.lastExportedAt, null);
+  const exported = markExported(profile, now);
+  assert.equal(exported.lastExportedAt, now);
+  assert.deepEqual({ ...exported, lastExportedAt: null }, profile);
+});
+
+test('backup reminder nudges after a few unsaved rounds, then only after enough elapsed time, and clears once exported', () => {
+  const rounds = count => ({ books: [{ workspace: { learner: { completedSessionIds: Array.from({ length: count }, (_, i) => `s${i}`) } } }] });
+  assert.equal(backupReminder({ lastExportedAt: null, ...rounds(2) }), null, 'too few completed rounds to nudge before any export');
+  assert.equal(backupReminder({ lastExportedAt: null, ...rounds(3) }), 'never');
+  const recent = new Date(Date.parse(now) - 5 * 86400000).toISOString();
+  assert.equal(backupReminder({ lastExportedAt: recent, ...rounds(50) }, new Date(now)), null, 'a recent export stays quiet regardless of round count');
+  const stale = new Date(Date.parse(now) - 20 * 86400000).toISOString();
+  assert.equal(backupReminder({ lastExportedAt: stale, ...rounds(0) }, new Date(now)), 'stale');
 });
 
 test('library limit refuses another book before mutating existing progress', () => {

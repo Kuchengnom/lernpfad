@@ -1,4 +1,4 @@
-import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
+import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, markExported, MAX_PROFILE_BYTES } from './profile.js';
 import { expectedAnswer } from './answer-format.js';
 import { cancelSpeech, speak } from './speech.js';
 import { awardStamps } from './stamps.js';
@@ -9,7 +9,7 @@ import './import-text.css';
 import './books.css';
 import './journey.css';
 import { renderApp } from './ui.js';
-import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession } from './engine.js';
+import { newLearner, generateSession, evaluateAnswer, recordAnswer, completeSession, isNearMiss } from './engine.js';
 import { loadWorkspace, saveWorkspace, acquireWriter } from './storage.js';
 import { analyzeReadiness } from './readiness.js';
 import { buildAuthoringPrompt, authoringSchemaFor } from './authoring.js';
@@ -71,6 +71,15 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 }
 const documentElement = tag => window.document.createElement(tag);
 
+// ponytail: a date suffix avoids silent Downloads-folder "(1)" duplicates; a slugged
+// book title avoids restoring the wrong file. Both stay filesystem-safe on every OS.
+const isoDateStamp = (now = new Date()) => now.toISOString().slice(0, 10);
+const filenameSlug = text => String(text || '')
+  .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue').replace(/ß/g, 'ss')
+  .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const datedFilename = (prefix, slug) => `lernpfad-${prefix}${slug ? `-${slug}` : ''}-${isoDateStamp()}.json`;
+
 function fromProfile(profile, extra = {}) {
   return { ...state, ...activeBook(profile).workspace, profile, inputError: null, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
 }
@@ -117,18 +126,18 @@ const actions = {
     try {
       await navigator.clipboard.writeText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject));
       if (state.view !== 'authoring') return;
-      notify('Prompt mit Schema kopiert. Füge ihn in deine neue Unterhaltung ein.', 'success');
+      notify('Anweisung mit Schema kopiert. Füge sie in deine neue Unterhaltung ein.', 'success');
       root.querySelector('[data-action="copy-authoring"]')?.focus();
     } catch {
       if (state.view !== 'authoring') return;
-      notify('Kopieren ist hier nicht verfügbar. Der Prompt ist unten markiert; kopiere ihn manuell oder lade ihn herunter.', 'info');
+      notify('Kopieren ist hier nicht verfügbar. Die Anweisung ist unten markiert; kopiere sie manuell oder lade sie herunter.', 'info');
       const details = root.querySelector('[data-authoring-details]');
       if (details) details.open = true;
       const field = root.querySelector('[data-authoring-prompt]');
       field?.focus(); field?.select();
     }
   },
-  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject), `lernpfad-autorenprompt-${state.authoringSubject === 'math' ? 'mathe' : state.authoringLanguage}.md`); },
+  downloadAuthoringPrompt() { downloadText(buildAuthoringPrompt(state.authoringLanguage, state.authoringSubject), `lernpfad-anweisung-${state.authoringSubject === 'math' ? 'mathe' : state.authoringLanguage}.md`); },
   downloadSchema() { download(authoringSchemaFor(state.authoringSubject), 'curriculum.schema.json'); },
   navigate(view) { if (!state.busy) { state.view = view; state.pendingImport = null; state.notice = null; show(); focusMain(); } },
   cancelImport() { if (!state.busy) actions.navigate('library'); },
@@ -142,8 +151,12 @@ const actions = {
     try { const bookTitleDrafts = { ...state.bookTitleDrafts }; delete bookTitleDrafts[id]; await commit({ ...state, bookTitleDrafts, profile: renameBook(state.profile, id, title), notice: { type: 'success', text: 'Name gespeichert.' } }); }
     catch (error) { notify(error.message); }
   },
-  exportProfile() {
-    try { download(profilePackage(state.profile), 'lernpfad-profil.json'); notify('Alles gesichert: deine Lernbücher, Lernstände und Sammelstempel.', 'success'); }
+  async exportProfile() {
+    try {
+      download(profilePackage(state.profile), datedFilename('profil'));
+      notify('Alles gesichert: deine Lernbücher, Lernstände und Sammelstempel.', 'success');
+      if (!state.readOnly) await commit({ ...state, profile: markExported(state.profile) });
+    }
     catch (error) { notify(error.message); }
     root.querySelector('[data-action="export-profile"]')?.focus();
   },
@@ -200,7 +213,9 @@ const actions = {
     }
     state.inputError = null;
     const learner = recordAnswer(state.learner, exercise, { ...result, curriculumId: state.curriculum.id, curriculumVersion: state.curriculum.version, sessionId: state.session.id, answerId: `${state.session.id}:${exercise.id}` });
-    const feedback = { ...result, expectedAnswer: expectedAnswer(exercise), explanation: exercise.explanation || exercise.feedback || '', selfCheck: exercise.type === 'writing' };
+    // Only a free-text answer can be an honest "almost" — choices, tiles, and numbers are exact by nature.
+    const near = exercise.type === 'text-input' && result.correct === false && (exercise.acceptedAnswers || []).some(expected => isNearMiss(text, expected));
+    const feedback = { ...result, near, expectedAnswer: expectedAnswer(exercise), explanation: exercise.explanation || exercise.feedback || '', selfCheck: exercise.type === 'writing' };
     delete feedback.normalizedAnswer;
     if (await commit({ ...state, learner, feedback, notice: null })) root.querySelector('[data-action="next"]')?.focus();
   },
@@ -221,7 +236,11 @@ const actions = {
     const learner = completeSession(state.learner, state.session);
     const records = learner.answerRecords.filter(a => a.sessionId === state.session.id);
     const objective = records.filter(a => !a.selfCheck);
-    const summary = { xp: learner.xp - state.learner.xp, gems: learner.gems - state.learner.gems, correct: objective.filter(a => a.correct).length, total: objective.length, selfChecks: records.length - objective.length };
+    const conceptIdsOf = exercise => exercise.conceptIds ?? (exercise.conceptId ? [exercise.conceptId] : []);
+    const conceptLabel = id => { const concept = state.curriculum.concepts.find(c => c.id === id); return concept?.target || concept?.label || id; };
+    const missedConceptIds = [...new Set(objective.filter(a => a.correct === false).flatMap(a => conceptIdsOf(state.session.exercises.find(e => e.id === a.exerciseId) || {})))];
+    const summary = { xp: learner.xp - state.learner.xp, gems: learner.gems - state.learner.gems, correct: objective.filter(a => a.correct).length, total: objective.length, selfChecks: records.length - objective.length, mode: state.session.mode, missedConcepts: missedConceptIds.map(id => ({ id, label: conceptLabel(id) })) };
+    if (state.session.mode === 'review' && state.session.conceptIds) summary.resolvedConcepts = state.session.conceptIds.filter(id => !missedConceptIds.includes(id)).map(id => ({ id, label: conceptLabel(id) }));
     const updated = { ...state, learner, session: null, index: 0, feedback: null };
     const profile = awardStamps(updateActiveBook(state.profile, workspace(updated)), state.session.id);
     summary.newStampIds = profile.stampAwards.filter(award => !state.profile.stampAwards.some(old => old.id === award.id)).map(award => award.stampId);
@@ -257,12 +276,16 @@ const actions = {
       root.querySelector('[data-import-text]')?.focus({ preventScroll: true });
     }
   },
-  exportBackup() {
-    try { download(backupPackage(state.curriculum, state.learner), 'lernpfad-sicherung.json'); notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success'); }
+  async exportBackup() {
+    try {
+      download(backupPackage(state.curriculum, state.learner), datedFilename('sicherung', filenameSlug(state.curriculum?.title)));
+      notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success');
+      if (!state.readOnly) await commit({ ...state, profile: markExported(state.profile) });
+    }
     catch (error) { notify(error.message); }
     root.querySelector('[data-action="export-backup"]')?.focus();
   },
-  exportCurriculum() { download(curriculumPackage(state.curriculum), 'lernpfad-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
+  exportCurriculum() { download(curriculumPackage(state.curriculum), datedFilename('lernstoff', filenameSlug(state.curriculum?.title))); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
   previewBundledExample(curriculum, fileName, keepActiveBook = false) {
     if (state.busy || state.readOnly) return;
     try { previewImport({ curriculum: validateCurriculum(curriculum), learner: null }, fileName, false, { keepActiveBook }); }
