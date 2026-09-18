@@ -422,6 +422,9 @@ button:disabled {
 .resume-banner { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--notice-bg); border-color: #e9c96c; }
 .resume-banner h2 { margin: 0; font-size: 1.1rem; }
 .resume-banner p:not(.eyebrow) { margin: .3rem 0 0; color: var(--ink-muted); }
+.backup-reminder { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.backup-reminder h2 { margin: 0; font-size: 1.05rem; }
+.backup-reminder p:not(.eyebrow) { margin: .3rem 0 0; color: var(--ink-muted); }
 .quick-actions {
   display: grid;
   gap: 0.6rem;
@@ -1011,6 +1014,7 @@ progress {
     display: grid;
   }
   .resume-banner { grid-column: auto; align-items: flex-start; display: grid; }
+  .backup-reminder { grid-column: auto; align-items: flex-start; display: grid; }
   .route-card,
   .quick-card {
     grid-column: auto;

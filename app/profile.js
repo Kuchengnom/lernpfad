@@ -74,7 +74,8 @@ export function validateProfile(profile) {
   if (!profile.books.some(book => book.id === profile.activeBookId)) fail('Das ausgewählte Lernbuch fehlt in der Bibliothek.');
   if (!unique(profile.stampAwards.map(award => award.id)) || !unique(profile.stampAwards.map(award => award.stampId))) fail('Ein Stempel wurde mehrfach gespeichert.');
   for (const award of profile.stampAwards) checkDate(award.earnedAt);
-  return { ...profile, profileVersion: CURRENT_PROFILE_VERSION, books: profile.books.map(book => {
+  if (profile.lastExportedAt != null) checkDate(profile.lastExportedAt);
+  return { ...profile, profileVersion: CURRENT_PROFILE_VERSION, lastExportedAt: profile.lastExportedAt ?? null, books: profile.books.map(book => {
     checkDate(book.importedAt);
     return { ...book, workspace: safeWorkspace(book.workspace) };
   }) };
@@ -83,7 +84,28 @@ export function validateProfile(profile) {
 export function createProfile(workspace, now) {
   const safe = safeWorkspace(workspace);
   const id = crypto.randomUUID();
-  return validateProfile({ profileVersion: CURRENT_PROFILE_VERSION, activeBookId: id, books: [{ id, title: safe.curriculum.title, importedAt: timestamp(now), workspace: safe }], stampAwards: [] });
+  return validateProfile({ profileVersion: CURRENT_PROFILE_VERSION, activeBookId: id, books: [{ id, title: safe.curriculum.title, importedAt: timestamp(now), workspace: safe }], stampAwards: [], lastExportedAt: null });
+}
+
+/** Records that the parent just downloaded a backup, so the reminder can go quiet again. */
+export function markExported(profile, now) {
+  return validateProfile({ ...profile, lastExportedAt: timestamp(now) });
+}
+
+// ponytail: no separate "rounds since last export" counter — a still-unsaved learner
+// who already finished a few rounds is reminder enough; after that, only elapsed time matters.
+const REMINDER_ROUNDS_NEVER_EXPORTED = 3;
+const REMINDER_DAYS_SINCE_EXPORT = 14;
+
+/** null when no reminder is due, otherwise 'never' or 'stale' for the two nudge reasons. */
+export function backupReminder(profile, now = new Date()) {
+  if (!profile) return null;
+  if (!profile.lastExportedAt) {
+    const rounds = profile.books.reduce((sum, book) => sum + (book.workspace.learner.completedSessionIds?.length || 0), 0);
+    return rounds >= REMINDER_ROUNDS_NEVER_EXPORTED ? 'never' : null;
+  }
+  const days = (now.getTime() - Date.parse(profile.lastExportedAt)) / 86400000;
+  return days >= REMINDER_DAYS_SINCE_EXPORT ? 'stale' : null;
 }
 
 export function activeBook(profile) {

@@ -6,6 +6,7 @@ import { brandMark, fieldKitArtwork, heroArtwork } from './scout-art.js';
 import { authoringView } from './authoring-view.js';
 import { getReviewItems } from './engine.js';
 import { foldForSearch, learnerText, isMath, contentLanguage, subjectName, curriculumLanguageLabel } from './study-language.js';
+import { backupReminder } from './profile.js';
 
 const drafts = new Map();
 let pendingFocus = null;
@@ -49,6 +50,12 @@ function shell(state, content) {
 
 function courseTitle(state) { return state.profile?.books.find(book => book.id === state.profile.activeBookId)?.title || state.curriculum?.title || 'Dein Lernbuch'; }
 
+function backupReminderCard(state) {
+  const reason = backupReminder(state.profile);
+  if (!reason) return '';
+  const heading = reason === 'never' ? 'Du übst schon eine Weile — magst du deinen Lernstand sichern?' : 'Es ist etwas her, dass du zuletzt gesichert hast.';
+  return `<section class="backup-reminder card" aria-labelledby="backup-reminder-title"><div><p class="eyebrow">Nicht vergessen</p><h2 id="backup-reminder-title">${heading}</h2><p>Dein Lernstand liegt nur auf diesem Gerät. Eine Sicherungsdatei bringt ihn zurück, falls Browserdaten gelöscht werden oder das Gerät wechselt.</p></div>${button('Alles sichern', 'export-profile', 'button button--secondary')}</section>`;
+}
 function home(state) {
   const progress = conceptProgress(state);
   const mastered = progress.filter(item => (item.mastery ?? 0) >= .8).length;
@@ -59,6 +66,7 @@ function home(state) {
     <div class="hero-card scout-hero">${heroArtwork()}<div class="hero-card__caption"><span class="stamp">Heute</span><strong>${esc(courseTitle(state))}</strong><span>Eine kurze Runde wartet auf dich.</span></div></div>
     ${state.session ? `<section class="resume-banner card"><div><p class="eyebrow">Noch offen</p><h2>Deine Lernrunde wartet.</h2><p>Du bist bei Aufgabe ${state.index + 1} von ${state.session.exercises.length}.</p></div>${button(`Runde fortsetzen ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>` : `<section class="continue-card card" aria-labelledby="continue-title"><div><p class="eyebrow">Empfohlen</p><h2 id="continue-title">Weiterlernen</h2><p>${due ? `${due} ${due === 1 ? 'Thema wartet' : 'Themen warten'} auf Wiederholung.` : (isMath(state.curriculum) ? 'Eine neue Mischung aus Zahlen und Regeln.' : 'Eine neue Mischung aus Wörtern und Sätzen.')}</p></div>${button(`Los geht’s ${icons.arrow}`, 'start-learn', 'button button--primary button--with-icon')}</section>`}
     <section class="route-card card" aria-labelledby="route-title"><div class="section-title"><div><p class="eyebrow">Dein Lernstoff</p><h2 id="route-title">${esc(courseTitle(state))}</h2></div><span class="route-badge">${mastered} oft richtig geübt</span></div><div class="truthful-counts"><span><strong>${progress.length}</strong> Themen</span><span><strong>${started}</strong> begonnen</span><span><strong>${due}</strong> fällig</span></div>${button(`Lernbuch öffnen ${icons.arrow}`, 'navigate', 'button button--secondary button--with-icon', 'data-view="study"')}</section>
+    ${backupReminderCard(state)}
     ${stampStrip(state, button)}<section class="quick-card card" aria-labelledby="quick-title"><p class="eyebrow">Kurz & gezielt</p><h2 id="quick-title">Was brauchst du?</h2><div class="quick-actions">${button(`${icons.route}<span>Wiederholungen ansehen${due ? ` (${due})` : ''}</span>`, 'navigate', 'quick-action', 'data-view="review"')}${button(`${icons.archive}<span>Meine Lernbücher</span>`, 'navigate', 'quick-action', 'data-view="books"')}</div></section>
   </section>`);
 }
@@ -162,8 +170,8 @@ function complete(state) {
 function library(state) {
   return shell(state, `<section class="utility-page" aria-labelledby="library-title">
     <p class="eyebrow">Dein Lernbuch</p><h1 id="library-title">Üben & verwalten</h1>
-    <p class="lede">Dein Material und dein Fortschritt liegen nur auf diesem Gerät, bis du sie selbst exportierst.</p>
-    <div class="import-preview__actions">${button('Meine Lernbücher', 'navigate', 'button button--secondary', 'data-view="books"')}${button('Sammelmappe', 'navigate', 'button button--secondary', 'data-view="album"')}${button('Alles sichern', 'export-profile', 'button button--quiet')}</div><div class="library-handoff">
+    <p class="lede">Dein Material und dein Fortschritt liegen nur auf diesem Gerät. Browserspeicher ist kein Tresor: Löschst du die Browserdaten oder geht das Gerät verloren, ist der Lernstand weg — bis du ihn selbst gesichert hast.</p>
+    <div class="import-preview__actions">${button('Meine Lernbücher', 'navigate', 'button button--secondary', 'data-view="books"')}${button('Sammelmappe', 'navigate', 'button button--secondary', 'data-view="album"')}${button('Alles sichern', 'export-profile', 'button button--primary')}</div><div class="library-handoff">
       <article class="card utility-card"><div class="utility-icon">${icons.archive}</div><h2>Lernstoff importieren</h2><p>Kopiere die JSON-Antwort aus ChatGPT hierher oder wähle eine Datei. Erst in der Vorschau übernimmst du den neuen Lernstoff.</p><div class="import-entry-actions">${button('Text einfügen', 'navigate', 'button button--primary', 'data-view="import-text"')}<label class="button button--secondary file-button">Datei auswählen<input type="file" accept="application/json,.json" data-import-file></label></div></article>
       <div class="card authoring-entry scout-authoring-entry"><div class="authoring-entry__copy"><h2>Eigenen Lernstoff erstellen</h2><p>Aus deinem Schulmaterial wird dein eigener Lernpfad. Mit Anleitung und Prompt für Sprachen oder Mathematik.</p>${button('Anleitung & Prompt', 'navigate', 'button button--primary', 'data-view="authoring"')}</div>${fieldKitArtwork()}</div>
     </div>
