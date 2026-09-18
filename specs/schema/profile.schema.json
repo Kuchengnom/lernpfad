@@ -43,6 +43,7 @@
                 "correct": { "type": ["boolean", "null"] },
                 "selfCheck": { "type": "boolean" },
                 "selfChecked": { "type": "boolean" },
+                "near": { "type": "boolean" },
                 "expectedAnswer": { "type": "string" },
                 "explanation": { "type": "string" }
               }

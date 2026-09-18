@@ -63,7 +63,7 @@ test('mobile pasted JSON preserves drafts and current progress through errors, e
   const downloaded = page.waitForEvent('download');
   await page.locator('[data-action="export-backup"]').click();
   const download = await downloaded;
-  expect(download.suggestedFilename()).toBe('lernpfad-sicherung.json');
+  expect(download.suggestedFilename()).toMatch(/^lernpfad-sicherung-.+-\d{4}-\d{2}-\d{2}\.json$/);
   expect(JSON.parse(await readFile(await download.path(), 'utf8')).curriculum).toEqual(french.curriculum);
   await page.getByRole('button', { name: 'Text einfügen', exact: true }).click();
   await expect(field).toHaveValue('');

@@ -138,7 +138,8 @@ test('full math round records a mistake, restores feedback, reviews it, and comp
       await page.reload();
       await page.locator('[data-action="start-learn"], [data-action="resume-session"]').first().click();
       await expect(page.locator('[data-action="next"]')).toBeVisible();
-      await expect(page.locator('.feedback')).toContainText('schau noch mal hin');
+      // A wrong number is never "almost": the near-miss label is reserved for free text.
+      await expect(page.locator('.feedback')).toContainText('Noch nicht');
     }
     await page.locator('[data-action="next"]').click();
     // Settle on one of the three post-answer states before the next iteration inspects the page.

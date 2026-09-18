@@ -169,7 +169,7 @@ test('two paused books rename and switch independently; duplicates preserve and 
   const pending = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Alles sichern', exact: true }).click();
   const download = await pending;
-  expect(download.suggestedFilename()).toBe('lernpfad-profil.json');
+  expect(download.suggestedFilename()).toMatch(/^lernpfad-profil-\d{4}-\d{2}-\d{2}\.json$/);
   const backup = JSON.parse(await readFile(await download.path(), 'utf8'));
   expect(backup.profile.books.map(book => book.workspace.learner)).toEqual([english.workspace.learner, frenchBook.workspace.learner]);
   expect(backup.profile.books.every(book => book.workspace.session === null)).toBe(true);

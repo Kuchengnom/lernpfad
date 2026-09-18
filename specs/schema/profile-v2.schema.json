@@ -141,6 +141,9 @@
                 "selfChecked": {
                   "type": "boolean"
                 },
+                "near": {
+                  "type": "boolean"
+                },
                 "expectedAnswer": {
                   "type": "string"
                 },
