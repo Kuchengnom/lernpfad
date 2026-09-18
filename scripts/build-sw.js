@@ -5,7 +5,9 @@ async function files(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   return (await Promise.all(entries.map(e => e.isDirectory() ? files(`${dir}/${e.name}`) : `${dir}/${e.name}`))).flat();
 }
-const paths = (await files('dist')).filter(p => !p.endsWith('/sw.js')).sort();
+// The landing-page film is excluded: precaching ~6 MB of video would make the
+// offline install slow and can fail addAll outright. It streams on demand.
+const paths = (await files('dist')).filter(p => !p.endsWith('/sw.js') && !p.endsWith('.mp4')).sort();
 const hash = createHash('sha256');
 hash.update(await readFile(new URL(import.meta.url)));
 for (const p of paths) hash.update(await readFile(p));
