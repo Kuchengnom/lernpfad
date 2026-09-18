@@ -126,7 +126,8 @@ function feedback(exercise, state) {
   if (writingPrompt) return `<section class="feedback feedback--notice" role="status"><div class="feedback-icon">${icons.book}</div><div><p class="eyebrow">Vergleiche in Ruhe</p><h2>Ein mögliches Beispiel</h2><p class="model-answer" lang="${esc(contentLanguage(state.curriculum))}">${esc(exercise.modelAnswer || result.expectedAnswer || '')}</p><p>Deine Antwort muss nicht genau gleich sein. Prüfe: ${esc((exercise.checklist || []).join(' · '))}</p></div>${button(`${icons.check} Ich habe verglichen`, 'self-check', 'button button--primary button--with-icon')}</section>`;
   const correct = result.correct;
   if (exercise.type === 'writing' && correct === null) return `<section class="feedback feedback--success" role="status"><div class="feedback-icon">${icons.check}</div><div><p class="eyebrow">Selbst geprüft</p><h2>Gut, dass du deinen Satz verglichen hast.</h2><p>Du kannst jetzt zur nächsten Aufgabe gehen.</p></div>${button(`Weiter ${icons.arrow}`, 'next', 'button button--primary button--with-icon')}</section>`;
-  return `<section class="feedback feedback--${correct ? 'success' : 'error'}" role="status"><div class="feedback-icon">${correct ? icons.check : '!'}</div><div><p class="eyebrow">${correct ? 'Gut gemacht' : 'Fast — schau noch mal hin'}</p><h2>${correct ? 'Das stimmt.' : `Richtig ist: ${esc(result.expectedAnswer || '')}`}</h2>${result.explanation ? `<p>${esc(result.explanation)}</p>` : ''}</div>${button(`Weiter ${icons.arrow}`, 'next', 'button button--primary button--with-icon')}</section>`;
+  const eyebrow = correct ? 'Gut gemacht' : result.near ? 'Fast — schau noch mal hin' : 'Noch nicht — so ist es richtig';
+  return `<section class="feedback feedback--${correct ? 'success' : 'error'}" role="status"><div class="feedback-icon">${correct ? icons.check : '!'}</div><div><p class="eyebrow">${eyebrow}</p><h2>${correct ? 'Das stimmt.' : `Richtig ist: ${esc(result.expectedAnswer || '')}`}</h2>${result.explanation ? `<p>${esc(result.explanation)}</p>` : ''}</div>${button(`Weiter ${icons.arrow}`, 'next', 'button button--primary button--with-icon')}</section>`;
 }
 
 function session(state) {
@@ -142,7 +143,20 @@ function session(state) {
 
 function complete(state) {
   const summary = state.summary || { xp: 0, gems: 0, correct: 0, total: 0 };
-  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">Das war eine gute Runde.</h1><p class="lede">Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.</p>${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}${completionStamps(state)}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Runde geschafft</span></div></div>${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}</section>`);
+  const missed = summary.missedConcepts || [];
+  const resolved = summary.resolvedConcepts || [];
+  const isReview = summary.mode === 'review';
+  const names = list => list.map(item => esc(item.label)).join(', ');
+  const headline = isReview ? (missed.length ? 'Ein Stück weiter aufgelöst.' : 'Das sitzt jetzt sicherer.') : 'Das war eine gute Runde.';
+  const lede = isReview
+    ? (missed.length ? `${names(resolved) ? `${names(resolved)} sitzt jetzt sicherer. ` : ''}${names(missed)} braucht noch eine Runde.` : `${names(resolved) || 'Dieses Thema'} war noch unsicher — jetzt hast du es richtig gelöst.`)
+    : 'Du hast dir Zeit genommen und weitergeübt. Dein Lernbuch ist ein Stück voller geworden.';
+  // Peak-end moment: name what's still open instead of letting the tally speak for it, and offer a direct way back in.
+  const openNote = !isReview && missed.length
+    ? `<p class="complete-open-note">${names(missed)} kommt in einer der nächsten Runden wieder.</p>`
+    : '';
+  const secondaryAction = missed.length ? button(`Das gleich üben ${icons.arrow}`, 'start-review', 'button button--secondary button--with-icon') : '';
+  return shell(state, `<section class="complete" aria-labelledby="complete-title"><div class="completion-stamp" aria-hidden="true">${icons.check}</div><p class="eyebrow">Etappe geschafft</p><h1 id="complete-title">${headline}</h1><p class="lede">${lede}</p>${openNote}${summary.selfChecks ? `<p>${summary.selfChecks} Schreibaufgabe${summary.selfChecks === 1 ? '' : 'n'} selbst geprüft · ohne automatische Bewertung</p>` : ''}${completionStamps(state)}<div class="summary-row"><div><strong>${summary.correct}/${summary.total}</strong><span>richtig</span></div><div><strong>+${summary.xp}</strong><span>Punkte</span></div><div><strong>+${summary.gems}</strong><span>Runde geschafft</span></div></div><div class="complete-actions">${button(`Zur Übersicht ${icons.arrow}`, 'navigate', 'button button--primary button--with-icon', 'data-view="home"')}${secondaryAction}</div></section>`);
 }
 
 function library(state) {
