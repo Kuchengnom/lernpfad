@@ -1,4 +1,4 @@
-import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, MAX_PROFILE_BYTES } from './profile.js';
+import { createProfile, validateProfile, activeBook, updateActiveBook, selectBook, renameBook, importBook, previewBookImport, profilePackage, parseProfilePackage, markExported, MAX_PROFILE_BYTES } from './profile.js';
 import { expectedAnswer } from './answer-format.js';
 import { cancelSpeech, speak } from './speech.js';
 import { awardStamps } from './stamps.js';
@@ -71,6 +71,15 @@ function downloadText(text, filename, type = 'text/plain;charset=utf-8') {
 }
 const documentElement = tag => window.document.createElement(tag);
 
+// ponytail: a date suffix avoids silent Downloads-folder "(1)" duplicates; a slugged
+// book title avoids restoring the wrong file. Both stay filesystem-safe on every OS.
+const isoDateStamp = (now = new Date()) => now.toISOString().slice(0, 10);
+const filenameSlug = text => String(text || '')
+  .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue').replace(/ß/g, 'ss')
+  .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const datedFilename = (prefix, slug) => `lernpfad-${prefix}${slug ? `-${slug}` : ''}-${isoDateStamp()}.json`;
+
 function fromProfile(profile, extra = {}) {
   return { ...state, ...activeBook(profile).workspace, profile, inputError: null, bookTitleDrafts: {}, pendingImport: null, studyQuery: '', studyKind: 'all', summary: null, ...extra };
 }
@@ -142,8 +151,12 @@ const actions = {
     try { const bookTitleDrafts = { ...state.bookTitleDrafts }; delete bookTitleDrafts[id]; await commit({ ...state, bookTitleDrafts, profile: renameBook(state.profile, id, title), notice: { type: 'success', text: 'Name gespeichert.' } }); }
     catch (error) { notify(error.message); }
   },
-  exportProfile() {
-    try { download(profilePackage(state.profile), 'lernpfad-profil.json'); notify('Alles gesichert: deine Lernbücher, Lernstände und Sammelstempel.', 'success'); }
+  async exportProfile() {
+    try {
+      download(profilePackage(state.profile), datedFilename('profil'));
+      notify('Alles gesichert: deine Lernbücher, Lernstände und Sammelstempel.', 'success');
+      if (!state.readOnly) await commit({ ...state, profile: markExported(state.profile) });
+    }
     catch (error) { notify(error.message); }
     root.querySelector('[data-action="export-profile"]')?.focus();
   },
@@ -257,12 +270,16 @@ const actions = {
       root.querySelector('[data-import-text]')?.focus({ preventScroll: true });
     }
   },
-  exportBackup() {
-    try { download(backupPackage(state.curriculum, state.learner), 'lernpfad-sicherung.json'); notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success'); }
+  async exportBackup() {
+    try {
+      download(backupPackage(state.curriculum, state.learner), datedFilename('sicherung', filenameSlug(state.curriculum?.title)));
+      notify('Sicherung heruntergeladen. Sie enthält Lernstoff und Lernstand.', 'success');
+      if (!state.readOnly) await commit({ ...state, profile: markExported(state.profile) });
+    }
     catch (error) { notify(error.message); }
     root.querySelector('[data-action="export-backup"]')?.focus();
   },
-  exportCurriculum() { download(curriculumPackage(state.curriculum), 'lernpfad-lernstoff.json'); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
+  exportCurriculum() { download(curriculumPackage(state.curriculum), datedFilename('lernstoff', filenameSlug(state.curriculum?.title))); notify('Lernstoff heruntergeladen — ohne deinen Lernstand.', 'success'); },
   previewBundledExample(curriculum, fileName, keepActiveBook = false) {
     if (state.busy || state.readOnly) return;
     try { previewImport({ curriculum: validateCurriculum(curriculum), learner: null }, fileName, false, { keepActiveBook }); }

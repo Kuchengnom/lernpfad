@@ -31,6 +31,12 @@
       "items": {
         "$ref": "#/$defs/stampAward"
       }
+    },
+    "lastExportedAt": {
+      "oneOf": [
+        { "$ref": "#/$defs/date" },
+        { "type": "null" }
+      ]
     }
   },
   "$defs": {

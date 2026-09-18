@@ -9,7 +9,8 @@
     "profileVersion": { "const": "1.0" },
     "activeBookId": { "$ref": "#/$defs/id" },
     "books": { "type": "array", "minItems": 1, "maxItems": 50, "items": { "$ref": "#/$defs/book" } },
-    "stampAwards": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/stampAward" } }
+    "stampAwards": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/stampAward" } },
+    "lastExportedAt": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] }
   },
   "$defs": {
     "id": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "^(?!__proto__$|constructor$|prototype$)[A-Za-z0-9][A-Za-z0-9._:-]*$" },

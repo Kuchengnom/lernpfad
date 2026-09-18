@@ -44,7 +44,7 @@ export function booksView(state, esc, button) {
   const books = state.profile?.books || [];
   return `<section class="books-page" aria-labelledby="books-title">
     <p class="eyebrow">Deine Sammlung</p><h1 id="books-title">Meine Lernbücher</h1>
-    <p class="lede">Wechsle zwischen deinen Büchern. Jedes behält seinen Lernstand und seine pausierte Runde.</p>
+    <p class="lede">Wechsle zwischen deinen Büchern in dieser Sammlung. Jedes behält seinen Lernstand und seine pausierte Runde.</p>
 
     <section class="card books-examples" aria-labelledby="books-examples-title"><div><p class="eyebrow">Schnell testen</p><h2 id="books-examples-title">Beispiel-Lernbücher hinzufügen</h2><p>Füge Mathe oder Französisch einzeln über die gewohnte Importvorschau hinzu. Dein aktuell ausgewähltes Buch bleibt geöffnet.</p></div><div class="books-examples__actions">${button('Französisch-Beispiel hinzufügen', 'load-example', 'button button--secondary', 'data-example="french" data-keep-active-book="true"')}${button('Mathe-Beispiel hinzufügen', 'load-math-example', 'button button--secondary', 'data-keep-active-book="true"')}</div></section>
     <div class="books-toolbar"><p>${books.length} ${books.length === 1 ? 'Lernbuch' : 'Lernbücher'}</p><div>${button('Text einfügen', 'navigate', 'button button--secondary', 'data-view="import-text"')}${button('Datei & Import-Auswahl', 'navigate', 'button button--secondary', 'data-view="library"')}</div></div>
@@ -78,6 +78,6 @@ export function bookImportMessage(state, esc) {
   if (pending.keepActiveBook && pending.action === 'open' && existing) return `<p>„${esc(bookTitle(existing))}“ ist bereits in deiner Sammlung. Es wird nicht doppelt angelegt; dein aktuell ausgewähltes Buch bleibt geöffnet.</p>`;
   if (pending.keepActiveBook) return '<p>Dieses Beispiel fügt deiner Sammlung ein neues Lernbuch hinzu. Dein aktuell ausgewähltes Buch bleibt geöffnet; sein Lernstand und seine pausierte Runde bleiben unverändert.</p>';
   if (pending.action === 'open' && existing) return `<p>„${esc(bookTitle(existing))}“ ist mit diesem Inhalt bereits in deiner Sammlung. Beim Übernehmen öffnest du das vorhandene Buch. Sein bisheriger Lernstand und seine pausierte Runde bleiben erhalten.</p>`;
-  if (pending.action === 'replace' && existing) return `<p>Diese Sicherung ersetzt den Lernstand und die pausierte Runde von „${esc(bookTitle(existing))}“. Die anderen Bücher und deine gesammelten Stempel bleiben erhalten. Mit „Alles sichern“ kannst du vorher die aktuelle Sammlung herunterladen.</p>`;
+  if (pending.action === 'replace' && existing) return `<p>Diese Sicherung ersetzt den Lernstand von „${esc(bookTitle(existing))}“. Eine Sicherung enthält nie eine pausierte Runde: Falls gerade eine offen ist, geht sie beim Übernehmen verloren. Die anderen Bücher und deine gesammelten Stempel bleiben erhalten. Mit „Alles sichern“ kannst du vorher die aktuelle Sammlung herunterladen.</p>`;
   return '<p>Dieser Import fügt deiner Sammlung ein neues Lernbuch hinzu. Deine bisherigen Bücher, Lernstände, pausierten Runden und gesammelten Stempel bleiben erhalten. Auch eine neue Version eines Buches wird getrennt aufgenommen.</p>';
 }
