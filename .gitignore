@@ -15,3 +15,8 @@ experiment/evidence/
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# /brag working directory: the Hyperframes project plus its bundled music and
+# font. The published film lives in public/ — this is the source, not an artifact
+# the site needs.
+brag-output/

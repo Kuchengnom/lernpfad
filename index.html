@@ -71,6 +71,29 @@
         </div>
       </section>
 
+      <!-- The film sits directly under the hero: a parent who wants to see it
+           before reading gets it here. Self-hosted, no external embed — an
+           iframe from a video platform would contradict the privacy section. -->
+      <section class="film" aria-labelledby="film-titel">
+        <h2 id="film-titel" class="film__title">Lernpfad in 40 Sekunden</h2>
+        <video
+          class="film__player"
+          controls
+          preload="none"
+          playsinline
+          width="1920"
+          height="1080"
+          poster="./lernpfad-vorstellung.jpg"
+        >
+          <source src="./lernpfad-vorstellung.mp4" type="video/mp4" />
+          <p>Dein Browser kann dieses Video nicht abspielen. <a href="./lernpfad-vorstellung.mp4">Video herunterladen</a>.</p>
+        </video>
+        <p class="film__note">
+          Ohne Sprache — alles steht als Text im Bild. Das Video liegt auf dieser Seite, nicht bei
+          einem Videodienst: es lädt erst, wenn du es startest.
+        </p>
+      </section>
+
       <section class="band">
         <div class="pitch">
           <h2>Die meisten Lern-Apps bringen ihren eigenen Stoff mit.</h2>

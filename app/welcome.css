@@ -587,3 +587,29 @@ a:focus-visible, summary:focus-visible {
     animation-delay: 0.01ms !important;
   }
 }
+
+/* Film ------------------------------------------------------------------ */
+/* Self-hosted and preload="none": the 5.8 MB file must not cost every visitor
+   a download they did not ask for, and no external player may be embedded. */
+.film {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--space-inset);
+}
+.film__title { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); margin-bottom: 1rem; }
+.film__player {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  background: var(--paper-muted);
+}
+.film__note {
+  margin: 0.85rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  max-width: 54ch;
+}
